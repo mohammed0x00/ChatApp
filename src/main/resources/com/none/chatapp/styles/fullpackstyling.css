@@ -103,3 +103,23 @@
 .linear-grad {
     -fx-background-color: linear-gradient(to bottom left, #6F4CBB, #431FA0);
 }
+
+.dark-gray-background
+{
+	-fx-background-color: #46474A;
+}
+
+.gray-background
+{
+	-fx-background-color: #636566;
+}
+
+.transparent-background
+{
+	-fx-background-color: rgba(0,0,0,0);
+}
+
+.radius
+{
+	-fx-background-radius: 100px;
+}

@@ -3,7 +3,7 @@ package com.none.chatapp;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import  javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import animatefx.animation.*;
 
 public class LoginController {
@@ -57,35 +58,49 @@ public class LoginController {
     @FXML
     private Pane pnLogin;
 
+    // Fields to store initial mouse click coordinates
+    private double xOffset = 0;
+    private double yOffset = 0;
 
     @FXML
-    private void handleButtonAction(ActionEvent event)
-    {
-        if(event.getSource().equals(btnSign))
-        {
+    private void handleButtonAction(ActionEvent event) {
+        if (event.getSource().equals(btnSign)) {
             new ZoomIn(pnSign).play();
             pnSign.toFront();
         }
-
     }
 
     @FXML
     void handleMouseEvent(MouseEvent event) {
-        if(event.getSource() == btnClose)
-        {
+        if (event.getSource() == btnClose) {
             new animatefx.animation.FadeOut(anchRoot).play();
             System.exit(0);
         }
-        if(event.getSource() == btnBack)
-        {
+        if (event.getSource() == btnBack) {
             new ZoomIn(pnLogin).play();
             pnLogin.toFront();
         }
-
     }
-    public void initialize()
-    {
+
+    @FXML
+    private void handleMousePressed(MouseEvent event) {
+        xOffset = event.getSceneX();
+        yOffset = event.getSceneY();
+    }
+
+    @FXML
+    private void handleMouseDragged(MouseEvent event) {
+        Stage stage = (Stage) anchRoot.getScene().getWindow();
+        stage.setX(event.getScreenX() - xOffset);
+        stage.setY(event.getScreenY() - yOffset);
+    }
+
+    @FXML
+    public void initialize() {
         new animatefx.animation.FadeIn(anchRoot).play();
-    }
 
+        // Add mouse pressed and dragged event handlers to the root node
+        anchRoot.setOnMousePressed(this::handleMousePressed);
+        anchRoot.setOnMouseDragged(this::handleMouseDragged);
+    }
 }
