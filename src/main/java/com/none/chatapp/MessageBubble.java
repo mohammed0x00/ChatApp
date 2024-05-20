@@ -1,67 +1,70 @@
 package com.none.chatapp;
 
+import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 
-public class MessageBubble extends Region {
 
-    private Label messageLabel;
-    private Button deleteButton;
 
-    public MessageBubble(String message) {
-        messageLabel = new Label(message);
-        messageLabel.setMaxWidth(200); // Set maximum width for text wrapping
-        messageLabel.setWrapText(true); // Allow text wrapping
+class MessageBubble extends HBox {
+    private static final double PADDING = 10;
+    private static final double ARC_SIZE = 20;
 
-        deleteButton = new Button("Delete");
-        deleteButton.setOnAction(event -> {
-            // Handle delete button action
-            getParent().getChildrenUnmodifiable().remove(this);
-        });
+    public MessageBubble(String message, String time, String status) {
+        // Create a Text for the message
+        Text messageText = new Text(message);
+        messageText.setTextAlignment(TextAlignment.LEFT);
 
-        // Styling for message bubble
-        Rectangle bubbleBackground = new Rectangle(10, 10);
-        bubbleBackground.setFill(Color.LIGHTBLUE);
-        bubbleBackground.setStroke(Color.BLUE);
+        // Create a Rectangle shape for the bubble with rounded corners
+        Rectangle bubble = new Rectangle();
+        bubble.setArcWidth(ARC_SIZE); // Radius of rounded corners
+        bubble.setArcHeight(ARC_SIZE); // Radius of rounded corners
+        bubble.setFill(Color.LIGHTBLUE);
 
-        HBox messageBox = new HBox(10);
-        messageBox.setAlignment(Pos.CENTER_LEFT);
-        messageBox.getChildren().addAll(messageLabel, deleteButton);
+        // StackPane to overlay text on the rectangle
+        StackPane bubblePane = new StackPane();
+        bubblePane.getChildren().addAll(bubble, messageText);
+        bubblePane.setPadding(new Insets(PADDING));
 
-        getChildren().addAll(bubbleBackground, messageBox);
-    }
+        // Bind the text's wrapping width to the width of the HBox minus padding and labels
+        messageText.wrappingWidthProperty().bind(Bindings.createDoubleBinding(() ->
+                Math.min(180, this.widthProperty().subtract(60).doubleValue()), this.widthProperty()));
 
-    @Override
-    protected void layoutChildren() {
-        super.layoutChildren();
+        // Bind the rectangle's width and height to the text's bounds with padding
+        bubble.widthProperty().bind(Bindings.createDoubleBinding(() ->
+                messageText.getLayoutBounds().getWidth() + 2 * PADDING, messageText.layoutBoundsProperty()));
+        bubble.heightProperty().bind(Bindings.createDoubleBinding(() ->
+                messageText.getLayoutBounds().getHeight() + 2 * PADDING, messageText.layoutBoundsProperty()));
 
-        double width = getWidth();
-        double height = getHeight();
+        // Create Labels for time and status
+        Label timeLabel = new Label(time);
+        timeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: gray;");
 
-        double buttonWidth = deleteButton.prefWidth(-1);
-        double buttonHeight = deleteButton.prefHeight(-1);
+        Label statusLabel = new Label(status);
+        statusLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: gray;");
 
-        // Position the message box inside the bubble
-        messageLabel.resizeRelocate(10, 5, width - 2 * buttonWidth - 20, height - 10);
-        deleteButton.resizeRelocate(width - buttonWidth - 5, (height - buttonHeight) / 2, buttonWidth, buttonHeight);
+        VBox labelsBox = new VBox(timeLabel, statusLabel);
+        labelsBox.setAlignment(Pos.BOTTOM_RIGHT);
+        labelsBox.setSpacing(2);
 
-        // Set the size of the bubble background
-        ((Rectangle) getChildren().get(0)).setWidth(width);
-        ((Rectangle) getChildren().get(0)).setHeight(height);
-    }
+        // Add bubblePane and labelsBox to the HBox
+        this.getChildren().addAll(bubblePane, labelsBox);
+        this.setAlignment(Pos.CENTER_LEFT);
+        this.setSpacing(10); // Space between bubble and labels
+        this.setPadding(new Insets(10)); // Add padding around the HBox
 
-    @Override
-    protected double computePrefWidth(double height) {
-        return messageLabel.prefWidth(-1) + deleteButton.prefWidth(-1) + 20; // Add padding
-    }
-
-    @Override
-    protected double computePrefHeight(double width) {
-        return Math.max(messageLabel.prefHeight(width), deleteButton.prefHeight(width)) + 10; // Add padding
+        // Make sure HBox resizes based on VBox width
+        this.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(this, javafx.scene.layout.Priority.ALWAYS);
     }
 }
