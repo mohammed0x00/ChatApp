@@ -123,3 +123,8 @@
 {
 	-fx-background-radius: 100px;
 }
+
+.dark-mode-background1
+{
+	-fx-background-color: linear-gradient(to bottom left, #A9A9A9, #222222);
+}

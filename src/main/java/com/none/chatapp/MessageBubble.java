@@ -8,13 +8,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-
-
 
 class MessageBubble extends HBox {
     private static final double PADDING = 10;
@@ -38,7 +34,7 @@ class MessageBubble extends HBox {
 
         // Bind the text's wrapping width to the width of the HBox minus padding and labels
         messageText.wrappingWidthProperty().bind(Bindings.createDoubleBinding(() ->
-                Math.min(180, this.widthProperty().subtract(60).doubleValue()), this.widthProperty()));
+                Math.min(500, this.getWidth() - 80), this.widthProperty())); // Adjust 80 based on label width
 
         // Bind the rectangle's width and height to the text's bounds with padding
         bubble.widthProperty().bind(Bindings.createDoubleBinding(() ->

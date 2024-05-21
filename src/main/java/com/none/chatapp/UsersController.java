@@ -1,20 +1,23 @@
 package com.none.chatapp;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
-import javafx.scene.layout.VBox;
-
+import javafx.scene.input.MouseEvent;
 
 public class UsersController {
 
+    @FXML
+    private ResourceBundle resources;
 
     @FXML
-    private VBox messagesViewBox;
+    private URL location;
 
     @FXML
-    protected void onSendButtonClick() {
-        messagesViewBox.getChildren().add(new MessageBubble("hello", "34:44", "seen"));
-        messagesViewBox.getChildren().add(new MessageBubble("icneruicmeriocmeriocmeriocmerio\ncmeioceoicmeriomceriocmeocmeriomceriomcoeirmcoemroicvermocvimeorc", "34:44", "seen"));
+    void initialize() {
+
     }
+    void handleMouseEvent(MouseEvent event) {
 
-
+    }
 }
