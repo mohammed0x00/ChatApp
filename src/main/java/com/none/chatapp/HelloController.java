@@ -14,6 +14,6 @@ public class HelloController {
     @FXML
     protected void onHelloButtonClick() {
         MessageBubble x = new MessageBubble("hello", "11:44:11", "seen");
-        chatMenu.getChildren().add(x);
+        chatMenu.getChildren().add(new MessageBubble("hello", "11:44:11", "seen"));
     }
 }
