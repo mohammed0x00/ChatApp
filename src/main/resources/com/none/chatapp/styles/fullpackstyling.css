@@ -128,3 +128,12 @@
 {
 	-fx-background-color: linear-gradient(to bottom left, #A9A9A9, #222222);
 }
+
+.scroll-pane .viewport {
+    -fx-background-color: rgba(0,0,0,0);
+}
+
+.scroll-pane1 .viewport
+{
+    -fx-background-color: rgba(0,0,0,0);
+}

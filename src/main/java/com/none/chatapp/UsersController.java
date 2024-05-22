@@ -32,5 +32,7 @@ public class UsersController {
     void handleMouseEvent(MouseEvent event) {
        usersViewBox.getChildren().add(new UserItem("Mohammed Ali Mansour", true, new Image("https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars.png")));
        messageViewBox.getChildren().add(new MessageBubble("hello, I'm mohammed ali", "9:32", "seen"));
+        messageViewBox.getChildren().add(new MessageBubble("hello, I'm mohammed aliiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii", "9:32", "seen"));
+
     }
 }
