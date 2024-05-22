@@ -21,13 +21,6 @@ public class UsersController {
     @FXML
     private VBox messageViewBox;
 
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
-
-    Timer timer = new Timer();
 
     @FXML
     void initialize() {
@@ -48,7 +41,6 @@ public class UsersController {
                 }
                 catch (Exception ignored)
                 {
-                    System.out.println(ignored.getMessage());
                 }
             }
         };
@@ -77,6 +69,7 @@ public class UsersController {
        usersViewBox.getChildren().add(new UserItem("Mohammed Ali Mansour", true, new Image("https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars.png")));
        messageViewBox.getChildren().add(new MessageBubble("hello, I'm mohammed ali", "9:32", "seen"));
        messageViewBox.getChildren().add(new MessageBubble("hello, I'm mohammed aliiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii", "9:32", "seen"));
+
 
     }
 

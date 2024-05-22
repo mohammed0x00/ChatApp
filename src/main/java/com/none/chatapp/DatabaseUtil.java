@@ -45,8 +45,7 @@ public class DatabaseUtil {
         String query = "Call ListAllUsers();";
 
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery();
-            return rs; // No match found
+            return stmt.executeQuery();
 
         } catch (Exception e) {
             return null;

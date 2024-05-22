@@ -18,9 +18,6 @@ import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import animatefx.animation.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-
 public class LoginController {
 
     @FXML
@@ -28,15 +25,6 @@ public class LoginController {
 
     @FXML
     private Circle btnClose;
-
-    @FXML
-    private ImageView imgLogo;
-
-    @FXML
-    private Label lblLogo;
-
-    @FXML
-    private Label lblDsc;
 
     @FXML
     private ImageView btnBack;
@@ -52,12 +40,6 @@ public class LoginController {
 
     @FXML
     private Button btnSign;
-
-    @FXML
-    private Label lblSign;
-
-    @FXML
-    private Label lblLog;
 
     @FXML
     private Pane pnSign;
