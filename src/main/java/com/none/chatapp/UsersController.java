@@ -48,7 +48,7 @@ public class UsersController {
 
         // Schedule the task to run every 5 seconds with an initial delay of 0 seconds
         long delay = 0;
-        long period = 60000 * 2;
+        long period = 30000;
         timer.scheduleAtFixedRate(repetitiveTask, delay, period);
 
         try{
