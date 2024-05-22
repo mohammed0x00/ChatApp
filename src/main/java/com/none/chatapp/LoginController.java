@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.scene.control.Alert;
 import animatefx.animation.*;
 
 public class LoginController {
@@ -68,6 +69,27 @@ public class LoginController {
             new ZoomIn(pnSign).play();
             pnSign.toFront();
         }
+        if (event.getSource().equals(btnLog)) {
+            String username = txfUser.getText();
+            String password = txfPass.getText();
+
+            DatabaseUtil dbUtil = new DatabaseUtil();
+            try {
+                Integer userId = dbUtil.validateUser(username, password);
+                if (userId != null) {
+                    // Login successful, proceed to the next scene or dashboard
+                    System.out.println("Login successful, User ID: " + userId);
+                    showAlert("Login Successful", "Welcome, " + username + "!");
+                } else {
+                    // Login failed, show error message
+                    System.out.println("Login failed");
+                    showAlert("Login Failed", "Invalid username or password.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert("Error", "An error occurred during login.");
+            }
+        }
     }
 
     @FXML
@@ -102,5 +124,14 @@ public class LoginController {
         // Add mouse pressed and dragged event handlers to the root node
         anchRoot.setOnMousePressed(this::handleMousePressed);
         anchRoot.setOnMouseDragged(this::handleMouseDragged);
+    }
+
+    @FXML
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

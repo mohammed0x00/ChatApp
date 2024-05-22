@@ -6,6 +6,7 @@ module com.none.chatapp {
     requires java.desktop;
     requires AnimateFX;
     requires java.compiler;
+    requires java.sql;
 
     opens com.none.chatapp to javafx.fxml;
     exports com.none.chatapp;
