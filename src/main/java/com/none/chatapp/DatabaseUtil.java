@@ -1,6 +1,8 @@
 package com.none.chatapp;
 
+import javafx.event.EventHandler;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public class DatabaseUtil {
         }
     }
 
-    public static ArrayList<UserItem> getOnlineUsersList() {
+    public static ArrayList<UserItem> getOnlineUsersList(EventHandler<MouseEvent> userItemMouseEvent) {
         String query = "Call GetOnlineUsers();";
         ArrayList<UserItem> tmp = new ArrayList<>();
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -63,7 +65,7 @@ public class DatabaseUtil {
                 if(user != user_id)
                 {
                     String name = rs.getString("username");
-                    tmp.add(new UserItem(name, true, new Image("https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars.png")));
+                    tmp.add(new UserItem(userItemMouseEvent, name, true, new Image("https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars.png")));
                 }
             }
             return tmp;

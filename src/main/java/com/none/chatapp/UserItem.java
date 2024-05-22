@@ -1,5 +1,6 @@
 package com.none.chatapp;
 
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -7,15 +8,18 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.input.MouseEvent;
+
 
 public class UserItem extends HBox {
     private static final double PADDING = 5;
     private static final double IMAGE_SIZE = 50;
     private static final double STATUS_CIRCLE_RADIUS = 7; // Increase radius for visibility
 
-    public UserItem(String name, boolean isOnline, Image image) {
+    public UserItem(EventHandler<MouseEvent> click_event, String name, boolean isOnline, Image image) {
         // Create ImageView for the user's image
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(IMAGE_SIZE);
@@ -43,5 +47,11 @@ public class UserItem extends HBox {
         this.setAlignment(Pos.CENTER_LEFT);
         this.setSpacing(PADDING);
         this.setPadding(new Insets(PADDING));
+
+        imageStackPane.setOnMouseClicked(click_event);
+        imageView.setOnMouseClicked(click_event);
+        nameLabel.setOnMouseClicked(click_event);
+
     }
+
 }
