@@ -4,13 +4,18 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javax.lang.model.type.NullType;
 
 public class UsersController {
 
     @FXML
-    public ScrollPane messageViewPane;
+    public VBox usersViewBox;
+    
+    @FXML
+    private VBox messageViewBox;
 
     @FXML
     private ResourceBundle resources;
@@ -25,6 +30,7 @@ public class UsersController {
 
     @FXML
     void handleMouseEvent(MouseEvent event) {
-        messageViewPane.setContent(new MessageBubble("hello world", "3:33", "unseen"));
+       usersViewBox.getChildren().add(new UserItem("Mohammed Ali Mansour", true, new Image("https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars.png")));
+       messageViewBox.getChildren().add(new MessageBubble("hello, I'm mohammed ali", "9:32", "seen"));
     }
 }

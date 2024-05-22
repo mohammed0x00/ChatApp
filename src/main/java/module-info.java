@@ -5,6 +5,7 @@ module com.none.chatapp {
     requires com.dlsc.formsfx;
     requires java.desktop;
     requires AnimateFX;
+    requires java.compiler;
 
     opens com.none.chatapp to javafx.fxml;
     exports com.none.chatapp;
