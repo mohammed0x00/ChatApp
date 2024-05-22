@@ -2,6 +2,9 @@ package com.none.chatapp;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Label;
@@ -14,6 +17,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import animatefx.animation.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
 
 public class LoginController {
 
@@ -73,22 +79,33 @@ public class LoginController {
             String username = txfUser.getText();
             String password = txfPass.getText();
 
-            DatabaseUtil dbUtil = new DatabaseUtil();
-            try {
-                Integer userId = dbUtil.validateUser(username, password);
+            try
+            {
+                DatabaseUtil.connect();
+                Integer userId = DatabaseUtil.validateUser(username, password);
                 if (userId != null) {
                     // Login successful, proceed to the next scene or dashboard
-                    System.out.println("Login successful, User ID: " + userId);
-                    showAlert("Login Successful", "Welcome, " + username + "!");
+
+                    DatabaseUtil.user_id = userId;
+                    Scene scene = new Scene(new FXMLLoader(getClass().getResource("users-view.fxml")).load(), 800, 700);
+                    Stage newStage = new Stage();
+                    newStage.setTitle("Chat Bus");
+                    newStage.setScene(scene);
+                    newStage.show();
+
+                    Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    currentStage.close();
+
                 } else {
                     // Login failed, show error message
-                    System.out.println("Login failed");
-                    showAlert("Login Failed", "Invalid username or password.");
+                    Utils.showAlert(Alert.AlertType.ERROR,"Login Failed", "Invalid username or password.");
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert("Error", "An error occurred during login.");
             }
+            catch (Exception e)
+            {
+                Utils.showAlert(Alert.AlertType.ERROR,"Connection Failed" ,"Cannot Connect to Server");
+            }
+
         }
     }
 
@@ -126,12 +143,6 @@ public class LoginController {
         anchRoot.setOnMouseDragged(this::handleMouseDragged);
     }
 
-    @FXML
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+
+
 }
