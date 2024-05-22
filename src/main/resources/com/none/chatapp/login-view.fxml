@@ -62,7 +62,7 @@
                      <children>
                         <TextField fx:id="txfUser" layoutX="75.0" layoutY="128.0" prefHeight="35.0" prefWidth="245.0" promptText="Username" />
                         <PasswordField fx:id="txfPass" layoutX="75.0" layoutY="188.0" prefHeight="35.0" prefWidth="245.0" promptText="Password" />
-                        <Button fx:id="btnLog" layoutX="138.0" layoutY="250.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" stylesheets="@styles/fullpackstyling.css" text="LOG IN">
+                        <Button fx:id="btnLog" layoutX="138.0" layoutY="250.0" mnemonicParsing="false" onAction="#handleButtonAction" prefHeight="35.0" prefWidth="120.0" stylesheets="@styles/fullpackstyling.css" text="LOG IN">
                            <styleClass>
                               <String fx:value="button1" />
                               <String fx:value="radius" />
