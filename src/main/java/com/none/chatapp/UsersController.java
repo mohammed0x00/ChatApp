@@ -1,5 +1,6 @@
 package com.none.chatapp;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,6 +19,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import static com.none.chatapp.DatabaseUtil.loadConversation;
+
 public class UsersController {
 
     @FXML
@@ -25,6 +28,9 @@ public class UsersController {
     
     @FXML
     private VBox messageViewBox;
+
+    private int current_user_id;
+    private int selected_user_id;
 
     @FXML
     void initialize() {
@@ -83,11 +89,32 @@ public class UsersController {
     @FXML
     void handleMouseEvent(MouseEvent event) {
 
-
     }
 
     void handleUserItemMouseClick(MouseEvent event) {
-        messageViewBox.getChildren().add(new MessageBubble("Hello!", "2:44", "seen"));
+        if (event.getSource() instanceof UserItem) { // to be on safe side, you may
+            // remove this if-statement
+            // if you are sure
+            UserItem user = (UserItem) event.getSource();
+            selected_user_id = user.usr_id;
+        }
+        loadMessages();
+    }
+
+    public void setCurrentUserID(int id)
+    {
+        current_user_id = id;
+    }
+
+    void loadMessages()
+    {
+        ArrayList<MessageBubble> msgList = loadConversation(current_user_id, selected_user_id);
+        messageViewBox.getChildren().clear();
+        for(MessageBubble msg : msgList)
+        {
+            messageViewBox.getChildren().add(msg);
+        }
+
     }
 
 

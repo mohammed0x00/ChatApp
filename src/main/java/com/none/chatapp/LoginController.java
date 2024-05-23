@@ -71,10 +71,12 @@ public class LoginController {
                     // Login successful, proceed to the next scene or dashboard
 
                     DatabaseUtil.user_id = userId;
-                    Scene scene = new Scene(new FXMLLoader(getClass().getResource("users-view.fxml")).load(), 800, 700);
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("users-view.fxml"));
+                    Scene scene = new Scene(loader.load(), 800, 700);
                     Stage newStage = new Stage();
                     newStage.setTitle("Chat Bus");
                     newStage.setScene(scene);
+                    ((UsersController) loader.getController()).setCurrentUserID(userId);
                     newStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                         @Override
                         public void handle(WindowEvent event) {

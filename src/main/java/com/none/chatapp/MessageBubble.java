@@ -12,8 +12,10 @@ import javafx.scene.text.TextAlignment;
 class MessageBubble extends HBox {
     private static final double PADDING = 10;
     private static final double ARC_SIZE = 20;
+    public int msg_id;
 
-    public MessageBubble(String message, String time, String status) {
+    public MessageBubble(int id, String message, String time, String status) {
+        msg_id = id;
         // Create a Text for the message
         Text messageText = new Text(message);
         messageText.setTextAlignment(TextAlignment.LEFT);

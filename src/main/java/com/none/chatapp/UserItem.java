@@ -18,8 +18,10 @@ public class UserItem extends HBox {
     private static final double PADDING = 5;
     private static final double IMAGE_SIZE = 50;
     private static final double STATUS_CIRCLE_RADIUS = 7; // Increase radius for visibility
+    public int usr_id;
 
-    public UserItem(EventHandler<MouseEvent> click_event, String name, boolean isOnline, Image image) {
+    public UserItem(EventHandler<MouseEvent> click_event, int id, String name, boolean isOnline, Image image) {
+        usr_id = id;
         // Create ImageView for the user's image
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(IMAGE_SIZE);
