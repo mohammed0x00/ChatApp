@@ -5,29 +5,29 @@
 }
 .button1:hover
 {
-	-fx-text-fill:  #431FA0;
+	-fx-text-fill:  BLACK;
 
 }
 .button1:pressed
 {
-	-fx-text-fill:  #371897;
+	-fx-text-fill:  BLACK;
 }
 
 .button2
 {
--fx-background-color :  #D5CBEB;
+-fx-background-color :  GREY;
 -fx-background-radius : 5;
--fx-text-fill :  #371897;
--fx-border-color : #6F4CBB;
+-fx-text-fill : BLACK;
+-fx-border-color : #F48967;
 -fx-border-radius : 5;
 }
 .button2:hover
 {
--fx-background-color : #E4EEFD ;
+-fx-background-color : WHITE ;
 }
 .button2:pressed
 {
--fx-background-color : #E4EEFD ;
+-fx-background-color : WHITE ;
 -fx-background-radius : 20;
 }
 
@@ -136,4 +136,9 @@
 .scroll-pane1 .viewport
 {
     -fx-background-color: rgba(0,0,0,0);
+}
+
+.txtfield
+{
+    -fx-text-fill : WHITE
 }

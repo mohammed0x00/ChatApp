@@ -4,7 +4,10 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import animatefx.animation.FadeIn;
+import animatefx.animation.FadeOut;
 import animatefx.animation.ZoomIn;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -13,6 +16,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 public class UsersController {
 
@@ -28,20 +32,31 @@ public class UsersController {
 
         // Create a TimerTask that defines the task to be executed
         TimerTask repetitiveTask = new TimerTask() {
-
             @Override
             public void run() {
-                try
-                {
+                try {
                     DatabaseUtil.updateStatus();
-                    Platform.runLater(() -> usersViewBox.getChildren().clear());
-                    for(UserItem item : Objects.requireNonNull(DatabaseUtil.getOnlineUsersList(UsersController.this::handleUserItemMouseClick)))
-                    {
-                        Platform.runLater(() -> usersViewBox.getChildren().add(item));
-                    }
-                }
-                catch (Exception ignored)
-                {
+                    Platform.runLater(() -> {
+                        // Fade out the usersViewBox
+                        new FadeOut(usersViewBox).play();
+
+                        // Clear the usersViewBox after a short delay
+                        PauseTransition pause = new PauseTransition(Duration.seconds(0.5)); // Adjust duration as needed
+                        pause.setOnFinished(e -> {
+                            usersViewBox.getChildren().clear();
+
+                            // Add the updated user list
+                            for (UserItem item : Objects.requireNonNull(DatabaseUtil.getOnlineUsersList(UsersController.this::handleUserItemMouseClick))) {
+                                usersViewBox.getChildren().add(item);
+                            }
+
+                            // Fade in the usersViewBox
+                            new FadeIn(usersViewBox).play();
+                        });
+                        pause.play();
+                    });
+                } catch (Exception ignored) {
+                    // Handle exceptions
                 }
             }
         };
@@ -72,7 +87,7 @@ public class UsersController {
     }
 
     void handleUserItemMouseClick(MouseEvent event) {
-        messageViewBox.getChildren().add(new MessageBubble("ahaaaaaaaaaaaaaa", "2:44", "seen"));
+        messageViewBox.getChildren().add(new MessageBubble("Hello!", "2:44", "seen"));
     }
 
 

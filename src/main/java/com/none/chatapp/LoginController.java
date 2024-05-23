@@ -89,6 +89,8 @@ public class LoginController {
                 } else {
                     // Login failed, show error message
                     Utils.showAlert(Alert.AlertType.ERROR,"Login Failed", "Invalid username or password.");
+                    txfUser.setText("");
+                    txfPass.setText("");
                 }
             }
             catch (Exception e)
