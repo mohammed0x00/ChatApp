@@ -15,8 +15,5 @@ public class LoginCommand extends ServerCommand implements Serializable {
         this.UserPassword = password;
         this.CMD_Number = COMMAND_LOGIN;
     }
-    public void SendCommand(Socket socket) throws IOException {
 
-        new ObjectOutputStream(socket.getOutputStream()).writeObject(this);
-    }
 }

@@ -14,6 +14,7 @@ public class HandlerThread extends Thread {
     }
 
     public void run() {
+        int current_user_id;
         try {
             while(true)
             {
