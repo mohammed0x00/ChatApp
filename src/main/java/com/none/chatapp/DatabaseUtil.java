@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class DatabaseUtil {
-
+/*
     private static final String URL = "jdbc:mysql://localhost:3306/chat_app";
     private static final String USER = "Admin";
     private static final String PASSWORD = "Admin";
@@ -128,5 +128,5 @@ public class DatabaseUtil {
         stmt.setInt(1, user_id);
         stmt.execute();
     }
-
+*/
 }

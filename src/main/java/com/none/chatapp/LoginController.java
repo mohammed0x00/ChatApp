@@ -19,8 +19,12 @@ import javafx.stage.Stage;
 import javafx.scene.control.Alert;
 import animatefx.animation.*;
 import javafx.stage.WindowEvent;
+import com.none.chatapp_commands.*;
+import java.net.Socket;
 
 public class LoginController {
+    public final String hostname = "localhost";
+    public final int port = 12345;
 
     @FXML
     private AnchorPane anchRoot;
@@ -63,20 +67,16 @@ public class LoginController {
             String username = txfUser.getText();
             String password = txfPass.getText();
 
-            try
+            try(Socket socket = new Socket(hostname, port))
             {
-                DatabaseUtil.connect();
-                Integer userId = DatabaseUtil.validateUser(username, password);
-                if (userId != null) {
+                new LoginCommand(username, password).SendCommand(socket);
+                if (true) {
                     // Login successful, proceed to the next scene or dashboard
-
-                    DatabaseUtil.user_id = userId;
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("users-view.fxml"));
                     Scene scene = new Scene(loader.load(), 800, 700);
                     Stage newStage = new Stage();
                     newStage.setTitle("Chat Bus");
                     newStage.setScene(scene);
-                    ((UsersController) loader.getController()).setCurrentUserID(userId);
                     newStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                         @Override
                         public void handle(WindowEvent event) {

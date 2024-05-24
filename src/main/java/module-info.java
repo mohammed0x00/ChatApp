@@ -10,5 +10,7 @@ module com.none.chatapp {
     requires jdk.jshell;
 
     opens com.none.chatapp to javafx.fxml;
+    opens com.none.chatapp_server to javafx.fxml;
     exports com.none.chatapp;
+    exports com.none.chatapp_server;
 }
