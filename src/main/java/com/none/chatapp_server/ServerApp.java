@@ -1,34 +1,111 @@
 package com.none.chatapp_server;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 
 public class ServerApp extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    private ServerSocket serverSocket;
+    private Thread serverThread;
+    private TextArea logTextArea;
+    private Button toggleButton;
+    private boolean serverRunning = false;
 
     @Override
     public void start(Stage primaryStage) {
-        int port = 12345;  // Port number on which the server will listen
+        logTextArea = new TextArea();
+        logTextArea.setEditable(false);
+        logTextArea.setStyle("-fx-control-inner-background: #333; -fx-text-fill: white;");
 
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server is listening on port " + port);
+        toggleButton = new Button("Start Server");
+        toggleButton.setStyle("-fx-base: #4CAF50; -fx-text-fill: white;");
+        toggleButton.setOnAction(event -> toggleServer());
 
-            while(true) {
-                Socket socket = serverSocket.accept();
-                System.out.println("New client connected");
+        HBox controlBox = new HBox(toggleButton);
+        controlBox.setAlignment(Pos.CENTER);
+        controlBox.setSpacing(10);
 
-                // Create a new thread for each client connection
-                new HandlerThread(socket).start();
-            }
+        BorderPane root = new BorderPane();
+        root.setStyle("-fx-background-color: #222;");
+        root.setPadding(new Insets(10));
+        root.setCenter(logTextArea);
+        root.setBottom(controlBox);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        Scene scene = new Scene(root, 500, 400);
+
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("ChatApp Server");
+        primaryStage.setOnCloseRequest(event -> stopServer());
+        primaryStage.show();
+    }
+
+    private void toggleServer() {
+        if (!serverRunning) {
+            startServer();
+        } else {
+            stopServer();
         }
+    }
+
+    private void startServer() {
+        try {
+            int port = 12345; // Port number on which the server will listen
+            serverSocket = new ServerSocket(port);
+            log("Server is listening on port " + port);
+            toggleButton.setText("Stop Server");
+            serverRunning = true;
+
+            serverThread = new Thread(() -> {
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        Socket socket = serverSocket.accept();
+                        log("New client connected: " + socket.getInetAddress().getHostAddress());
+                        new HandlerThread(socket).start();
+                    } catch (IOException e) {
+                        log("Error accepting client connection: " + e.getMessage());
+                    }
+                }
+            });
+            serverThread.start();
+        } catch (IOException e) {
+            log("Error starting server: " + e.getMessage());
+        }
+    }
+
+    private void stopServer() {
+        if (serverSocket != null) {
+            try {
+                serverSocket.close();
+                serverThread.interrupt();
+                log("Server stopped");
+                toggleButton.setText("Start Server");
+                serverRunning = false;
+            } catch (IOException e) {
+                log("Error stopping server: " + e.getMessage());
+            }
+        } else {
+            log("Server socket is null. Server might not have been started.");
+        }
+    }
+
+    private void log(String message) {
+        Platform.runLater(() -> logTextArea.appendText(message + "\n"));
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

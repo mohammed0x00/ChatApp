@@ -2,6 +2,7 @@ package com.none.chatapp_server;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import com.none.chatapp_commands.*;
@@ -19,11 +20,14 @@ public class HandlerThread extends Thread {
             while(true)
             {
                 ServerCommand cmd = ServerCommand.WaitForCommand(socket);
-                if(cmd.CMD_Number == ServerCommand.COMMAND_LOGIN)
-                {
+                if(cmd.CMD_Number == ServerCommand.COMMAND_LOGIN) {
                     LoginCommand c = (LoginCommand) cmd;
-                    System.out.println("Login:" + c.UserName + "\n" + c.UserPassword);
+                    boolean isLoginSuccessful = Utils.handleLogin(c);
+                    // Send login response back to client
+                    new ObjectOutputStream(socket.getOutputStream()).writeObject(new LoginResponseCommand(isLoginSuccessful));
+                    //System.out.println(loginResponse);
                 }
+
             }
         } catch (java.io.EOFException e) {
             System.out.println("Client disconnected");
@@ -37,4 +41,5 @@ public class HandlerThread extends Thread {
             }
         }
     }
+
 }

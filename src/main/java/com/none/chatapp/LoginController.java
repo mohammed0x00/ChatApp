@@ -67,39 +67,39 @@ public class LoginController {
             String username = txfUser.getText();
             String password = txfPass.getText();
 
-            try(Socket socket = new Socket(hostname, port))
-            {
+            try (Socket socket = new Socket(hostname, port)) {
                 new LoginCommand(username, password).SendCommand(socket);
-                if (true) {
-                    // Login successful, proceed to the next scene or dashboard
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("users-view.fxml"));
-                    Scene scene = new Scene(loader.load(), 800, 700);
-                    Stage newStage = new Stage();
-                    newStage.setTitle("Chat Bus");
-                    newStage.setScene(scene);
-                    newStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                        @Override
-                        public void handle(WindowEvent event) {
-                            System.exit(0);
-                        }
-                    });
-                    newStage.show();
 
-                    Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                    currentStage.close();
+                // Wait for the response
+                ServerCommand response = ServerCommand.WaitForCommand(socket);
+                if (response instanceof LoginResponseCommand loginResponse) {
+                    if (loginResponse.isSuccess) {
+                        // Login successful, proceed to the next scene or dashboard
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("users-view.fxml"));
+                        Scene scene = new Scene(loader.load(), 800, 700);
+                        Stage newStage = new Stage();
+                        newStage.setTitle("Chat Bus");
+                        newStage.setScene(scene);
+                        newStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                            @Override
+                            public void handle(WindowEvent event) {
+                                System.exit(0);
+                            }
+                        });
+                        newStage.show();
 
-                } else {
-                    // Login failed, show error message
-                    Utils.showAlert(Alert.AlertType.ERROR,"Login Failed", "Invalid username or password.");
-                    txfUser.setText("");
-                    txfPass.setText("");
+                        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                        currentStage.close();
+                    } else {
+                        // Login failed, show error message
+                        Utils.showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid username or password.");
+                        txfUser.setText("");
+                        txfPass.setText("");
+                    }
                 }
+            } catch (Exception e) {
+                Utils.showAlert(Alert.AlertType.ERROR, "Connection Failed", "Cannot Connect to Server");
             }
-            catch (Exception e)
-            {
-                Utils.showAlert(Alert.AlertType.ERROR,"Connection Failed" ,"Cannot Connect to Server");
-            }
-
         }
     }
 
@@ -136,7 +136,4 @@ public class LoginController {
         anchRoot.setOnMousePressed(this::handleMousePressed);
         anchRoot.setOnMouseDragged(this::handleMouseDragged);
     }
-
-
-
 }
