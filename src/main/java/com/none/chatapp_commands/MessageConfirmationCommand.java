@@ -2,10 +2,10 @@ package com.none.chatapp_commands;
 
 import java.io.Serializable;
 
-public class SendMessageCommand extends ServerCommand implements Serializable {
+public class MessageConfirmationCommand extends ServerCommand implements Serializable {
     public Message msg = new Message();
 
-    public SendMessageCommand(Message m)
+    public MessageConfirmationCommand(Message m)
     {
         msg.sender_id = m.sender_id;
         msg.content = m.content;

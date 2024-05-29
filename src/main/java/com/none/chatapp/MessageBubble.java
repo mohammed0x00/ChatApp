@@ -30,7 +30,7 @@ class MessageBubble extends HBox {
                 Color.LIGHTBLUE, new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
         // Create Labels for time and status
-        Label timeLabel = new Label(new SimpleDateFormat("MM-dd hh:mm").format(msg.sent_at));
+        Label timeLabel = new Label("");
         timeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: gray;");
 
         Label statusLabel = new Label(msg.seen? "seen":"");

@@ -9,8 +9,10 @@ import java.util.TimerTask;
 import animatefx.animation.FadeIn;
 import animatefx.animation.FadeOut;
 import animatefx.animation.ZoomIn;
+import com.none.chatapp_commands.Message;
 import com.none.chatapp_commands.MessageListCommand;
 import com.none.chatapp_commands.MessagesListRequestCommand;
+import com.none.chatapp_commands.SendMessageCommand;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.Event;
@@ -19,6 +21,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -34,8 +37,12 @@ public class UsersController {
     @FXML
     public VBox messageViewBox;
 
+    @FXML
+    public TextField messageTextField;
+
     private int current_user_id;
-    private int selected_user_id;
+    public int selected_user_id;
+    public int selected_conv_id;
 
     @FXML
     void initialize() {
@@ -43,8 +50,16 @@ public class UsersController {
     }
 
     @FXML
-    public void handleMouseEvent(MouseEvent event) {
-
+    public void handleSendButtonEvent(MouseEvent event) {
+        Message msg = new Message();
+        msg.conv_id = selected_conv_id;
+        msg.content = messageTextField.getText();
+        msg.type = Message.Type.text;
+        try {
+            new SendMessageCommand(msg).SendCommand(HandlerThread.socket);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     void handleUserItemMouseClick(MouseEvent event) {

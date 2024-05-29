@@ -5,8 +5,10 @@ import java.util.ArrayList;
 
 public class MessageListCommand extends ServerCommand implements Serializable {
     public ArrayList<Message> list = new ArrayList<>();
-    public MessageListCommand(ArrayList<Message> l)
+    public int Conversation_id;
+    public MessageListCommand(int conv_id, ArrayList<Message> lst)
     {
-        list.addAll(l);
+        Conversation_id = conv_id;
+        list.addAll(lst);
     }
 }

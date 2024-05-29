@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import com.none.chatapp_commands.*;
+import javafx.util.Pair;
 
 public class HandlerThread extends Thread {
     public Socket socket;
@@ -37,8 +38,13 @@ public class HandlerThread extends Thread {
                 }
                 else if(cmd instanceof MessagesListRequestCommand reqCmd)
                 {
-                    ArrayList<Message> list = DatabaseController.loadConversation(data.id, reqCmd.user_id);
-                    new MessageListCommand(list).SendCommand(socket);
+
+                    Pair <Integer, ArrayList<Message>> list = DatabaseController.loadConversation(data.id, reqCmd.user_id);
+                    new MessageListCommand(list.getKey(), list.getValue()).SendCommand(socket);
+                }
+                else if (cmd instanceof SendMessageCommand sndCmd)
+                {
+                    Utils.SendMessageToUser(this, sndCmd.msg);
                 }
 
             }

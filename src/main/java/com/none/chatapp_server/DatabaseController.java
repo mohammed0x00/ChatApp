@@ -2,6 +2,7 @@ package com.none.chatapp_server;
 
 import com.none.chatapp_commands.Message;
 import com.none.chatapp_commands.User;
+import javafx.util.Pair;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
@@ -74,8 +75,8 @@ public class DatabaseController {
         }
     }
 
-    public static ArrayList<Message> loadConversation(int user1_id, int user2_id) throws SQLException {
-        int conv_id;
+    public static Pair<Integer, ArrayList<Message>> loadConversation(int user1_id, int user2_id) throws SQLException {
+        Integer conv_id;
         ArrayList<Message> tmp = new ArrayList<>();
         try (CallableStatement stmt = conn.prepareCall("Call StartConversation(?, ?)")) {
             stmt.setInt(1, user1_id);
@@ -108,7 +109,7 @@ public class DatabaseController {
                 Message new_msg = new Message();
                 new_msg.id = rs.getInt("message_id");
                 new_msg.content = rs.getString("content");
-                new_msg.sent_at = rs.getTime("sent_at");
+                new_msg.sent_at = rs.getTimestamp("sent_at");
                 new_msg.seen = rs.getBoolean("is_seen");
                 tmp.add(new_msg);
             }
@@ -118,7 +119,7 @@ public class DatabaseController {
             //return null;
         }
 
-        return tmp;
+        return new Pair<> (conv_id, tmp);
 
     }
 

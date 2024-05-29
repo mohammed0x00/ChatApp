@@ -50,11 +50,26 @@ public class HandlerThread extends Thread{
                     }
                     else if(cmd instanceof MessageListCommand listCommand)
                     {
+                        controller.selected_conv_id = listCommand.Conversation_id;
                         Platform.runLater(() -> controller.messageViewBox.getChildren().clear());
                         for(Message item : listCommand.list)
                         {
                             MessageBubble tmp = new MessageBubble(item);
                             Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
+                        }
+                    }
+                    else if(cmd instanceof ClientNotifyMessageCommand ncmd)
+                    {
+                        if(controller.selected_user_id == ncmd.msg.sender_id)
+                        {
+                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(ncmd.msg)));
+                        }
+                    }
+                    else if(cmd instanceof MessageConfirmationCommand confcmd)
+                    {
+                        if(controller.selected_conv_id == confcmd.msg.conv_id)
+                        {
+                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(confcmd.msg)));
                         }
                     }
 

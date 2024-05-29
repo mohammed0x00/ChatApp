@@ -29,15 +29,15 @@ public class Utils {
 
     }
 
-    public void SendMessageToUser(HandlerThread thread, Message msg)
+    public static void SendMessageToUser(HandlerThread thread, Message msg)
     {
         try {
-            Integer receiver_id = DatabaseController.sendMessage(msg);
             msg.sender_id = thread.data.id;
+            Integer receiver_id = DatabaseController.sendMessage(msg);
+            new MessageConfirmationCommand(msg).SendCommand(thread.socket);
             OnlineUsers.notifyUserMessage(receiver_id, msg);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        }
+        catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
 

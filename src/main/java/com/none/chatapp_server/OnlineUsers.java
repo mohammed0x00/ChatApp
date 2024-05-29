@@ -63,7 +63,7 @@ public class OnlineUsers{
             for (HandlerThread user : onlineUsers)
                 if(user.data.id == receiver)
                 {
-                    new SendMessageCommand(msg).SendCommand(user.socket);
+                    new ClientNotifyMessageCommand(msg).SendCommand(user.socket);
                 }
         }
         catch (Exception e)

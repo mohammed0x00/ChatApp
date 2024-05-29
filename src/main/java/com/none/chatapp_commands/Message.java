@@ -1,7 +1,8 @@
 package com.none.chatapp_commands;
 
 import java.io.Serializable;
-import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class Message implements Serializable {
     public enum Type {
@@ -17,7 +18,7 @@ public class Message implements Serializable {
     public String content;
     public boolean seen;
     public Type type;
-    public Time sent_at;
+    public Timestamp sent_at;
 
     public void setType(String s)
     {
