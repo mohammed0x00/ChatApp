@@ -142,3 +142,34 @@
 {
     -fx-text-fill : WHITE
 }
+
+/* TabPane styling for dark mode */
+.tab-pane {
+    -fx-background-color: #222222; /* Dark background color */
+}
+
+.tab-pane .tab-header-area {
+    -fx-background-color: #333333; /* Slightly lighter background for tab headers */
+}
+
+.tab-pane .tab-header-background {
+    -fx-background-color: #333333; /* Matching background for tab header */
+}
+
+.tab-pane .tab {
+    -fx-background-color: #46474A; /* Matching dark gray for individual tabs */
+    -fx-text-fill: white; /* White text for contrast */
+}
+
+.tab-pane .tab:hover {
+    -fx-background-color: #636566; /* Slightly lighter gray on hover */
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #F48967; /* Highlight color for selected tab */
+    -fx-text-fill: white; /* Keep text white for readability */
+}
+
+.tab-pane .tab-content-area {
+    -fx-background-color: #222222; /* Consistent dark background for content area */
+}
