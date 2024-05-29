@@ -2,6 +2,7 @@ package com.none.chatapp_server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import com.none.chatapp_commands.*;
 
@@ -33,7 +34,11 @@ public class HandlerThread extends Thread {
                     {
                         new LoginResponseCommand(LoginResponseCommand.RESPONSE_INVALID).SendCommand(socket);
                     }
-
+                }
+                else if(cmd instanceof MessagesListRequestCommand reqCmd)
+                {
+                    ArrayList<Message> list = DatabaseController.loadConversation(data.id, reqCmd.user_id);
+                    new MessageListCommand(list).SendCommand(socket);
                 }
 
             }

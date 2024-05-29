@@ -1,8 +1,11 @@
 package com.none.chatapp_server;
 
+import com.none.chatapp_commands.Message;
 import com.none.chatapp_commands.User;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 public class DatabaseController {
 
@@ -58,6 +61,7 @@ public class DatabaseController {
                 tmp.name = rs.getString("username");
                 tmp.age = rs.getInt("age");
                 tmp.status_msg = rs.getString("status_message");
+                tmp.isOnline = true;
                 System.out.println(tmp.name);
                 // tmp.image = *** Not Implemented Yet ***
                 return tmp; // Return user ID if a match is found
@@ -70,6 +74,53 @@ public class DatabaseController {
         }
     }
 
+    public static ArrayList<Message> loadConversation(int user1_id, int user2_id) throws SQLException {
+        int conv_id;
+        ArrayList<Message> tmp = new ArrayList<>();
+        try (CallableStatement stmt = conn.prepareCall("Call StartConversation(?, ?)")) {
+            stmt.setInt(1, user1_id);
+            stmt.setInt(2, user2_id);
+            stmt.execute();
+
+        } catch (Exception e) {
+            throw e;
+            //return null;
+        }
+
+        try (CallableStatement stmt = conn.prepareCall("Call GetConversationID(?, ?, ?);")) {
+            stmt.setInt(1, user1_id);
+            stmt.setInt(2, user2_id);
+            stmt.registerOutParameter(3, Types.INTEGER);
+            stmt.execute();
+            conv_id = stmt.getInt(3);
+
+        } catch (Exception e) {
+            throw e;
+            //return null;
+        }
+
+
+        try (PreparedStatement stmt = conn.prepareStatement("Call GetMessages(?);")) {
+            stmt.setInt(1, conv_id);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next())
+            {
+                Message new_msg = new Message();
+                new_msg.id = rs.getInt("message_id");
+                new_msg.content = rs.getString("content");
+                new_msg.sent_at = rs.getTime("sent_at");
+                new_msg.seen = rs.getBoolean("is_seen");
+                tmp.add(new_msg);
+            }
+
+        } catch (Exception e) {
+            throw e;
+            //return null;
+        }
+
+        return tmp;
+
+    }
 
 
 

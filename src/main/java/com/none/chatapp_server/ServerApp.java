@@ -1,5 +1,6 @@
 package com.none.chatapp_server;
 
+import com.none.chatapp_commands.Message;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -80,6 +81,7 @@ public class ServerApp extends Application {
             });
             DatabaseController.connect();
             serverThread.start();
+
         } catch (IOException e) {
             log("Error starting server: " + e.getMessage());
         } catch (Exception e) {

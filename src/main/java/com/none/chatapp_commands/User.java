@@ -11,5 +11,6 @@ public class User implements Serializable {
     public Image image;
     public int age;
     public String status_msg;
+    public boolean isOnline;
 
 }

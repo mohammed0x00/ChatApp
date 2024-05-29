@@ -53,6 +53,7 @@ public class UserItem extends HBox {
         imageStackPane.setOnMouseClicked(click_event);
         imageView.setOnMouseClicked(click_event);
         nameLabel.setOnMouseClicked(click_event);
+        this.setOnMouseClicked(click_event);
 
     }
 

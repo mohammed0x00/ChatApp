@@ -1,18 +1,20 @@
 package com.none.chatapp;
 
-import com.none.chatapp_commands.ServerCommand;
-import com.none.chatapp_commands.User;
-import com.none.chatapp_commands.UserListCommand;
-import com.none.chatapp_commands.UserStatusCommand;
+import com.none.chatapp_commands.*;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 public class HandlerThread extends Thread{
-    static Socket socket;
+    public static Socket socket;
     static UsersController controller;
+    static EventHandler<MouseEvent> userItemMouseEvent;
 
     private static final Thread me = new Thread(new Runnable() {
         @Override
@@ -26,7 +28,7 @@ public class HandlerThread extends Thread{
                     {
                         if(stat_cmd.status == UserStatusCommand.Stat.ONLINE)
                         {
-                            UserItem user = new UserItem(null, stat_cmd.user.id, stat_cmd.user.name, true, null);
+                            UserItem user = new UserItem(userItemMouseEvent, stat_cmd.user.id, stat_cmd.user.name, stat_cmd.user.isOnline, null);
                             Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
                         }
                         else for(Node i : controller.usersViewBox.getChildren())
@@ -46,6 +48,15 @@ public class HandlerThread extends Thread{
                             Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
                         }
                     }
+                    else if(cmd instanceof MessageListCommand listCommand)
+                    {
+                        Platform.runLater(() -> controller.messageViewBox.getChildren().clear());
+                        for(Message item : listCommand.list)
+                        {
+                            MessageBubble tmp = new MessageBubble(item.id, item.content, new SimpleDateFormat("MM-dd hh:mm").format(item.sent_at), item.seen? "seen":"");
+                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
+                        }
+                    }
 
 
 
@@ -61,5 +72,7 @@ public class HandlerThread extends Thread{
     {
         me.start();
     }
+
+
 
 }
