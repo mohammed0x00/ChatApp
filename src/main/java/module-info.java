@@ -13,4 +13,6 @@ module com.none.chatapp {
     opens com.none.chatapp_server to javafx.fxml;
     exports com.none.chatapp;
     exports com.none.chatapp_server;
+    exports com.none.chatapp_commands;
+    opens com.none.chatapp_commands to javafx.fxml;
 }

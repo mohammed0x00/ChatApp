@@ -1,8 +1,8 @@
 package com.none.chatapp_server;
 
+import com.none.chatapp_commands.User;
+
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DatabaseController {
 
@@ -40,6 +40,37 @@ public class DatabaseController {
             return null;
         }
     }
+
+    public static User getUserDetails (int id) {
+        String query = "Call GetUserDetails(?);";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                User tmp = new User();
+                if(rs.wasNull())
+                {
+                    return null;
+                }
+                tmp.id = rs.getInt("user_id");
+                tmp.name = rs.getString("username");
+                tmp.age = rs.getInt("age");
+                tmp.status_msg = rs.getString("status_message");
+                System.out.println(tmp.name);
+                // tmp.image = *** Not Implemented Yet ***
+                return tmp; // Return user ID if a match is found
+            }
+            System.out.println("HI");
+            return null; // No match found
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
 
 
     // Close the database connection

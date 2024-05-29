@@ -13,7 +13,6 @@ public class LoginCommand extends ServerCommand implements Serializable {
     {
         this.UserName = user_name;
         this.UserPassword = password;
-        this.CMD_Number = COMMAND_LOGIN;
     }
 
 }

@@ -25,6 +25,7 @@ import java.net.Socket;
 public class LoginController {
     public final String hostname = "localhost";
     public final int port = 12345;
+    Socket socket;
 
     @FXML
     private AnchorPane anchRoot;
@@ -66,12 +67,12 @@ public class LoginController {
         if (event.getSource().equals(btnLog)) {
             String username = txfUser.getText();
             String password = txfPass.getText();
-
-            try (Socket socket = new Socket(hostname, port)) {
+            try {
+                socket = new Socket(hostname, port);
                 new LoginCommand(username, password).SendCommand(socket);
-
                 // Wait for the response
                 ServerCommand response = ServerCommand.WaitForCommand(socket);
+
                 if (response instanceof LoginResponseCommand loginResponse) {
                     if (loginResponse.isSuccess) {
                         // Login successful, proceed to the next scene or dashboard
@@ -86,8 +87,10 @@ public class LoginController {
                                 System.exit(0);
                             }
                         });
+                        HandlerThread.controller = loader.getController();
+                        HandlerThread.socket = socket;
                         newStage.show();
-
+                        HandlerThread.startThread();
                         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                         currentStage.close();
                     } else {
@@ -98,7 +101,8 @@ public class LoginController {
                     }
                 }
             } catch (Exception e) {
-                Utils.showAlert(Alert.AlertType.ERROR, "Connection Failed", "Cannot Connect to Server");
+                System.out.println(e.getMessage());
+                Utils.showAlert(Alert.AlertType.ERROR, "Connection Failed", "Cannot Connect to Server"+ e.getMessage() + e.toString());
             }
         }
     }

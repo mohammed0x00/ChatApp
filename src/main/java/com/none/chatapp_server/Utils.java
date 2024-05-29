@@ -1,31 +1,27 @@
 package com.none.chatapp_server;
 
 import com.none.chatapp_commands.*;
-import javafx.fxml.FXML;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Utils {
 
-    public static boolean handleLogin(LoginCommand loginCommand) throws Exception {
-        DatabaseController.connect();
+    public static User handleLogin(LoginCommand loginCommand) {
+
         try {
             Integer userId = DatabaseController.validateUser(loginCommand.UserName, loginCommand.UserPassword);
             if (userId != null) {
-
                 System.out.println("Login successful. User ID: " + userId);
-                return true;
+                User details = DatabaseController.getUserDetails(userId);
+                return details;
             } else {
                 System.out.println("Login failed.");
-                return false;
+                return null;
 
             }
         } catch (Exception e) {
             e.printStackTrace();
             // An error occurred during login
             System.out.println("Login failed due to an error.");
-            return false;
+            return null;
         }
 
     }

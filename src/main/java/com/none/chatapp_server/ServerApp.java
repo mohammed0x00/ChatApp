@@ -67,7 +67,6 @@ public class ServerApp extends Application {
             log("Server is listening on port " + port);
             toggleButton.setText("Stop Server");
             serverRunning = true;
-
             serverThread = new Thread(() -> {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
@@ -79,15 +78,19 @@ public class ServerApp extends Application {
                     }
                 }
             });
+            DatabaseController.connect();
             serverThread.start();
         } catch (IOException e) {
             log("Error starting server: " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
     private void stopServer() {
         if (serverSocket != null) {
             try {
+                DatabaseController.closeConnection();
                 serverSocket.close();
                 serverThread.interrupt();
                 log("Server stopped");

@@ -1,45 +1,57 @@
 package com.none.chatapp_server;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+
 import com.none.chatapp_commands.*;
 
 public class HandlerThread extends Thread {
-    private Socket socket;
+    public Socket socket;
+    User data;
 
     public HandlerThread(Socket socket) {
         this.socket = socket;
     }
 
+    @Override
     public void run() {
-        int current_user_id;
         try {
             while(true)
             {
                 ServerCommand cmd = ServerCommand.WaitForCommand(socket);
-                if(cmd.CMD_Number == ServerCommand.COMMAND_LOGIN) {
-                    LoginCommand c = (LoginCommand) cmd;
-                    boolean isLoginSuccessful = Utils.handleLogin(c);
+                if(cmd instanceof LoginCommand loginCMD) {
+                    User tmp = Utils.handleLogin(loginCMD);
                     // Send login response back to client
-                    new ObjectOutputStream(socket.getOutputStream()).writeObject(new LoginResponseCommand(isLoginSuccessful));
-                    //System.out.println(loginResponse);
+                    if (tmp != null)
+                    {
+                        data = tmp;
+                        new LoginResponseCommand(LoginResponseCommand.RESPONSE_SUCCESSFUL).SendCommand(socket);
+                        OnlineUsers.add(this);
+                        OnlineUsers.SendListToSocket(this);
+                    }
+                    else
+                    {
+                        new LoginResponseCommand(LoginResponseCommand.RESPONSE_INVALID).SendCommand(socket);
+                    }
+
                 }
 
             }
-        } catch (java.io.EOFException e) {
-            System.out.println("Client disconnected");
-        } catch (Exception e) {
+        }
+        catch (IOException e) {
+            System.out.println("Client disconnected: " + e.getMessage());
+        }
+        catch (Exception e) {
             e.printStackTrace();
-        } finally {
+        }
+        finally {
             try {
                 socket.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            OnlineUsers.remove(this);
+
         }
     }
-
 }
