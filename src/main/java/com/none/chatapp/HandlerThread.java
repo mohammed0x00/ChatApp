@@ -44,7 +44,7 @@ public class HandlerThread extends Thread{
                     {
                         for(User item : list_cmd.list)
                         {
-                            UserItem user = new UserItem(null, item.id, item.name, true, null);
+                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, true, null);
                             Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
                         }
                     }
@@ -53,7 +53,7 @@ public class HandlerThread extends Thread{
                         Platform.runLater(() -> controller.messageViewBox.getChildren().clear());
                         for(Message item : listCommand.list)
                         {
-                            MessageBubble tmp = new MessageBubble(item.id, item.content, new SimpleDateFormat("MM-dd hh:mm").format(item.sent_at), item.seen? "seen":"");
+                            MessageBubble tmp = new MessageBubble(item);
                             Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
                         }
                     }

@@ -1,5 +1,6 @@
 package com.none.chatapp;
 
+import com.none.chatapp_commands.Message;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,15 +10,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
+import java.text.SimpleDateFormat;
+
 class MessageBubble extends HBox {
     private static final double PADDING = 10;
     private static final double ARC_SIZE = 20;
     public int msg_id;
 
-    public MessageBubble(int id, String message, String time, String status) {
-        msg_id = id;
+    public MessageBubble(Message msg) {
+        msg_id = msg.id;
         // Create a Text for the message
-        Text messageText = new Text(message);
+        Text messageText = new Text(msg.content);
         messageText.setTextAlignment(TextAlignment.LEFT);
 
         // Create a StackPane for the text to apply padding
@@ -27,10 +30,10 @@ class MessageBubble extends HBox {
                 Color.LIGHTBLUE, new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
         // Create Labels for time and status
-        Label timeLabel = new Label(time);
+        Label timeLabel = new Label(new SimpleDateFormat("MM-dd hh:mm").format(msg.sent_at));
         timeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: gray;");
 
-        Label statusLabel = new Label(status);
+        Label statusLabel = new Label(msg.seen? "seen":"");
         statusLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: gray;");
 
         VBox labelsBox = new VBox(timeLabel, statusLabel);
