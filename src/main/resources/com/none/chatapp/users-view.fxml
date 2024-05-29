@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.2835951134380454" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="575.0" prefWidth="1162.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
+<SplitPane dividerPositions="0.2835951134380454" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="575.0" prefWidth="1162.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
    <items>
       <AnchorPane minHeight="0.0" minWidth="-Infinity" prefHeight="598.0" prefWidth="322.0" style="-fx-background-color: #202020;">
          <children>
@@ -78,9 +86,26 @@
                               <String fx:value="radius" />
                            </styleClass>
                         </AnchorPane>
-                        <ScrollPane fitToWidth="true" prefHeight="340.0" prefWidth="288.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css" VBox.vgrow="ALWAYS">
-                           <VBox fx:id="usersViewBox" prefHeight="480.0" prefWidth="286.0" />
-                        </ScrollPane>
+                        <TabPane prefHeight="471.0" prefWidth="268.0" stylesheets="@styles/fullpackstyling.css" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                          <tabs>
+                            <Tab text="ONLINE">
+                                 <content>
+                                    <ScrollPane fitToWidth="true" prefHeight="462.0" prefWidth="288.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css">
+                                       <VBox fx:id="usersViewBox" prefHeight="462.0" prefWidth="286.0" />
+                                    </ScrollPane>
+                                 </content>
+                              </Tab>
+                            <Tab text="ALL">
+                                 <content>
+                                    <ScrollPane fitToWidth="true" prefHeight="462.0" prefWidth="288.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css">
+                                       <content>
+                                          <VBox prefHeight="462.0" prefWidth="254.0" />
+                                       </content>
+                                    </ScrollPane>
+                                 </content>
+                              </Tab>
+                          </tabs>
+                        </TabPane>
                      </children>
                   </VBox>
                </children>
