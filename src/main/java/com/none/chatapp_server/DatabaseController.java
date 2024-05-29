@@ -124,6 +124,28 @@ public class DatabaseController {
 
 
 
+    public static Integer sendMessage (Message msg) throws SQLException {
+
+        try (PreparedStatement stmt = conn.prepareStatement("Call SendMessage(?, ?, ?, ?);")) {
+            stmt.setInt(1, msg.conv_id);
+            stmt.setInt(2, msg.sender_id);
+            stmt.setString(3, msg.content);
+            stmt.setString(4, msg.getType());
+
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next())
+            {
+                return rs.getInt(1);
+            }
+
+        } catch (Exception e) {
+            throw e;
+        }
+        return null;
+    }
+
+
+
     // Close the database connection
     public static void closeConnection() {
         try {

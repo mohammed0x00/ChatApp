@@ -1,8 +1,6 @@
 package com.none.chatapp_server;
 
-import com.none.chatapp_commands.User;
-import com.none.chatapp_commands.UserListCommand;
-import com.none.chatapp_commands.UserStatusCommand;
+import com.none.chatapp_commands.*;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -57,6 +55,22 @@ public class OnlineUsers{
                 // Ok, No Problem
             }
         }
+    }
+
+    public static void notifyUserMessage(int receiver, Message msg) throws IOException {
+        try
+        {
+            for (HandlerThread user : onlineUsers)
+                if(user.data.id == receiver)
+                {
+                    new SendMessageCommand(msg).SendCommand(user.socket);
+                }
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
+
     }
 
 }

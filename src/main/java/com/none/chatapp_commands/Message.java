@@ -24,4 +24,9 @@ public class Message implements Serializable {
         type = Type.valueOf(s);
     }
 
+    public String getType()
+    {
+        return type.toString();
+    }
+
 }
