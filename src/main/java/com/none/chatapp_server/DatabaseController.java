@@ -145,7 +145,37 @@ public class DatabaseController {
         return null;
     }
 
+    public static ArrayList<User> getUsersList (HandlerThread exceptMe) {
+        ArrayList<User> list = new ArrayList<>();
 
+        try (PreparedStatement stmt = conn.prepareStatement("Call ListAllUsers();")) {
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                User tmp = new User();
+                if(rs.wasNull())
+                {
+                    return list;
+                }
+                tmp.id = rs.getInt("user_id");
+                tmp.name = rs.getString("username");
+                tmp.age = rs.getInt("age");
+                tmp.status_msg = rs.getString("status_message");
+                tmp.isOnline = true;
+                if(tmp.id != exceptMe.data.id)
+                {
+                    list.add(tmp);
+                }
+
+                // tmp.image = *** Not Implemented Yet ***
+                ; // Return user ID if a match is found
+            }
+            return list;
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     // Close the database connection
     public static void closeConnection() {

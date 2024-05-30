@@ -29,7 +29,6 @@ public class HandlerThread extends Thread {
                         data = tmp;
                         new LoginResponseCommand(LoginResponseCommand.RESPONSE_SUCCESSFUL).SendCommand(socket);
                         OnlineUsers.add(this);
-                        OnlineUsers.SendListToSocket(this);
                     }
                     else
                     {
@@ -45,6 +44,13 @@ public class HandlerThread extends Thread {
                 else if (cmd instanceof SendMessageCommand sndCmd)
                 {
                     Utils.SendMessageToUser(this, sndCmd.msg);
+                }
+                else if(cmd instanceof RequestUsersListCommand)
+                {
+                    ArrayList<User> list = DatabaseController.getUsersList(this);
+                    assert list != null;
+                    OnlineUsers.changeUsersListStatus(list);
+                    new ResponseUsersListCommand(list).SendCommand(socket);
                 }
 
             }

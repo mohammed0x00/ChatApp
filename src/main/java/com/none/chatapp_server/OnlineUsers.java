@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class OnlineUsers{
 
-    private static ArrayList<HandlerThread> onlineUsers = new ArrayList<>();
+    public static ArrayList<HandlerThread> onlineUsers = new ArrayList<>();
 
     public static void SendListToSocket(HandlerThread thread) throws IOException {
         UserListCommand cmd = new UserListCommand();
@@ -71,6 +71,22 @@ public class OnlineUsers{
             throw e;
         }
 
+    }
+
+    public static void changeUsersListStatus(ArrayList<User> lst)
+    {
+        for(User item : lst)
+        {
+            item.isOnline = false;
+            for(HandlerThread onlineUser : onlineUsers)
+            {
+                if(item.id == onlineUser.data.id)
+                {
+                    item.isOnline = true;
+                    break;
+                }
+            }
+        }
     }
 
 }

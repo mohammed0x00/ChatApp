@@ -20,6 +20,13 @@ public class HandlerThread extends Thread{
         @Override
         public void run()
         {
+
+            try {
+                new RequestUsersListCommand().SendCommand(socket);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             while(true)
             {
                 try {
@@ -28,17 +35,26 @@ public class HandlerThread extends Thread{
                     {
                         if(stat_cmd.status == UserStatusCommand.Stat.ONLINE)
                         {
-                            UserItem user = new UserItem(userItemMouseEvent, stat_cmd.user.id, stat_cmd.user.name, stat_cmd.user.isOnline, null);
-                            Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
+                            for(Node item : controller.offlineUsersViewBox.getChildren())
+                                if(item instanceof UserItem u)
+                                    if(u.usr_id == stat_cmd.user.id)
+                                    {
+                                        u.setStatus(true);
+                                        Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().remove(u));
+                                        Platform.runLater(() -> controller.usersViewBox.getChildren().add(u));
+                                    }
                         }
-                        else for(Node i : controller.usersViewBox.getChildren())
-                        {
-                            UserItem item = (UserItem) i;
-                            if(item.usr_id == stat_cmd.user.id)
+                        else
+                            for(Node item : controller.usersViewBox.getChildren())
                             {
-                                Platform.runLater(() -> controller.usersViewBox.getChildren().remove(item));
+                                if(item instanceof UserItem u)
+                                    if(u.usr_id == stat_cmd.user.id)
+                                    {
+                                        u.setStatus(false);
+                                        Platform.runLater(() -> controller.usersViewBox.getChildren().remove(u));
+                                        Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().add(u));
+                                    }
                             }
-                        }
                     }
                     else if(cmd instanceof UserListCommand list_cmd)
                     {
@@ -70,6 +86,23 @@ public class HandlerThread extends Thread{
                         if(controller.selected_conv_id == confcmd.msg.conv_id)
                         {
                             Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(confcmd.msg)));
+                        }
+                    }
+                    else if(cmd instanceof ResponseUsersListCommand responseCmd)
+                    {
+                        for(User item : responseCmd.list)
+                        {
+                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, item.isOnline, null);
+
+                            if(item.isOnline)
+                            {
+                                Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
+                            }
+                            else
+                            {
+                                Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().add(user));
+                            }
+
                         }
                     }
 

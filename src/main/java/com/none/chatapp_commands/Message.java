@@ -2,7 +2,6 @@ package com.none.chatapp_commands;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 public class Message implements Serializable {
     public enum Type {

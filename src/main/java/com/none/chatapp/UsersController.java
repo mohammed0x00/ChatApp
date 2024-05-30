@@ -1,38 +1,23 @@
 package com.none.chatapp;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import animatefx.animation.FadeIn;
-import animatefx.animation.FadeOut;
-import animatefx.animation.ZoomIn;
 import com.none.chatapp_commands.Message;
-import com.none.chatapp_commands.MessageListCommand;
 import com.none.chatapp_commands.MessagesListRequestCommand;
 import com.none.chatapp_commands.SendMessageCommand;
-import javafx.animation.PauseTransition;
-import javafx.application.Platform;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 
 
 public class UsersController {
 
     @FXML
     public VBox usersViewBox;
+
+    @FXML
+    public VBox offlineUsersViewBox;
     
     @FXML
     public VBox messageViewBox;
@@ -57,6 +42,7 @@ public class UsersController {
         msg.type = Message.Type.text;
         try {
             new SendMessageCommand(msg).SendCommand(HandlerThread.socket);
+            messageTextField.clear();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

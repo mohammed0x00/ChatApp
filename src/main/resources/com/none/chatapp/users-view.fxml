@@ -87,11 +87,11 @@
                                     </ScrollPane>
                                  </content>
                               </Tab>
-                            <Tab text="ALL">
+                            <Tab text="OFFLINE">
                                  <content>
                                     <ScrollPane fitToWidth="true" prefHeight="462.0" prefWidth="288.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css">
                                        <content>
-                                          <VBox prefHeight="462.0" prefWidth="254.0" />
+                                          <VBox fx:id="offlineUsersViewBox" prefHeight="462.0" prefWidth="254.0" />
                                        </content>
                                     </ScrollPane>
                                  </content>

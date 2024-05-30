@@ -8,7 +8,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
@@ -19,6 +18,7 @@ public class UserItem extends HBox {
     private static final double IMAGE_SIZE = 50;
     private static final double STATUS_CIRCLE_RADIUS = 7; // Increase radius for visibility
     public int usr_id;
+    Circle statusCircle;
 
     public UserItem(EventHandler<MouseEvent> click_event, int id, String name, boolean isOnline, Image image) {
         usr_id = id;
@@ -30,8 +30,8 @@ public class UserItem extends HBox {
         imageView.setClip(new Circle(IMAGE_SIZE / 2, IMAGE_SIZE / 2, IMAGE_SIZE / 2)); // Clip to make it circular
 
         // Create a Circle for the user's status
-        Circle statusCircle = new Circle(STATUS_CIRCLE_RADIUS);
-        statusCircle.setFill(isOnline ? Color.GREEN : Color.GRAY);
+        statusCircle = new Circle(STATUS_CIRCLE_RADIUS);
+        setStatus(isOnline);
 
         // StackPane to overlay the status circle on the image
         StackPane imageStackPane = new StackPane(imageView, statusCircle);
@@ -55,6 +55,11 @@ public class UserItem extends HBox {
         nameLabel.setOnMouseClicked(click_event);
         this.setOnMouseClicked(click_event);
 
+    }
+
+    public void setStatus(boolean isOnline)
+    {
+        statusCircle.setFill(isOnline ? Color.GREEN : Color.GRAY);
     }
 
 }
