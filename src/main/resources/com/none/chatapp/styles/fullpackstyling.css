@@ -173,3 +173,22 @@
 .tab-pane .tab-content-area {
     -fx-background-color: #222222; /* Consistent dark background for content area */
 }
+
+.rounded-container {
+    -fx-background-color: transparent;
+    -fx-border-radius: 50%; /* Ensures the container is circular */
+    -fx-background-radius: 50%; /* Ensures the background is circular */
+    -fx-padding: 2; /* Optional: adds a bit of padding for the border */
+    -fx-border-color: #ffffff; /* Optional: adds a white border for better visibility */
+    -fx-border-width: 2; /* Optional: sets the border width */
+    -fx-overflow: hidden; /* Ensures that the image doesn't overflow the rounded container */
+    -fx-max-width: 100px; /* Set max width for the container */
+    -fx-max-height: 100px; /* Set max height for the container */
+    -fx-min-width: 100px; /* Set min width for the container */
+    -fx-min-height: 100px; /* Set min height for the container */
+}
+
+.rounded-image {
+    -fx-fit-width: 100px; /* Ensure the image fits the container */
+    -fx-fit-height: 100px; /* Ensure the image fits the container */
+}
