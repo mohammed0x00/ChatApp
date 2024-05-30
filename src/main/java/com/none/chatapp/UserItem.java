@@ -19,6 +19,7 @@ public class UserItem extends HBox {
     private static final double STATUS_CIRCLE_RADIUS = 7; // Increase radius for visibility
     public int usr_id;
     Circle statusCircle;
+    Label nameLabel;
 
     public UserItem(EventHandler<MouseEvent> click_event, int id, String name, boolean isOnline, Image image) {
         usr_id = id;
@@ -40,7 +41,7 @@ public class UserItem extends HBox {
         statusCircle.setTranslateY(STATUS_CIRCLE_RADIUS / 2);
 
         // Create Label for the user's name
-        Label nameLabel = new Label(name);
+        nameLabel = new Label(name);
         nameLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         nameLabel.setTextFill(Color.WHITE);
 
@@ -60,6 +61,11 @@ public class UserItem extends HBox {
     public void setStatus(boolean isOnline)
     {
         statusCircle.setFill(isOnline ? Color.GREEN : Color.GRAY);
+    }
+
+    public String getName()
+    {
+        return nameLabel.getText();
     }
 
 }

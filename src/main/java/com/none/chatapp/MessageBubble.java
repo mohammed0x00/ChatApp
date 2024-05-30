@@ -50,6 +50,11 @@ class MessageBubble extends HBox {
         this.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(this, Priority.SOMETIMES);
 
+        if(msg.sender_id == UsersController.selected_user_id)
+        {
+
+        }
+
         // Bind the text's wrapping width to the available width of the HBox minus some padding
         messageText.wrappingWidthProperty().bind(Bindings.createDoubleBinding(() ->
                 Math.max(0, this.getWidth() - 80), this.widthProperty()));

@@ -6,6 +6,7 @@ import com.none.chatapp_commands.MessagesListRequestCommand;
 import com.none.chatapp_commands.SendMessageCommand;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -23,11 +24,13 @@ public class UsersController {
     public VBox messageViewBox;
 
     @FXML
+    public Label selectedUserName;
+
+    @FXML
     public TextField messageTextField;
 
-    private int current_user_id;
-    public int selected_user_id;
-    public int selected_conv_id;
+    public static int selected_user_id;
+    public static int selected_conv_id;
 
     @FXML
     void initialize() {
@@ -59,6 +62,7 @@ public class UsersController {
             try {
                 System.out.println(event.getSource().toString());
                 new MessagesListRequestCommand(selected_user_id).SendCommand(HandlerThread.socket);
+                selectedUserName.setText(selectedUser.getName());
             }
             catch (IOException e)
             {

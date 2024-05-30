@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<SplitPane dividerPositions="0.2835951134380454" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="575.0" prefWidth="1162.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
+<SplitPane dividerPositions="0.2835951134380454" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="575.0" prefWidth="1162.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
    <items>
       <AnchorPane minHeight="0.0" minWidth="-Infinity" prefHeight="598.0" prefWidth="322.0" style="-fx-background-color: #202020;">
          <children>
@@ -139,7 +131,7 @@
             <HBox layoutX="-1.0" layoutY="-50.0" prefHeight="69.0" prefWidth="346.0" style="-fx-border-color: white; -fx-border-width: 1;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <ImageView fitHeight="67.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true" />
-                  <Label textFill="WHITE">
+                  <Label fx:id="selectedUserName" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="30.0" />
                      </font>
