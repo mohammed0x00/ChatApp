@@ -4,6 +4,7 @@ import com.none.chatapp_commands.*;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
@@ -15,6 +16,9 @@ public class HandlerThread extends Thread{
     public static Socket socket;
     static UsersController controller;
     static EventHandler<MouseEvent> userItemMouseEvent;
+    public static Image imageUrl2 = new Image("https://w7.pngwing.com/pngs/129/292/png-transparent-female-avatar-girl-face-woman-user-flat-classy-users-icon.png");
+    public static Image imageUrl1 = new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKBH5DbCnCmwQCpcjv__106JSjG3U2oVNZRw&s");
+    static Image imageUrl;
 
     private static final Thread me = new Thread(new Runnable() {
         @Override
@@ -60,7 +64,11 @@ public class HandlerThread extends Thread{
                     {
                         for(User item : list_cmd.list)
                         {
-                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, true, null);
+                            if(item.name.equals("Sarah Donald"))
+                                imageUrl = imageUrl2;
+                            else
+                                imageUrl = imageUrl1;
+                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, true, imageUrl);
                             Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
                         }
                     }
@@ -92,7 +100,11 @@ public class HandlerThread extends Thread{
                     {
                         for(User item : responseCmd.list)
                         {
-                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, item.isOnline, null);
+                            if(item.name.equals("Sarah Donald"))
+                                imageUrl = imageUrl2;
+                            else
+                                imageUrl = imageUrl1;
+                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, item.isOnline, imageUrl);
 
                             if(item.isOnline)
                             {

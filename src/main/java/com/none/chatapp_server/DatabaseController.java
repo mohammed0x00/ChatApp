@@ -111,6 +111,10 @@ public class DatabaseController {
                 new_msg.content = rs.getString("content");
                 new_msg.sent_at = rs.getTimestamp("sent_at");
                 new_msg.seen = rs.getBoolean("is_seen");
+                new_msg.sender_id = rs.getInt("sender_id");
+
+                // Debug statement to verify sent_at value
+                System.out.println("Message ID: " + new_msg.id + ", Sent At: " + new_msg.sent_at);
                 tmp.add(new_msg);
             }
 
