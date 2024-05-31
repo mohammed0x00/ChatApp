@@ -6,8 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
@@ -20,6 +19,8 @@ public class UserItem extends HBox {
     public int usr_id;
     Circle statusCircle;
     Label nameLabel;
+    private boolean isSelected = false;
+    private static UserItem selectedUserItem = null;
 
     public UserItem(EventHandler<MouseEvent> click_event, int id, String name, boolean isOnline, Image image) {
         usr_id = id;
@@ -51,10 +52,40 @@ public class UserItem extends HBox {
         this.setSpacing(PADDING);
         this.setPadding(new Insets(PADDING));
 
+        // Set the initial background color
+        this.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        // Set event handlers for hover and selection effects using hex colors
+        this.setOnMouseEntered(event -> {
+            if (!isSelected) {
+                this.setBackground(new Background(new BackgroundFill(Color.web("#3A3B3C"), CornerRadii.EMPTY, Insets.EMPTY))); // DarkGray in hex
+            }
+        });
+
+        this.setOnMouseExited(event -> {
+            if (!isSelected) {
+                this.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+        });
+
+        EventHandler<MouseEvent> combinedEvent = event -> {
+            // Execute the passed click_event handler
+            click_event.handle(event);
+
+            // Handle the selection logic
+            if (selectedUserItem != null) {
+                selectedUserItem.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+                selectedUserItem.isSelected = false;
+            }
+            selectedUserItem = this;
+            this.setBackground(new Background(new BackgroundFill(Color.web("#5E423F"), CornerRadii.EMPTY, Insets.EMPTY))); // SteelBlue in hex
+            this.isSelected = true;
+        };
+
         imageStackPane.setOnMouseClicked(click_event);
         imageView.setOnMouseClicked(click_event);
         nameLabel.setOnMouseClicked(click_event);
-        this.setOnMouseClicked(click_event);
+        this.setOnMouseClicked(combinedEvent);
 
     }
 
