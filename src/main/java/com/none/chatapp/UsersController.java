@@ -4,6 +4,9 @@ import java.io.IOException;
 import com.none.chatapp_commands.Message;
 import com.none.chatapp_commands.MessagesListRequestCommand;
 import com.none.chatapp_commands.SendMessageCommand;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -32,10 +35,15 @@ public class UsersController {
     private ImageView selectedUserImage;
 
     @FXML
+    private ImageView sendImgbtn;
+
+    @FXML
     public TextField messageTextField;
 
     public static int selected_user_id;
     public static int selected_conv_id;
+
+    private BooleanProperty isChatSelected = new SimpleBooleanProperty(false);
 
     // Add this method to initialize the circular clipping for the image
     private void initializeCircularImage() {
@@ -58,6 +66,10 @@ public class UsersController {
     @FXML
     void initialize() {
         initializeCircularImage();HandlerThread.userItemMouseEvent = this::handleUserItemMouseClick;
+
+        // Bind the visibility of the message text field and send button to the isChatSelected property
+        messageTextField.visibleProperty().bind(isChatSelected);
+        sendImgbtn.visibleProperty().bind(isChatSelected.and(Bindings.isNotEmpty(messageTextField.textProperty())));
     }
 
     @FXML
@@ -91,6 +103,8 @@ public class UsersController {
                 } else {
                     selectedUserImage.setImage(HandlerThread.imageUrl1);
                 }
+                // Update the isChatSelected property to show the message text field and send button
+                isChatSelected.set(true);
             }
             catch (IOException e)
             {

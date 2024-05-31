@@ -126,7 +126,7 @@
                         <Insets left="5.0" />
                      </HBox.margin>
                   </TextField>
-                  <ImageView fitHeight="40.0" fitWidth="37.0" onMouseClicked="#handleSendButtonEvent" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+                  <ImageView fx:id="sendImgbtn" fitHeight="40.0" fitWidth="37.0" onMouseClicked="#handleSendButtonEvent" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
                      <image>
                         <Image url="@icons/send(2).png" />
                      </image>

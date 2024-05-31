@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class UserStatusCommand extends ServerCommand implements Serializable {
     public Stat status;
-    public User user;
+    public User user = new User();
     public enum Stat
     {
         ONLINE,
@@ -13,7 +13,12 @@ public class UserStatusCommand extends ServerCommand implements Serializable {
 
     public UserStatusCommand(User u, Stat s)
     {
-        user = u;
+        user.id = u.id;
+        user.name = u.name;
+        user.image = u.image;
+        user.status_msg = u.status_msg;
+        user.age = u.age;
+        user.isOnline = u.isOnline;
         status = s;
     }
 }

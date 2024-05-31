@@ -98,6 +98,7 @@ public class LoginController {
                         Utils.showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid username or password.");
                         txfUser.setText("");
                         txfPass.setText("");
+                        socket.close();
                     }
                 }
             } catch (Exception e) {

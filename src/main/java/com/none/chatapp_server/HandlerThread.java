@@ -67,7 +67,8 @@ public class HandlerThread extends Thread {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            OnlineUsers.remove(this);
+            if(this.data != null)
+                OnlineUsers.remove(this);
 
         }
     }
