@@ -1,26 +1,31 @@
 package com.none.chatapp;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.scene.control.Alert;
 import animatefx.animation.*;
 import javafx.stage.WindowEvent;
 import com.none.chatapp_commands.*;
 import java.net.Socket;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.stream.IntStream;
+import java.util.stream.Collectors;  // Import Collectors
+import java.util.List;  // Import List
+import javafx.util.StringConverter;
 
 public class LoginController {
     public final String hostname = "localhost";
@@ -49,10 +54,29 @@ public class LoginController {
     private Button btnSign;
 
     @FXML
+    private Button btnSignUp;
+
+    @FXML
     private Pane pnSign;
 
     @FXML
     private Pane pnLogin;
+
+    @FXML
+    private RadioButton RdMale;
+
+    @FXML
+    private RadioButton RdFemale;
+
+    @FXML
+    private RadioButton RdOther;
+
+    @FXML
+    private DatePicker BrthDate;
+
+    @FXML
+    private VBox SignVBox;
+
 
     // Fields to store initial mouse click coordinates
     private double xOffset = 0;
@@ -61,6 +85,7 @@ public class LoginController {
     @FXML
     private void handleButtonAction(ActionEvent event) {
         if (event.getSource().equals(btnSign)) {
+            SignVBox.setVisible(true);
             new ZoomIn(pnSign).play();
             pnSign.toFront();
         }
@@ -117,6 +142,7 @@ public class LoginController {
         if (event.getSource() == btnBack) {
             new ZoomIn(pnLogin).play();
             pnLogin.toFront();
+            SignVBox.setVisible(false);
         }
     }
 
@@ -135,10 +161,45 @@ public class LoginController {
 
     @FXML
     public void initialize() {
+        //SignVBox.setVisible(false);
         new animatefx.animation.FadeIn(anchRoot).play();
 
         // Add mouse pressed and dragged event handlers to the root node
         anchRoot.setOnMousePressed(this::handleMousePressed);
         anchRoot.setOnMouseDragged(this::handleMouseDragged);
+        SignVBox.setVisible(false);
+
+        // Initialize radio buttons without ToggleGroup
+        RdMale.setOnAction(e -> handleRadioButtonSelection(RdMale));
+        RdFemale.setOnAction(e -> handleRadioButtonSelection(RdFemale));
+        RdOther.setOnAction(e -> handleRadioButtonSelection(RdOther));
+
+        // Initialize radio buttons without ToggleGroup
+        RdMale.setOnAction(e -> handleRadioButtonSelection(RdMale));
+        RdFemale.setOnAction(e -> handleRadioButtonSelection(RdFemale));
+        RdOther.setOnAction(e -> handleRadioButtonSelection(RdOther));
+
+        // Add listener to DatePicker to calculate and display age
+        BrthDate.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                int age = calculateAge(newValue);
+            }
+        });
+
+    }
+
+    private void handleRadioButtonSelection(RadioButton selectedRadioButton) {
+        RdMale.setSelected(selectedRadioButton == RdMale);
+        RdFemale.setSelected(selectedRadioButton == RdFemale);
+        RdOther.setSelected(selectedRadioButton == RdOther);
+    }
+
+    private int calculateAge(LocalDate birthDate) {
+        if (birthDate == null) {
+            return 0;
+        }
+        return Period.between(birthDate, LocalDate.now()).getYears();
     }
 }
+
+

@@ -2,8 +2,10 @@
 
 <?import java.lang.String?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -12,6 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
@@ -50,14 +53,35 @@
          <center>
             <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <Pane fx:id="pnSign" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #ffff;">
+                  <Pane fx:id="pnSign" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #202020;">
                      <children>
-                        <ImageView fx:id="btnBack" fitHeight="30.0" fitWidth="50.0" layoutX="24.0" layoutY="36.0" onMouseClicked="#handleMouseEvent" pickOnBounds="true" preserveRatio="true">
+                        <TextField layoutX="64.0" layoutY="91.0" prefHeight="35.0" prefWidth="245.0" promptText="Email" />
+                        <TextField layoutX="64.0" layoutY="148.0" prefHeight="35.0" prefWidth="245.0" promptText="Username" />
+                        <PasswordField layoutX="65.0" layoutY="305.0" prefHeight="35.0" prefWidth="245.0" promptText="Password" />
+                        <RadioButton fx:id="RdMale" layoutX="64.0" layoutY="262.0" mnemonicParsing="false" text="Male" textFill="#f5f0f0" />
+                        <RadioButton fx:id="RdFemale" layoutX="158.0" layoutY="262.0" mnemonicParsing="false" text="Female" textFill="#f5f0f0" />
+                        <RadioButton fx:id="RdOther" layoutX="257.0" layoutY="262.0" mnemonicParsing="false" text="Other" textFill="#f5f0f0" />
+                        <Label layoutX="65.0" layoutY="23.0" text="SIGN UP" textFill="WHITESMOKE">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="65.0" layoutY="51.0" text="It's quick and easy." textFill="#686868" />
+                        <Button fx:id="btnSignUp" layoutX="127.0" layoutY="370.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" style="-fx-background-color: #F48967;" stylesheets="@styles/fullpackstyling.css" text="SIGN UP">
+                           <styleClass>
+                              <String fx:value="button1" />
+                              <String fx:value="radius" />
+                           </styleClass>
+                        </Button>
+                        <DatePicker fx:id="BrthDate" layoutX="64.0" layoutY="205.0" prefWidth="245.0" promptText="Date of birth" />
+                        <VBox fx:id="SignVBox" layoutX="-1.0" layoutY="-3.0" opacity="0.22" prefHeight="80.0" prefWidth="381.0" style="-fx-border-width: 1; -fx-border-color: white;" />
+                        <ImageView fx:id="btnBack" fitHeight="30.0" fitWidth="50.0" layoutX="21.0" layoutY="21.0" onMouseClicked="#handleMouseEvent" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@icons/left-arrow(4).png" />
+                              <Image url="@icons/previous.png" />
                            </image>
                         </ImageView>
-                     </children></Pane>
+                     </children>
+                  </Pane>
                   <Pane fx:id="pnLogin" prefHeight="438.0" prefWidth="373.0" style="-fx-background-color: #202020;">
                      <children>
                         <TextField fx:id="txfUser" layoutX="75.0" layoutY="128.0" prefHeight="35.0" prefWidth="245.0" promptText="Username/Email" />
@@ -67,7 +91,7 @@
                               <String fx:value="button1" />
                               <String fx:value="radius" />
                            </styleClass></Button>
-                        <Button fx:id="btnSign" layoutX="78.0" layoutY="336.0" mnemonicParsing="false" onAction="#handleButtonAction" opacity="0.62" prefHeight="43.0" prefWidth="254.0" styleClass="button2" stylesheets="@styles/fullpackstyling.css" text="SIGN UP" />
+                        <Button fx:id="btnSign" layoutX="78.0" layoutY="336.0" mnemonicParsing="false" onAction="#handleButtonAction" opacity="0.62" prefHeight="43.0" prefWidth="254.0" styleClass="button2" stylesheets="@styles/fullpackstyling.css" text=" Create new account" />
                         <Label fx:id="lblSign" layoutX="134.0" layoutY="312.0" opacity="0.63" text="Don't Have an Account?" textFill="#909090" />
                         <Label fx:id="lblLog" layoutX="78.0" layoutY="81.0" prefHeight="30.0" prefWidth="240.0" text="LOG IN" textFill="#f5f5f5">
                            <font>
