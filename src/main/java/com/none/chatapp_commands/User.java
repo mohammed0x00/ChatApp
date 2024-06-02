@@ -13,4 +13,8 @@ public class User implements Serializable {
     public String status_msg;
     public boolean isOnline;
 
+
+
 }
+
+

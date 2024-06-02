@@ -17,6 +17,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import animatefx.animation.*;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import com.none.chatapp_commands.*;
 import java.net.Socket;
@@ -77,6 +78,8 @@ public class LoginController {
     @FXML
     private VBox SignVBox;
 
+    public static String Current_User;
+
 
     // Fields to store initial mouse click coordinates
     private double xOffset = 0;
@@ -91,6 +94,7 @@ public class LoginController {
         }
         if (event.getSource().equals(btnLog)) {
             String username = txfUser.getText();
+            Current_User = username;
             String password = txfPass.getText();
             try {
                 socket = new Socket(hostname, port);
@@ -102,10 +106,12 @@ public class LoginController {
                     if (loginResponse.isSuccess) {
                         // Login successful, proceed to the next scene or dashboard
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("users-view.fxml"));
-                        Scene scene = new Scene(loader.load(), 800, 700);
+                        Scene scene = new Scene(loader.load(), 950, 700);
                         Stage newStage = new Stage();
                         newStage.setTitle("Chat Bus");
                         newStage.setScene(scene);
+                        newStage.initStyle(StageStyle.TRANSPARENT);
+                        newStage.setResizable(true);
                         newStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                             @Override
                             public void handle(WindowEvent event) {
