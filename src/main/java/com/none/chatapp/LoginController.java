@@ -133,7 +133,8 @@ public class LoginController {
                     }
                 }
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.out.println(e.toString());
+
                 Utils.showAlert(Alert.AlertType.ERROR, "Connection Failed", "Cannot Connect to Server"+ e.getMessage() + e.toString());
             }
         }
