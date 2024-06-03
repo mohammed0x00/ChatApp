@@ -18,6 +18,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -69,8 +70,7 @@ public class UsersController {
 
     @FXML
     private HBox UserWindow;
-    @FXML
-    private Label CurrentUserName;
+
     @FXML
     private ImageView CurrentUserImg;
 
@@ -126,6 +126,7 @@ public class UsersController {
         initializeEmojiPicker();
         // Initialize attachment button
         initializeAttachButton();
+        initializeDropdownMenu();
 
     }
 
@@ -134,9 +135,6 @@ public class UsersController {
 
         String currentUserName = LoginController.Current_User;
 
-        CurrentUserName.setText(currentUserName);
-
-        System.out.println(currentUserName);
         if(currentUserName.equals("Sarah Donald") || currentUserName.equals("sarah@gmail.com")) {
             CurrentUserImg.setImage(HandlerThread.imageUrl2);
         }
@@ -314,6 +312,239 @@ public class UsersController {
             }
         }
     }
+
+    private void initializeDropdownMenu() {
+        ContextMenu userMenu = new ContextMenu();
+        userMenu.setStyle("-fx-background-color: #242526;");
+
+        // User Information
+        HBox userInfoBox = new HBox();
+        userInfoBox.setAlignment(Pos.CENTER_LEFT);
+        userInfoBox.setSpacing(10);
+        userInfoBox.setStyle("-fx-padding: 10px; -fx-background-color: #3A3B3C;");
+
+        ImageView userProfileImage = new ImageView(CurrentUserImg.getImage());
+        initializeCircularImage(userProfileImage, 40);
+
+        Label userInfo = new Label(LoginController.Current_User + " (ID: " + getCurrentUserId() + ")");
+        userInfo.setStyle("-fx-font-weight: bold; -fx-text-fill: white;");
+
+        userInfoBox.getChildren().addAll(userProfileImage, userInfo);
+        CustomMenuItem userInfoItem = new CustomMenuItem(userInfoBox, false);
+
+        // Menu Items
+        MenuItem editStatusItem = createMenuItem("Edit Status", this::handleEditStatus);
+        MenuItem editUsernameItem = createMenuItem("Edit Username", this::handleEditUsername);
+        MenuItem changePasswordItem = createMenuItem("Change Password", this::handleChangePassword);
+        MenuItem uploadProfileImageItem = createMenuItem("Upload Profile Image", this::handleUploadProfileImage);
+        MenuItem deleteProfileImageItem = createMenuItem("Delete Profile Image", this::handleDeleteProfileImage);
+        MenuItem deleteAccountItem = createMenuItem("Delete Account", this::handleDeleteAccount);
+        MenuItem logoutItem = createMenuItem("Logout", this::handleLogout);
+
+        userMenu.getItems().addAll(
+                userInfoItem,
+                new SeparatorMenuItem(),
+                editStatusItem,
+                editUsernameItem,
+                changePasswordItem,
+                uploadProfileImageItem,
+                deleteProfileImageItem,
+                deleteAccountItem,
+                new SeparatorMenuItem(),
+                logoutItem
+        );
+        CurrentUserImg.setOnMouseClicked(event -> userMenu.show(CurrentUserImg, event.getScreenX(), event.getScreenY()));
+    }
+
+
+    private MenuItem createMenuItem(String text, Runnable action) {
+        HBox menuItemBox = new HBox();
+        menuItemBox.setAlignment(Pos.CENTER_LEFT);
+        menuItemBox.setSpacing(10);
+        menuItemBox.setStyle("-fx-background-color: #242526; -fx-background-radius: 5px;"); // Initial style
+
+        // Add mouse event handlers to the HBox to apply hover effect
+        //menuItemBox.setOnMouseEntered(e -> menuItemBox.setStyle("-fx-background-color: #F48967; -fx-background-radius: 5px;"));
+        //menuItemBox.setOnMouseExited(e -> menuItemBox.setStyle("-fx-background-color: #242526; -fx-background-radius: 5px;"));
+
+        Label label = new Label(text);
+        label.setStyle("-fx-text-fill: white;");
+
+        menuItemBox.getChildren().add(label);
+
+        CustomMenuItem menuItem = new CustomMenuItem(menuItemBox, true);
+        menuItem.setOnAction(event -> action.run());
+
+        return menuItem;
+    }
+
+    private String getCurrentUserId() {
+        // Return the current user's ID
+        return "123"; // Replace with actual user ID retrieval logic
+    }
+
+    private void handleEditStatus() {
+        Stage stage = new Stage();
+        VBox vbox = new VBox();
+        vbox.setStyle("-fx-background-color: #242526; -fx-padding: 20px;");
+        vbox.setSpacing(10);
+
+        Label label = new Label("Status");
+        label.setStyle("-fx-text-fill: white;");
+        TextField textField = new TextField();
+        Button saveButton = new Button("Save");
+        saveButton.setStyle("-fx-background-color: #F48967; -fx-text-fill: white;");
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setStyle("-fx-background-color: #3A3B3C; -fx-text-fill: white;");
+
+        saveButton.setOnAction(e -> {
+            String newStatus = textField.getText();
+            // Save the new status logic here
+            stage.close();
+        });
+
+        cancelButton.setOnAction(e -> stage.close());
+
+        HBox buttons = new HBox(saveButton, cancelButton);
+        buttons.setSpacing(10);
+
+        vbox.getChildren().addAll(label, textField, buttons);
+        Scene scene = new Scene(vbox, 300, 150);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+
+
+    private void handleEditUsername() {
+        Stage stage = new Stage();
+        VBox vbox = new VBox();
+        vbox.setStyle("-fx-background-color: #242526; -fx-padding: 20px;");
+        vbox.setSpacing(10);
+
+        Label label = new Label("Username");
+        label.setStyle("-fx-text-fill: white;");
+        TextField textField = new TextField();
+        Button saveButton = new Button("Save");
+        saveButton.setStyle("-fx-background-color: #F48967; -fx-text-fill: white;");
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setStyle("-fx-background-color: #3A3B3C; -fx-text-fill: white;");
+
+        saveButton.setOnAction(e -> {
+            String newUsername = textField.getText();
+            // Save the new username logic here
+            stage.close();
+        });
+
+        cancelButton.setOnAction(e -> stage.close());
+
+        HBox buttons = new HBox(saveButton, cancelButton);
+        buttons.setSpacing(10);
+
+        vbox.getChildren().addAll(label, textField, buttons);
+        Scene scene = new Scene(vbox, 300, 150);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+
+    private void handleChangePassword() {
+        Stage stage = new Stage();
+        VBox vbox = new VBox();
+        vbox.setStyle("-fx-background-color: #242526; -fx-padding: 20px;");
+        vbox.setSpacing(10);
+
+        Label currentPasswordLabel = new Label("Current Password");
+        currentPasswordLabel.setStyle("-fx-text-fill: white;");
+        PasswordField currentPasswordField = new PasswordField();
+
+        Label newPasswordLabel = new Label("New Password");
+        newPasswordLabel.setStyle("-fx-text-fill: white;");
+        PasswordField newPasswordField = new PasswordField();
+
+        Button saveButton = new Button("Save");
+        saveButton.setStyle("-fx-background-color: #F48967; -fx-text-fill: white;");
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setStyle("-fx-background-color: #3A3B3C; -fx-text-fill: white;");
+
+        saveButton.setOnAction(e -> {
+            String currentPassword = currentPasswordField.getText();
+            String newPassword = newPasswordField.getText();
+            // Save the new password logic here
+            stage.close();
+        });
+
+        cancelButton.setOnAction(e -> stage.close());
+
+        HBox buttons = new HBox(saveButton, cancelButton);
+        buttons.setSpacing(10);
+
+        vbox.getChildren().addAll(currentPasswordLabel, currentPasswordField, newPasswordLabel, newPasswordField, buttons);
+        Scene scene = new Scene(vbox, 300, 200);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void handleUploadProfileImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+        File selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile != null) {
+            // Logic to upload and set the profile image
+        }
+    }
+
+    private void handleDeleteProfileImage() {
+        CurrentUserImg.setImage(HandlerThread.imageUrl1);
+    }
+
+    private void handleDeleteAccount() {
+        Stage stage = new Stage();
+        VBox vbox = new VBox();
+        vbox.setStyle("-fx-background-color: #242526; -fx-padding: 20px;");
+        vbox.setSpacing(10);
+
+        Label titleLabel = new Label("Delete Account");
+        titleLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+
+        Label descriptionLabel = new Label("After confirmation, your account will be deleted in 7 days. " +
+                "Please note, you can cancel your deletion request at anytime within 7 days from your profile.");
+        descriptionLabel.setStyle("-fx-text-fill: white;");
+        descriptionLabel.setWrapText(true);
+
+        Label passwordLabel = new Label("Password");
+        passwordLabel.setStyle("-fx-text-fill: white;");
+        PasswordField passwordField = new PasswordField();
+
+        Button deleteButton = new Button("Delete");
+        deleteButton.setStyle("-fx-background-color: darkred; -fx-text-fill: white;");
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setStyle("-fx-background-color: #3A3B3C; -fx-text-fill: white;");
+
+        deleteButton.setOnAction(e -> {
+            String password = passwordField.getText();
+            // Logic to request account deletion with the provided password
+            stage.close();
+        });
+
+        cancelButton.setOnAction(e -> stage.close());
+
+        HBox buttons = new HBox(deleteButton, cancelButton);
+        buttons.setSpacing(10);
+
+        vbox.getChildren().addAll(titleLabel, descriptionLabel, passwordLabel, passwordField, buttons);
+        Scene scene = new Scene(vbox, 400, 250);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void handleLogout() {
+        Stage stage = (Stage) CurrentUserImg.getScene().getWindow();
+        stage.close();
+    }
+
 
 
 }
