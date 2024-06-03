@@ -10,6 +10,9 @@ import java.util.ArrayList;
 
 public class DatabaseController {
 
+    public static final int SIGNUP_EXISTS = -1;
+    public static final int SIGNUP_UNEXPECTED_ERROR = -2;
+
     private static final String URL = "jdbc:mysql://localhost:3306/chatbus_app";
     private static final String USER = "Admin";
     private static final String PASSWORD = "Admin";
@@ -44,6 +47,36 @@ public class DatabaseController {
             return null;
         }
     }
+
+
+    public static Integer SignUpDBCom(String username, String email, String password, int age, boolean gender_male) {
+        String query = "SELECT SignUp(?, ?, ?, ?, ?, ?, ?) AS user_id";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, username);
+            stmt.setString(2, email);
+            stmt.setString(3, password);
+            stmt.setString(4, null);
+            stmt.setString(5, null);
+            stmt.setInt(6, age);
+            stmt.setBoolean(7, gender_male);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int user_id = rs.getInt("user_id");
+                if(rs.wasNull())
+                {
+                    return SIGNUP_EXISTS;
+                }
+                return user_id; // Return user ID if a match is found
+            }
+
+            return SIGNUP_UNEXPECTED_ERROR; // No match found
+
+        } catch (Exception e) {
+            return SIGNUP_UNEXPECTED_ERROR;
+        }
+    }
+
 
     public static User getUserDetails (int id) {
         String query = "Call GetUserDetails(?);";

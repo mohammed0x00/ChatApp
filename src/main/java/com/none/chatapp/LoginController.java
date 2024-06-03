@@ -1,7 +1,5 @@
 package com.none.chatapp;
 
-import javafx.application.Application;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -20,13 +18,10 @@ import animatefx.animation.*;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import com.none.chatapp_commands.*;
+
+import java.io.IOException;
 import java.net.Socket;
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.stream.IntStream;
-import java.util.stream.Collectors;  // Import Collectors
-import java.util.List;  // Import List
-import javafx.util.StringConverter;
+
 
 public class LoginController {
     public final String hostname = "localhost";
@@ -56,6 +51,15 @@ public class LoginController {
 
     @FXML
     private Button btnSignUp;
+
+    @FXML
+    private TextField signupEmailTextField;
+
+    @FXML
+    private TextField signupUsernameTextField;
+
+    @FXML
+    private PasswordField signupPasswordTextField;
 
     @FXML
     private Pane pnSign;
@@ -189,7 +193,7 @@ public class LoginController {
         // Add listener to DatePicker to calculate and display age
         BrthDate.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                int age = calculateAge(newValue);
+                int age = Utils.calculateAge(newValue);
             }
         });
 
@@ -201,12 +205,79 @@ public class LoginController {
         RdOther.setSelected(selectedRadioButton == RdOther);
     }
 
-    private int calculateAge(LocalDate birthDate) {
-        if (birthDate == null) {
-            return 0;
+    @FXML
+    public void handleSignUpButton(ActionEvent event)
+    {
+        try
+        {
+            socket = new Socket(hostname, port);
+        }catch (Exception ignored){}
+
+        int age = Utils.calculateAge(BrthDate.getValue());
+        boolean gender = false;
+
+        if(RdMale.isSelected()) gender = true;
+
+        if(signupEmailTextField.getText().isEmpty())
+        {
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Please, Enter E-Mail address.");
+            return;
         }
-        return Period.between(birthDate, LocalDate.now()).getYears();
+        if(signupPasswordTextField.getText().isEmpty())
+        {
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Please, Enter Password.");
+            return;
+        }
+        if(signupUsernameTextField.getText().isEmpty())
+        {
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Please, Enter User Name.");
+            return;
+        }
+
+        try {
+            new SignUpCommand(signupUsernameTextField.getText(), signupPasswordTextField.getText(),
+                                signupEmailTextField.getText(), age, gender).SendCommand(socket);
+        } catch (IOException e) {
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Connection Error.");
+            return;
+        }
+
+        try {
+            ServerCommand cmd = ServerCommand.WaitForCommand(socket);
+
+            if(cmd instanceof SignUpResponseCommand response)
+            {
+                if(response.err_code == SignUpResponseCommand.RESPONSE_SUCCESSFUL)
+                {
+                    Utils.showAlert(Alert.AlertType.INFORMATION, "Succeeded", "Your Account was Created. Please login");
+                    new ZoomIn(pnLogin).play();
+                    pnLogin.toFront();
+                    SignVBox.setVisible(false);
+                }
+                else if(response.err_code == SignUpResponseCommand.RESPONSE_EXISTS)
+                {
+                    Utils.showAlert(Alert.AlertType.ERROR, "Error", "Username or E-mail already exists.");
+                }
+                else
+                {
+                    Utils.showAlert(Alert.AlertType.ERROR, "Error", "Unexpected error: -1");
+                }
+            }
+            else
+            {
+                Utils.showAlert(Alert.AlertType.ERROR, "Error", "Unexpected error: -2");
+            }
+        }
+        catch (Exception e)
+        {
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Cannot connect to server");
+        }
+
+
+
     }
+
+
 }
 
 

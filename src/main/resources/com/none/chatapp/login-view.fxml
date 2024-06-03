@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.text.Font?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="anchRoot" prefHeight="458.0" prefWidth="713.0" stylesheets="@styles/fullpackstyling.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.LoginController">
+<AnchorPane fx:id="anchRoot" prefHeight="458.0" prefWidth="713.0" stylesheets="@styles/fullpackstyling.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.LoginController">
    
     <children>
       <BorderPane prefHeight="458.0" prefWidth="713.0" style="-fx-background-color: #ffff;">
@@ -55,9 +44,9 @@
                <children>
                   <Pane fx:id="pnSign" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #202020;">
                      <children>
-                        <TextField layoutX="64.0" layoutY="91.0" prefHeight="35.0" prefWidth="245.0" promptText="Email" />
-                        <TextField layoutX="64.0" layoutY="148.0" prefHeight="35.0" prefWidth="245.0" promptText="Username" />
-                        <PasswordField layoutX="65.0" layoutY="305.0" prefHeight="35.0" prefWidth="245.0" promptText="Password" />
+                        <TextField fx:id="signupEmailTextField" layoutX="64.0" layoutY="91.0" prefHeight="35.0" prefWidth="245.0" promptText="Email" />
+                        <TextField fx:id="signupUsernameTextField" layoutX="64.0" layoutY="148.0" prefHeight="35.0" prefWidth="245.0" promptText="Username" />
+                        <PasswordField fx:id="signupPasswordTextField" layoutX="65.0" layoutY="305.0" prefHeight="35.0" prefWidth="245.0" promptText="Password" />
                         <RadioButton fx:id="RdMale" layoutX="64.0" layoutY="262.0" mnemonicParsing="false" text="Male" textFill="#f5f0f0" />
                         <RadioButton fx:id="RdFemale" layoutX="158.0" layoutY="262.0" mnemonicParsing="false" text="Female" textFill="#f5f0f0" />
                         <RadioButton fx:id="RdOther" layoutX="257.0" layoutY="262.0" mnemonicParsing="false" text="Other" textFill="#f5f0f0" />
@@ -67,7 +56,7 @@
                            </font>
                         </Label>
                         <Label layoutX="65.0" layoutY="51.0" text="It's quick and easy." textFill="#686868" />
-                        <Button fx:id="btnSignUp" layoutX="127.0" layoutY="370.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" style="-fx-background-color: #F48967;" stylesheets="@styles/fullpackstyling.css" text="SIGN UP">
+                        <Button fx:id="btnSignUp" layoutX="127.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleSignUpButton" prefHeight="35.0" prefWidth="120.0" style="-fx-background-color: #F48967;" stylesheets="@styles/fullpackstyling.css" text="SIGN UP">
                            <styleClass>
                               <String fx:value="button1" />
                               <String fx:value="radius" />

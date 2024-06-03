@@ -52,6 +52,9 @@ public class HandlerThread extends Thread {
                     OnlineUsers.changeUsersListStatus(list);
                     new ResponseUsersListCommand(list).SendCommand(socket);
                 }
+                else if (cmd instanceof SignUpCommand sgn_cmd) {
+                    Utils.handleSignUp(this, sgn_cmd);
+                }
 
             }
         }
