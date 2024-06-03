@@ -70,8 +70,7 @@ public class UsersController {
 
     @FXML
     private HBox UserWindow;
-    @FXML
-    private Label CurrentUserName;
+
     @FXML
     private ImageView CurrentUserImg;
 
@@ -136,9 +135,6 @@ public class UsersController {
 
         String currentUserName = LoginController.Current_User;
 
-        CurrentUserName.setText(currentUserName);
-
-        System.out.println(currentUserName);
         if(currentUserName.equals("Sarah Donald") || currentUserName.equals("sarah@gmail.com")) {
             CurrentUserImg.setImage(HandlerThread.imageUrl2);
         }
