@@ -1,11 +1,21 @@
 package com.none.chatapp_server;
 
 import com.none.chatapp_commands.*;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Random;
 
 public class Utils {
+    private static final String FTP_SERVER = "localhost";
+    private static final int FTP_PORT = 21;
+    private static final String FTP_USERNAME = "chatbus";
+    private static final String FTP_PASSWORD = "12345";
 
     public static User handleLogin(LoginCommand loginCommand) {
 
@@ -88,6 +98,41 @@ public class Utils {
         }
 
 
+    }
+
+    public static String saveFile(User user, byte[] data, String ext) {
+        String file_name = getRandomFileName();
+
+        FTPClient ftpClient = new FTPClient();
+        try {
+            // Connect and login to the server
+            ftpClient.connect(FTP_SERVER, FTP_PORT);
+            ftpClient.login(FTP_USERNAME, FTP_PASSWORD);
+
+            // Enter passive mode
+            ftpClient.enterLocalPassiveMode();
+
+            ftpClient.makeDirectory(String.valueOf(user.id));
+
+
+            return null;
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String getRandomFileName()
+    {
+        return String.valueOf(LocalDate.now().getYear()) +
+                String.valueOf(LocalDate.now().getMonth()) +
+                String.valueOf(LocalDate.now().getDayOfYear()) +
+                String.valueOf(LocalDateTime.now().getHour()) +
+                String.valueOf(LocalDateTime.now().getMinute()) +
+                String.valueOf(LocalDateTime.now().getSecond()) +
+                String.valueOf(LocalDateTime.now().getNano()) +
+                String.valueOf(new Random().nextInt());
     }
 
 }

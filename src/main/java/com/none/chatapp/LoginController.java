@@ -104,7 +104,7 @@ public class LoginController {
                 socket = new Socket(hostname, port);
                 new LoginCommand(username, password).SendCommand(socket);
                 // Wait for the response
-                ServerCommand response = ServerCommand.WaitForCommand(socket);
+                ServerCommand response = ServerCommand.WaitForCommand(socket, 7);
 
                 if (response instanceof LoginResponseCommand loginResponse) {
                     if (loginResponse.isSuccess) {
@@ -243,7 +243,7 @@ public class LoginController {
         }
 
         try {
-            ServerCommand cmd = ServerCommand.WaitForCommand(socket);
+            ServerCommand cmd = ServerCommand.WaitForCommand(socket, 5);
 
             if(cmd instanceof SignUpResponseCommand response)
             {
@@ -265,7 +265,7 @@ public class LoginController {
             }
             else
             {
-                Utils.showAlert(Alert.AlertType.ERROR, "Error", "Unexpected error: -2");
+                Utils.showAlert(Alert.AlertType.ERROR, "Error", "Unexpected error: Timeout exceeded");
             }
         }
         catch (Exception e)

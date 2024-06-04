@@ -20,7 +20,7 @@ public class HandlerThread extends Thread {
         try {
             while(true)
             {
-                ServerCommand cmd = ServerCommand.WaitForCommand(socket);
+                ServerCommand cmd = ServerCommand.WaitForCommand(socket, 0);
                 if(cmd instanceof LoginCommand loginCMD) {
                     User tmp = Utils.handleLogin(loginCMD);
                     // Send login response back to client
@@ -54,6 +54,25 @@ public class HandlerThread extends Thread {
                 }
                 else if (cmd instanceof SignUpCommand sgn_cmd) {
                     Utils.handleSignUp(this, sgn_cmd);
+                }
+                else if(cmd instanceof RequestFileCommand file_cmd)
+                {
+                    byte [] tmp;
+                    System.out.println("owner:");System.out.println(file_cmd.owner_id);
+                    if (file_cmd.owner_id == null) {
+                        tmp = FTPUploader.getFile(data.id, file_cmd.filename);
+                    } else {
+                        tmp = FTPUploader.getFile(file_cmd.owner_id, file_cmd.filename);
+                    }
+
+                    if(tmp != null)
+                    {
+                        new ResponseFileRequestCommand(true, tmp).SendCommand(socket);
+                    }
+                    else
+                    {
+                        new ResponseFileRequestCommand(false, null).SendCommand(socket);
+                    }
                 }
 
             }

@@ -10,7 +10,15 @@ import java.net.Socket;
 
 public abstract class ServerCommand implements Serializable {
 
-    public static ServerCommand WaitForCommand(Socket socket) throws IOException, ClassNotFoundException {
+    public static ServerCommand WaitForCommand(Socket socket, int timeout) throws IOException, ClassNotFoundException {
+        if(timeout > 0)
+        {
+            socket.setSoTimeout(timeout * 1000);
+        }
+        else
+        {
+            socket.setSoTimeout(0);
+        }
         ServerCommand cmd = (ServerCommand) (new ObjectInputStream(socket.getInputStream())).readObject();
         return cmd;
     }

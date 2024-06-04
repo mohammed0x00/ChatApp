@@ -17,6 +17,8 @@ public class DatabaseController {
     private static final String USER = "Admin";
     private static final String PASSWORD = "Admin";
 
+
+
     public static Connection conn;
 
     public static void connect() throws Exception {
@@ -145,6 +147,7 @@ public class DatabaseController {
                 new_msg.sent_at = rs.getTimestamp("sent_at");
                 new_msg.seen = rs.getBoolean("is_seen");
                 new_msg.sender_id = rs.getInt("sender_id");
+                new_msg.setType(rs.getString("message_type"));
 
                 // Debug statement to verify sent_at value
                 System.out.println("Message ID: " + new_msg.id + ", Sent At: " + new_msg.sent_at);

@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.net.URL;
 
 public class ServerApp extends Application {
+    private final static int SERVER_PORT = 12345;
 
     private ServerSocket serverSocket;
     private Thread serverThread;
@@ -63,9 +64,8 @@ public class ServerApp extends Application {
 
     private void startServer() {
         try {
-            int port = 12345; // Port number on which the server will listen
-            serverSocket = new ServerSocket(port);
-            log("Server is listening on port " + port);
+            serverSocket = new ServerSocket(SERVER_PORT);
+            log("Server is listening on port " + SERVER_PORT);
             toggleButton.setText("Stop Server");
             serverRunning = true;
             serverThread = new Thread(() -> {

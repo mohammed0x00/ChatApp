@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 public class Message implements Serializable {
     public enum Type {
         text,
+        image,
         audio,
         video,
         attachment

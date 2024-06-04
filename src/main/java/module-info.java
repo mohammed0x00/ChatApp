@@ -8,6 +8,7 @@ module com.none.chatapp {
     requires java.compiler;
     requires java.sql;
     requires jdk.jshell;
+    requires org.apache.commons.net;
 
     opens com.none.chatapp to javafx.fxml;
     opens com.none.chatapp_server to javafx.fxml;

@@ -34,7 +34,7 @@ public class HandlerThread extends Thread{
             while(true)
             {
                 try {
-                    ServerCommand cmd = ServerCommand.WaitForCommand(socket);
+                    ServerCommand cmd = ServerCommand.WaitForCommand(socket, 0);
                     if(cmd instanceof UserStatusCommand stat_cmd)
                     {
                         if(stat_cmd.status == UserStatusCommand.Stat.ONLINE)

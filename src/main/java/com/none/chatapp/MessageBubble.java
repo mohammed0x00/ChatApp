@@ -1,14 +1,21 @@
 package com.none.chatapp;
 
 import com.none.chatapp_commands.Message;
+import com.none.chatapp_commands.RequestFileCommand;
+import com.none.chatapp_commands.ResponseFileRequestCommand;
+import com.none.chatapp_commands.ServerCommand;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 
 class MessageBubble extends HBox {
@@ -84,5 +91,29 @@ class MessageBubble extends HBox {
         // Make sure HBox resizes based on VBox width
         this.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(this, Priority.ALWAYS);
+
+        if(msg.type == Message.Type.image)
+        {
+            messageText.setVisible(false);
+            ImageView imageView = new ImageView();
+
+            try{
+                new RequestFileCommand(msg.content, msg.sender_id).SendCommand(HandlerThread.socket);
+
+                ServerCommand cmd = ServerCommand.WaitForCommand(HandlerThread.socket, 10);
+                if((cmd instanceof ResponseFileRequestCommand response) && response.status)
+                {
+                    imageView.setImage(new Image(new ByteArrayInputStream(response.data)));
+                    this.getChildren().add(imageView);
+                }
+                else throw new Exception();
+
+            }catch(Exception e)
+            {
+                messageText.setVisible(true);
+                messageText.setText("Cannot Load Image");
+            }
+
+        }
     }
 }
