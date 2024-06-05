@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -27,6 +28,7 @@ public class HandlerThread extends Thread{
 
             try {
                 new RequestUsersListCommand().SendCommand(socket);
+                //initializeCurrentUser();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -34,7 +36,7 @@ public class HandlerThread extends Thread{
             while(true)
             {
                 try {
-                    ServerCommand cmd = ServerCommand.WaitForCommand(socket, 0);
+                    ServerCommand cmd = ServerCommand.WaitForCommand(socket);
                     if(cmd instanceof UserStatusCommand stat_cmd)
                     {
                         if(stat_cmd.status == UserStatusCommand.Stat.ONLINE)
@@ -131,6 +133,24 @@ public class HandlerThread extends Thread{
     public static void startThread()
     {
         me.start();
+    }
+
+    private static void initializeCurrentUser() {
+        try {
+            new RequestProfileImageCommand().SendCommand(HandlerThread.socket);
+
+            ServerCommand cmd = ServerCommand.WaitForCommand(HandlerThread.socket, 20);
+            if(cmd instanceof ResponeProfileImageCommand img_cmd && img_cmd.status)
+            {
+                controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data)));
+                // Apply circular clipping to CurrentUserImg
+                controller.initializeCircularImage(controller.CurrentUserImg, 70);
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println("can't load img: " + e.getMessage());
+        }
     }
 
 

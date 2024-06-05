@@ -3,6 +3,7 @@ package com.none.chatapp;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.*;
 
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -21,5 +22,15 @@ public class Utils {
             return 0;
         }
         return Period.between(birthDate, LocalDate.now()).getYears();
+    }
+
+    public static String getFileExtension(Path path) {
+        String fileName = path.getFileName().toString();
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex >= 0 && dotIndex < fileName.length() - 1) {
+            return fileName.substring(dotIndex + 1);
+        } else {
+            return ""; // No extension found
+        }
     }
 }

@@ -2,8 +2,10 @@ package com.none.chatapp_server;
 
 import com.none.chatapp_commands.Message;
 import com.none.chatapp_commands.User;
+import javafx.scene.image.Image;
 import javafx.util.Pair;
 
+import java.io.ByteArrayInputStream;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -98,6 +100,7 @@ public class DatabaseController {
                 tmp.age = rs.getInt("age");
                 tmp.status_msg = rs.getString("status_message");
                 tmp.isOnline = true;
+                tmp.image = rs.getString("profile_picture");
                 System.out.println(tmp.name);
                 // tmp.image = *** Not Implemented Yet ***
                 return tmp; // Return user ID if a match is found
@@ -110,7 +113,24 @@ public class DatabaseController {
         }
     }
 
-    public static Pair<Integer, ArrayList<Message>> loadConversation(int user1_id, int user2_id) throws SQLException {
+
+    public static void changeUserImage (int user_id, String filename, boolean delete) throws SQLException {
+
+        try (CallableStatement stmt = conn.prepareCall("Call ChangeUserImage(?, ?, ?);")) {
+            stmt.setInt(1, user_id);
+            stmt.setString(2, filename);
+            stmt.setBoolean(3, delete);
+            stmt.execute();
+
+        } catch (Exception e) {
+            throw e;
+            //return null;
+        }
+
+    }
+
+
+        public static Pair<Integer, ArrayList<Message>> loadConversation(int user1_id, int user2_id) throws SQLException {
         Integer conv_id;
         ArrayList<Message> tmp = new ArrayList<>();
         try (CallableStatement stmt = conn.prepareCall("Call StartConversation(?, ?)")) {
@@ -187,6 +207,7 @@ public class DatabaseController {
 
     public static ArrayList<User> getUsersList (HandlerThread exceptMe) {
         ArrayList<User> list = new ArrayList<>();
+        String img_path;
 
         try (PreparedStatement stmt = conn.prepareStatement("Call ListAllUsers();")) {
             ResultSet rs = stmt.executeQuery();
@@ -201,6 +222,7 @@ public class DatabaseController {
                 tmp.name = rs.getString("username");
                 tmp.age = rs.getInt("age");
                 tmp.status_msg = rs.getString("status_message");
+                tmp.image = rs.getString("profile_picture");
                 tmp.isOnline = true;
                 if(tmp.id != exceptMe.data.id)
                 {

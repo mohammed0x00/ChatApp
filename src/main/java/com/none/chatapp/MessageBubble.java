@@ -106,12 +106,12 @@ class MessageBubble extends HBox {
                     imageView.setImage(new Image(new ByteArrayInputStream(response.data)));
                     this.getChildren().add(imageView);
                 }
-                else throw new Exception();
+                else throw new Exception("Unknown Error");
 
             }catch(Exception e)
             {
                 messageText.setVisible(true);
-                messageText.setText("Cannot Load Image");
+                messageText.setText("Cannot Load Image: " + e.getMessage());
             }
 
         }

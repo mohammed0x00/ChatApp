@@ -1,7 +1,5 @@
 package com.none.chatapp_commands;
 
-import com.none.chatapp_server.HandlerThread;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -19,6 +17,13 @@ public abstract class ServerCommand implements Serializable {
         {
             socket.setSoTimeout(0);
         }
+        ServerCommand cmd = (ServerCommand) (new ObjectInputStream(socket.getInputStream())).readObject();
+        socket.setSoTimeout(0);
+        return cmd;
+    }
+
+    public static ServerCommand WaitForCommand(Socket socket) throws IOException, ClassNotFoundException {
+        socket.setSoTimeout(0);
         ServerCommand cmd = (ServerCommand) (new ObjectInputStream(socket.getInputStream())).readObject();
         return cmd;
     }

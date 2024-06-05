@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import com.none.chatapp_commands.*;
+import javafx.scene.image.Image;
 import javafx.util.Pair;
 
 public class HandlerThread extends Thread {
@@ -20,7 +21,7 @@ public class HandlerThread extends Thread {
         try {
             while(true)
             {
-                ServerCommand cmd = ServerCommand.WaitForCommand(socket, 0);
+                ServerCommand cmd = ServerCommand.WaitForCommand(socket);
                 if(cmd instanceof LoginCommand loginCMD) {
                     User tmp = Utils.handleLogin(loginCMD);
                     // Send login response back to client
@@ -58,7 +59,6 @@ public class HandlerThread extends Thread {
                 else if(cmd instanceof RequestFileCommand file_cmd)
                 {
                     byte [] tmp;
-                    System.out.println("owner:");System.out.println(file_cmd.owner_id);
                     if (file_cmd.owner_id == null) {
                         tmp = FTPUploader.getFile(data.id, file_cmd.filename);
                     } else {
@@ -71,14 +71,32 @@ public class HandlerThread extends Thread {
                     }
                     else
                     {
-                        new ResponseFileRequestCommand(false, null).SendCommand(socket);
+                        new ResponseFileRequestCommand(false, new byte[1]).SendCommand(socket);
                     }
                 }
-
+                else if(cmd instanceof ChangeUserImageCommand img_cmd)
+                {
+                    if(img_cmd.remove_image)
+                    {
+                        DatabaseController.changeUserImage(this.data.id, "", true);
+                        new ResponseActionCommand().SendCommand(socket);
+                    }
+                    else
+                    {
+                        String filename = FTPUploader.saveFile(this.data.id, img_cmd.data, img_cmd.extension);
+                        DatabaseController.changeUserImage(this.data.id, filename, false);
+                        new ResponseActionCommand().SendCommand(socket);
+                    }
+                }
+                else if (cmd instanceof RequestProfileImageCommand img_cmd)
+                {
+                    byte[] img = FTPUploader.getFile(data.id, data.image);
+                    new ResponeProfileImageCommand(true, img).SendCommand(socket);
+                }
             }
         }
         catch (IOException e) {
-            System.out.println("Client disconnected: " + e.getMessage());
+            System.out.println("Warning: " + e.getMessage());
         }
         catch (Exception e) {
             e.printStackTrace();

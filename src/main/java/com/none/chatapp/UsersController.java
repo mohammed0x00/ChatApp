@@ -1,17 +1,14 @@
 package com.none.chatapp;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.none.chatapp_commands.Message;
-import com.none.chatapp_commands.MessagesListRequestCommand;
-import com.none.chatapp_commands.SendMessageCommand;
-import com.none.chatapp_commands.User;
+import com.none.chatapp_commands.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -72,7 +69,7 @@ public class UsersController {
     private HBox UserWindow;
 
     @FXML
-    private ImageView CurrentUserImg;
+    public ImageView CurrentUserImg;
 
     public static int selected_user_id;
     public static int selected_conv_id;
@@ -86,7 +83,7 @@ public class UsersController {
 
 
     // Add this method to initialize the circular clipping for the image
-    private void initializeCircularImage(ImageView imageView, double imageSize) {
+    public void initializeCircularImage(ImageView imageView, double imageSize) {
         // Set the dimensions of the image view to be square
         imageView.setFitWidth(imageSize);
         imageView.setFitHeight(imageSize);
@@ -108,8 +105,6 @@ public class UsersController {
         initializeCircularImage(selectedUserImage, 70);
 
         HandlerThread.userItemMouseEvent = this::handleUserItemMouseClick;
-        // Set current user info
-        initializeCurrentUser();
 
 
         // Make the UserWindow draggable
@@ -130,21 +125,7 @@ public class UsersController {
 
     }
 
-    private void initializeCurrentUser() {
-        // Example current user data, replace with actual data source
 
-        String currentUserName = LoginController.Current_User;
-
-        if(currentUserName.equals("Sarah Donald") || currentUserName.equals("sarah@gmail.com")) {
-            CurrentUserImg.setImage(HandlerThread.imageUrl2);
-        }
-        else
-            CurrentUserImg.setImage(HandlerThread.imageUrl1);
-        //CurrentUserImg.setImage(currentUserImage);
-
-        // Apply circular clipping to CurrentUserImg
-        initializeCircularImage(CurrentUserImg, 70);
-    }
 
 
     private void makeWindowDraggable() {
@@ -491,13 +472,44 @@ public class UsersController {
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
         File selectedFile = fileChooser.showOpenDialog(null);
-        if (selectedFile != null) {
-            // Logic to upload and set the profile image
+
+        try{
+            if (selectedFile != null) {
+                int attempts = 0;
+                Path filePath = Paths.get(selectedFile.getAbsolutePath());
+                byte[] img = Files.readAllBytes(filePath);
+                while(true)
+                {
+                    new ChangeUserImageCommand(img, Utils.getFileExtension(filePath)).SendCommand(HandlerThread.socket);
+                    ServerCommand response = ServerCommand.WaitForCommand(HandlerThread.socket, 10);
+                    if(response instanceof ResponseActionCommand){break;}
+                    else attempts++;
+                    if(attempts > 3) throw new Exception();
+                }
+            }
+        }catch (Exception e)
+        {
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't load image");
         }
+
     }
 
     private void handleDeleteProfileImage() {
-        CurrentUserImg.setImage(HandlerThread.imageUrl1);
+        try{
+            int attempts=0;
+            while(true)
+            {
+                new ChangeUserImageCommand(true).SendCommand(HandlerThread.socket);
+                ServerCommand response = ServerCommand.WaitForCommand(HandlerThread.socket, 10);
+                if(response instanceof ResponseActionCommand){break;}
+                else attempts++;
+                if(attempts > 3) throw new Exception();
+            }
+        }
+        catch (Exception e)
+        {
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't delete image");
+        }
     }
 
     private void handleDeleteAccount() {
