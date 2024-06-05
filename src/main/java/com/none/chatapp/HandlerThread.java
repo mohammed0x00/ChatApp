@@ -83,23 +83,8 @@ public class HandlerThread extends Thread{
                         for(Message item : listCommand.list)
                         {
                             byte[] img_buffer = new byte[1];
-                            if(item.type == Message.Type.image)
-                            {
-                                try{
-                                    new RequestFileCommand(item.content, item.sender_id).SendCommand(HandlerThread.socket);
-                                    ServerCommand msg_cmd = ServerCommand.WaitForCommand(HandlerThread.socket, 10);
-                                    if((msg_cmd instanceof ResponseFileRequestCommand response) && response.status)
-                                    {
-                                        img_buffer = response.data;
-                                    }
-                                    else throw new Exception("Unknown Error");
+                            loadImageFromMessage(item, img_buffer);
 
-                                }catch(Exception e)
-                                {
-                                    item.type = Message.Type.text;
-                                    item.content = "Can't Load Image";
-                                }
-                            }
                             MessageBubble tmp = new MessageBubble(item, img_buffer);
                             Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
                         }
@@ -108,6 +93,8 @@ public class HandlerThread extends Thread{
                     {
                         if(controller.selected_user_id == ncmd.msg.sender_id)
                         {
+                            byte[] img_buffer = new byte[1];
+                            loadImageFromMessage(ncmd.msg, img_buffer);
                             Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(ncmd.msg, null)));
                         }
                     }
@@ -115,6 +102,8 @@ public class HandlerThread extends Thread{
                     {
                         if(controller.selected_conv_id == confcmd.msg.conv_id)
                         {
+                            byte[] img_buffer = new byte[1];
+                            loadImageFromMessage(confcmd.msg, img_buffer);
                             Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(confcmd.msg, null)));
                         }
                     }
@@ -164,6 +153,27 @@ public class HandlerThread extends Thread{
     public static void startThread()
     {
         me.start();
+    }
+
+    private static void loadImageFromMessage(Message item, byte[] img_buffer)
+    {
+        if(item.type == Message.Type.image)
+        {
+            try{
+                new RequestFileCommand(item.content, item.sender_id).SendCommand(HandlerThread.socket);
+                ServerCommand msg_cmd = ServerCommand.WaitForCommand(HandlerThread.socket, 15);
+                if((msg_cmd instanceof ResponseFileRequestCommand response) && response.status)
+                {
+                    img_buffer = response.data;
+                }
+                else throw new Exception("Unknown Error");
+
+            }catch(Exception e)
+            {
+                item.type = Message.Type.text;
+                item.content = "Can't Load Image";
+            }
+        }
     }
 
 

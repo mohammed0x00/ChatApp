@@ -237,7 +237,16 @@ public class UsersController {
         File file = fileChooser.showOpenDialog(new Stage());
         if (file != null) {
             String fileExtension = getFileExtension(file.getName());
-            // send it
+            Message msg = new Message();
+            msg.conv_id = selected_conv_id;
+            msg.content = messageTextField.getText();
+            msg.type = Message.Type.image;
+            try {
+                new SendMessageCommand(msg).SendCommand(HandlerThread.socket);
+                messageTextField.clear();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

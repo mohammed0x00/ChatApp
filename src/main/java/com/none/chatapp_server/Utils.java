@@ -85,13 +85,17 @@ public class Utils {
 
     }
 
-    public static void SendMessageToUser(HandlerThread thread, Message msg)
+    public static void SendMessageToUser(HandlerThread thread, SendMessageCommand msgcmd)
     {
         try {
-            msg.sender_id = thread.data.id;
-            Integer receiver_id = DatabaseController.sendMessage(msg);
-            new MessageConfirmationCommand(msg).SendCommand(thread.socket);
-            OnlineUsers.notifyUserMessage(receiver_id, msg);
+            msgcmd.msg.sender_id = thread.data.id;
+            if(msgcmd.msg.type == Message.Type.image || msgcmd.msg.type == Message.Type.attachment)
+            {
+                msgcmd.msg.content = FTPUploader.saveFile(thread.data.id, msgcmd.file_data, msgcmd.extension);
+            }
+            Integer receiver_id = DatabaseController.sendMessage(msgcmd.msg);
+            new MessageConfirmationCommand(msgcmd.msg).SendCommand(thread.socket);
+            OnlineUsers.notifyUserMessage(receiver_id, msgcmd.msg);
         }
         catch (IOException | SQLException e) {
             throw new RuntimeException(e);

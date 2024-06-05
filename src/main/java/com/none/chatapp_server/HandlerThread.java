@@ -44,7 +44,7 @@ public class HandlerThread extends Thread {
                 }
                 else if (cmd instanceof SendMessageCommand sndCmd)
                 {
-                    Utils.SendMessageToUser(this, sndCmd.msg);
+                    Utils.SendMessageToUser(this, sndCmd);
                 }
                 else if(cmd instanceof RequestUsersListCommand)
                 {
