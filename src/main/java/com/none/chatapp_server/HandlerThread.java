@@ -67,11 +67,11 @@ public class HandlerThread extends Thread {
 
                     if(tmp != null)
                     {
-                        new ResponseFileRequestCommand(true, tmp).SendCommand(socket);
+                        new ResponseFileRequestCommand(file_cmd.filename, file_cmd.owner_id,true, tmp).SendCommand(socket);
                     }
                     else
                     {
-                        new ResponseFileRequestCommand(false, new byte[1]).SendCommand(socket);
+                        new ResponseFileRequestCommand(file_cmd.filename, file_cmd.owner_id,false, new byte[1]).SendCommand(socket);
                     }
                 }
                 else if(cmd instanceof ChangeUserImageCommand img_cmd)

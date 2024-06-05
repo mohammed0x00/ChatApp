@@ -4,6 +4,6 @@ import java.io.Serializable;
 
 public class ResponeProfileImageCommand extends ResponseFileRequestCommand implements Serializable {
     public ResponeProfileImageCommand(boolean stat, byte[] d) {
-        super(stat, d);
+        super(null, 0, stat, d);
     }
 }

@@ -91,7 +91,7 @@ public class Utils {
             msgcmd.msg.sender_id = thread.data.id;
             if(msgcmd.msg.type == Message.Type.image || msgcmd.msg.type == Message.Type.attachment)
             {
-                msgcmd.msg.content = FTPUploader.saveFile(thread.data.id, msgcmd.file_data, msgcmd.extension);
+                msgcmd.msg.content = FTPUploader.saveFile(thread.data.id, msgcmd.file_data, msgcmd.msg.content);
             }
             Integer receiver_id = DatabaseController.sendMessage(msgcmd.msg);
             new MessageConfirmationCommand(msgcmd.msg).SendCommand(thread.socket);

@@ -1,21 +1,22 @@
 package com.none.chatapp;
-
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.input.MouseEvent;
-
+import javafx.scene.control.Label;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 
 public class UserItem extends HBox {
     private static final double PADDING = 5;
     private static final double IMAGE_SIZE = 50;
     private static final double STATUS_CIRCLE_RADIUS = 7; // Increase radius for visibility
+    private static final long DEBOUNCE_INTERVAL = 300; // 300 milliseconds debounce interval
+    private long lastClickTime = 0;
+
     public int usr_id;
     Circle statusCircle;
     Label nameLabel;
@@ -69,6 +70,12 @@ public class UserItem extends HBox {
         });
 
         EventHandler<MouseEvent> combinedEvent = event -> {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastClickTime < DEBOUNCE_INTERVAL) {
+                return; // Ignore this click as it is within the debounce interval
+            }
+            lastClickTime = currentTime;
+
             // Execute the passed click_event handler
             click_event.handle(event);
 
@@ -82,21 +89,17 @@ public class UserItem extends HBox {
             this.isSelected = true;
         };
 
-        imageStackPane.setOnMouseClicked(click_event);
-        imageView.setOnMouseClicked(click_event);
-        nameLabel.setOnMouseClicked(click_event);
+        imageStackPane.setOnMouseClicked(combinedEvent);
+        imageView.setOnMouseClicked(combinedEvent);
+        nameLabel.setOnMouseClicked(combinedEvent);
         this.setOnMouseClicked(combinedEvent);
-
     }
 
-    public void setStatus(boolean isOnline)
-    {
+    public void setStatus(boolean isOnline) {
         statusCircle.setFill(isOnline ? Color.GREEN : Color.GRAY);
     }
 
-    public String getName()
-    {
+    public String getName() {
         return nameLabel.getText();
     }
-
 }

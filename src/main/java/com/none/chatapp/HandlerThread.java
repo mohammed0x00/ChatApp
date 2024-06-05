@@ -82,10 +82,8 @@ public class HandlerThread extends Thread{
                         Platform.runLater(() -> controller.messageViewBox.getChildren().clear());
                         for(Message item : listCommand.list)
                         {
-                            byte[] img_buffer = new byte[1];
-                            loadImageFromMessage(item, img_buffer);
-
-                            MessageBubble tmp = new MessageBubble(item, img_buffer);
+                            MessageBubble tmp = new MessageBubble(item);
+                            ResourceMgr.requestFile(item, tmp);
                             Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
                         }
                     }
@@ -93,18 +91,18 @@ public class HandlerThread extends Thread{
                     {
                         if(controller.selected_user_id == ncmd.msg.sender_id)
                         {
-                            byte[] img_buffer = new byte[1];
-                            loadImageFromMessage(ncmd.msg, img_buffer);
-                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(ncmd.msg, null)));
+                            MessageBubble bub = new MessageBubble(ncmd.msg);
+                            ResourceMgr.requestFile(ncmd.msg, bub);
+                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(bub));
                         }
                     }
                     else if(cmd instanceof MessageConfirmationCommand confcmd)
                     {
                         if(controller.selected_conv_id == confcmd.msg.conv_id)
                         {
-                            byte[] img_buffer = new byte[1];
-                            loadImageFromMessage(confcmd.msg, img_buffer);
-                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(confcmd.msg, null)));
+                            MessageBubble bub = new MessageBubble(confcmd.msg);
+                            ResourceMgr.requestFile(confcmd.msg, bub);
+                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(bub));
                         }
                     }
                     else if(cmd instanceof ResponseUsersListCommand responseCmd)
@@ -135,9 +133,16 @@ public class HandlerThread extends Thread{
                     }
                     else if(cmd instanceof ResponeProfileImageCommand img_cmd && img_cmd.status)
                     {
-                        Platform.runLater(() ->controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data))));
-                        // Apply circular clipping to CurrentUserImg
-                        Platform.runLater(() ->controller.initializeCircularImage(controller.CurrentUserImg, 70));
+                        if(img_cmd.data != null)
+                        {
+                            Platform.runLater(() ->controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data))));
+                            // Apply circular clipping to CurrentUserImg
+                            Platform.runLater(() ->controller.initializeCircularImage(controller.CurrentUserImg, 70));
+                        }
+                    }
+                    else if(cmd instanceof ResponseFileRequestCommand response_cmd)
+                    {
+                        ResourceMgr.responseHandler(response_cmd);
                     }
 
 
@@ -154,29 +159,5 @@ public class HandlerThread extends Thread{
     {
         me.start();
     }
-
-    private static void loadImageFromMessage(Message item, byte[] img_buffer)
-    {
-        if(item.type == Message.Type.image)
-        {
-            try{
-                new RequestFileCommand(item.content, item.sender_id).SendCommand(HandlerThread.socket);
-                ServerCommand msg_cmd = ServerCommand.WaitForCommand(HandlerThread.socket, 15);
-                if((msg_cmd instanceof ResponseFileRequestCommand response) && response.status)
-                {
-                    img_buffer = response.data;
-                }
-                else throw new Exception("Unknown Error");
-
-            }catch(Exception e)
-            {
-                item.type = Message.Type.text;
-                item.content = "Can't Load Image";
-            }
-        }
-    }
-
-
-
 
 }

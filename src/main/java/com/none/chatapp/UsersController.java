@@ -232,30 +232,33 @@ public class UsersController {
     }
 
     private void handleAttachButtonEvent() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Attachments");
-        File file = fileChooser.showOpenDialog(new Stage());
-        if (file != null) {
-            String fileExtension = getFileExtension(file.getName());
-            Message msg = new Message();
-            msg.conv_id = selected_conv_id;
-            msg.content = messageTextField.getText();
-            msg.type = Message.Type.image;
-            try {
-                new SendMessageCommand(msg).SendCommand(HandlerThread.socket);
-                messageTextField.clear();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 
-    private String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf('.');
-        if (dotIndex != -1 && dotIndex < fileName.length() - 1) {
-            return fileName.substring(dotIndex + 1).toLowerCase();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        try{
+            if (selectedFile != null) {
+                Path filePath = Paths.get(selectedFile.getAbsolutePath());
+                byte[] file = Files.readAllBytes(filePath);
+                Message msg = new Message();
+                msg.conv_id = selected_conv_id;
+                msg.content = Utils.getFileExtension(filePath);
+                msg.type = Message.Type.image;
+                try {
+                    new SendMessageCommand(msg, file).SendCommand(HandlerThread.socket);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }catch (Exception e)
+        {
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Error occurred while sending file" + e.toString());
         }
-        return "";
+
+
     }
 
 

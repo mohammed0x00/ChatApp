@@ -4,6 +4,7 @@ import com.none.chatapp_commands.Message;
 import com.none.chatapp_commands.RequestFileCommand;
 import com.none.chatapp_commands.ResponseFileRequestCommand;
 import com.none.chatapp_commands.ServerCommand;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -22,14 +23,14 @@ class MessageBubble extends HBox {
     private static final double PADDING = 10;
     private static final double ARC_SIZE = 20;
 
+    private Text messageText;
     public int msg_id;
 
-    public MessageBubble(Message msg, byte[] data) {
+    public MessageBubble(Message msg) {
         msg_id = msg.id;
 
-
         // Create a Text for the message
-        Text messageText = new Text(msg.content);
+        messageText = new Text(msg.content);
         messageText.setTextAlignment(TextAlignment.LEFT);
         messageText.setFill(Color.WHITE);
 
@@ -92,13 +93,23 @@ class MessageBubble extends HBox {
         this.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(this, Priority.ALWAYS);
 
-        if(msg.type == Message.Type.image)
-        {
-            messageText.setVisible(false);
-            ImageView imageView = new ImageView();
-            imageView.setImage(new Image(new ByteArrayInputStream(data)));
-            this.getChildren().add(imageView);
-
-        }
     }
+
+    public void setImage(byte[] data)
+    {
+        if(data == null)
+        {
+            Platform.runLater(() ->messageText.setVisible(true));
+            Platform.runLater(() ->messageText.setText("Error: Can't Load " + messageText.getText()));
+        }
+        else
+        {
+            Platform.runLater(() ->messageText.setVisible(false));
+            ImageView imageView = new ImageView();
+            Platform.runLater(() ->imageView.setImage(new Image(new ByteArrayInputStream(data))));
+            Platform.runLater(() ->this.getChildren().add(imageView));
+        }
+
+    }
+
 }
