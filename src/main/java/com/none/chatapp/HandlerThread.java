@@ -29,7 +29,8 @@ public class HandlerThread extends Thread{
 
             try {
                 new RequestUsersListCommand().SendCommand(socket);
-                //initializeCurrentUser();
+                new RequestProfileImageCommand().SendCommand(socket);
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -143,6 +144,12 @@ public class HandlerThread extends Thread{
                         if(response.result) Platform.runLater(() ->Utils.showAlert(Alert.AlertType.INFORMATION, "Image Changed", "Image Changed/Removed Successfully."));
                         else Platform.runLater(() ->Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't Change/Remove Image."));
                     }
+                    else if(cmd instanceof ResponeProfileImageCommand img_cmd && img_cmd.status)
+                    {
+                        Platform.runLater(() ->controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data))));
+                        // Apply circular clipping to CurrentUserImg
+                        Platform.runLater(() ->controller.initializeCircularImage(controller.CurrentUserImg, 70));
+                    }
 
 
 
@@ -159,23 +166,6 @@ public class HandlerThread extends Thread{
         me.start();
     }
 
-    private static void initializeCurrentUser() {
-        try {
-            new RequestProfileImageCommand().SendCommand(HandlerThread.socket);
-
-            ServerCommand cmd = ServerCommand.WaitForCommand(HandlerThread.socket, 20);
-            if(cmd instanceof ResponeProfileImageCommand img_cmd && img_cmd.status)
-            {
-                controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data)));
-                // Apply circular clipping to CurrentUserImg
-                controller.initializeCircularImage(controller.CurrentUserImg, 70);
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println("can't load img: " + e.getMessage());
-        }
-    }
 
 
 
