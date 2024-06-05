@@ -4,6 +4,7 @@ import com.none.chatapp_commands.*;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 
@@ -80,7 +81,25 @@ public class HandlerThread extends Thread{
                         Platform.runLater(() -> controller.messageViewBox.getChildren().clear());
                         for(Message item : listCommand.list)
                         {
-                            MessageBubble tmp = new MessageBubble(item);
+                            byte[] img_buffer = new byte[1];
+                            if(item.type == Message.Type.image)
+                            {
+                                try{
+                                    new RequestFileCommand(item.content, item.sender_id).SendCommand(HandlerThread.socket);
+                                    ServerCommand msg_cmd = ServerCommand.WaitForCommand(HandlerThread.socket, 10);
+                                    if((msg_cmd instanceof ResponseFileRequestCommand response) && response.status)
+                                    {
+                                        img_buffer = response.data;
+                                    }
+                                    else throw new Exception("Unknown Error");
+
+                                }catch(Exception e)
+                                {
+                                    item.type = Message.Type.text;
+                                    item.content = "Can't Load Image";
+                                }
+                            }
+                            MessageBubble tmp = new MessageBubble(item, img_buffer);
                             Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
                         }
                     }
@@ -88,14 +107,14 @@ public class HandlerThread extends Thread{
                     {
                         if(controller.selected_user_id == ncmd.msg.sender_id)
                         {
-                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(ncmd.msg)));
+                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(ncmd.msg, null)));
                         }
                     }
                     else if(cmd instanceof MessageConfirmationCommand confcmd)
                     {
                         if(controller.selected_conv_id == confcmd.msg.conv_id)
                         {
-                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(confcmd.msg)));
+                            Platform.runLater(() -> controller.messageViewBox.getChildren().add(new MessageBubble(confcmd.msg, null)));
                         }
                     }
                     else if(cmd instanceof ResponseUsersListCommand responseCmd)
@@ -118,6 +137,11 @@ public class HandlerThread extends Thread{
                             }
 
                         }
+                    }
+                    else if(cmd instanceof ResponseImageChangeCommand response)
+                    {
+                        if(response.result) Platform.runLater(() ->Utils.showAlert(Alert.AlertType.INFORMATION, "Image Changed", "Image Changed/Removed Successfully."));
+                        else Platform.runLater(() ->Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't Change/Remove Image."));
                     }
 
 

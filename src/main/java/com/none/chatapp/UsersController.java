@@ -475,36 +475,20 @@ public class UsersController {
 
         try{
             if (selectedFile != null) {
-                int attempts = 0;
                 Path filePath = Paths.get(selectedFile.getAbsolutePath());
                 byte[] img = Files.readAllBytes(filePath);
-                while(true)
-                {
-                    new ChangeUserImageCommand(img, Utils.getFileExtension(filePath)).SendCommand(HandlerThread.socket);
-                    ServerCommand response = ServerCommand.WaitForCommand(HandlerThread.socket, 10);
-                    if(response instanceof ResponseActionCommand){break;}
-                    else attempts++;
-                    if(attempts > 3) throw new Exception();
-                }
+                new ChangeUserImageCommand(img, Utils.getFileExtension(filePath)).SendCommand(HandlerThread.socket);
             }
         }catch (Exception e)
         {
-            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't load image");
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't load image" + e.toString());
         }
 
     }
 
     private void handleDeleteProfileImage() {
         try{
-            int attempts=0;
-            while(true)
-            {
-                new ChangeUserImageCommand(true).SendCommand(HandlerThread.socket);
-                ServerCommand response = ServerCommand.WaitForCommand(HandlerThread.socket, 10);
-                if(response instanceof ResponseActionCommand){break;}
-                else attempts++;
-                if(attempts > 3) throw new Exception();
-            }
+            new ChangeUserImageCommand(true).SendCommand(HandlerThread.socket);
         }
         catch (Exception e)
         {

@@ -24,7 +24,7 @@ class MessageBubble extends HBox {
 
     public int msg_id;
 
-    public MessageBubble(Message msg) {
+    public MessageBubble(Message msg, byte[] data) {
         msg_id = msg.id;
 
 
@@ -96,23 +96,8 @@ class MessageBubble extends HBox {
         {
             messageText.setVisible(false);
             ImageView imageView = new ImageView();
-
-            try{
-                new RequestFileCommand(msg.content, msg.sender_id).SendCommand(HandlerThread.socket);
-
-                ServerCommand cmd = ServerCommand.WaitForCommand(HandlerThread.socket, 10);
-                if((cmd instanceof ResponseFileRequestCommand response) && response.status)
-                {
-                    imageView.setImage(new Image(new ByteArrayInputStream(response.data)));
-                    this.getChildren().add(imageView);
-                }
-                else throw new Exception("Unknown Error");
-
-            }catch(Exception e)
-            {
-                messageText.setVisible(true);
-                messageText.setText("Cannot Load Image: " + e.getMessage());
-            }
+            imageView.setImage(new Image(new ByteArrayInputStream(data)));
+            this.getChildren().add(imageView);
 
         }
     }

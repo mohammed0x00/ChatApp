@@ -76,16 +76,22 @@ public class HandlerThread extends Thread {
                 }
                 else if(cmd instanceof ChangeUserImageCommand img_cmd)
                 {
-                    if(img_cmd.remove_image)
-                    {
-                        DatabaseController.changeUserImage(this.data.id, "", true);
-                        new ResponseActionCommand().SendCommand(socket);
+                    try{
+                        if(img_cmd.remove_image)
+                        {
+                            DatabaseController.changeUserImage(this.data.id, "", true);
+                        }
+                        else
+                        {
+                            String filename = FTPUploader.saveFile(this.data.id, img_cmd.data, img_cmd.extension);
+                            if(filename == null) throw new Exception();
+                            DatabaseController.changeUserImage(this.data.id, filename, false);
+                        }
+                        new ResponseImageChangeCommand(true).SendCommand(socket);
                     }
-                    else
+                    catch (Exception e)
                     {
-                        String filename = FTPUploader.saveFile(this.data.id, img_cmd.data, img_cmd.extension);
-                        DatabaseController.changeUserImage(this.data.id, filename, false);
-                        new ResponseActionCommand().SendCommand(socket);
+                        new ResponseImageChangeCommand(false).SendCommand(socket);
                     }
                 }
                 else if (cmd instanceof RequestProfileImageCommand img_cmd)
