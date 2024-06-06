@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
@@ -102,7 +103,9 @@ public class UsersController {
     @FXML
     void initialize() {
         // Apply circular clipping to selectedUserImage
+
         initializeCircularImage(selectedUserImage, 70);
+        initializeCircularImage(CurrentUserImg, 70);
 
         HandlerThread.userItemMouseEvent = this::handleUserItemMouseClick;
 

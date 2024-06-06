@@ -135,8 +135,8 @@ public class HandlerThread extends Thread{
                         {
                             if(img_cmd.owner_id == null)
                             {
-                                Platform.runLater(() ->controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data))));
                                 Platform.runLater(() ->controller.initializeCircularImage(controller.CurrentUserImg, 70));
+                                Platform.runLater(() ->controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data))));
                             }
                             else
                             {
