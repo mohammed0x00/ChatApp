@@ -148,6 +148,12 @@ class MessageBubble extends HBox {
         imageView.setSmooth(true);
 
         BorderPane root = new BorderPane(imageView);
+        root.setStyle("-fx-background-color: #2e2e2e;"); // Set dark background color
+
+        // Apply styles directly to the ImageView
+        imageView.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 10, 0.5, 0, 0);");
+
+
         Scene scene = new Scene(root, image.getWidth(), image.getHeight());
         stage.setScene(scene);
         stage.setTitle("Image Viewer");

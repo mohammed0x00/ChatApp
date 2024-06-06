@@ -140,20 +140,6 @@
                         </ImageView>
                      </children>
                   </HBox>
-                  <HBox fx:id="UserWindow" layoutX="-1.0" layoutY="-50.0" prefHeight="69.0" prefWidth="1114.0" style="-fx-border-color: white; -fx-border-width: 1;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-6.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <AnchorPane prefHeight="67.0" prefWidth="1116.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <ImageView fx:id="selectedUserImage" fitHeight="67.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true" />
-                              <Label fx:id="selectedUserName" alignment="CENTER" layoutX="97.0" layoutY="16.0" textFill="WHITE">
-                                 <font>
-                                    <Font name="System Bold" size="24.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                        </AnchorPane>
-                     </children>
-                  </HBox>
                   <ScrollPane fitToWidth="true" layoutY="67.0" prefHeight="478.0" prefWidth="1114.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css" AnchorPane.bottomAnchor="53.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-6.0" AnchorPane.topAnchor="67.0">
                      <VBox fx:id="messageViewBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="476.0" prefWidth="1129.0">
                         <children>
@@ -166,6 +152,20 @@
                         </children>
                      </VBox>
                   </ScrollPane>
+                  <HBox fx:id="UserWindow" layoutX="-1.0" layoutY="-50.0" prefHeight="69.0" prefWidth="1114.0" style="-fx-border-color: white; -fx-border-width: 1;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-6.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane prefHeight="83.0" prefWidth="2801.0" style="-fx-background-color: #222222;" HBox.hgrow="ALWAYS">
+                           <children>
+                              <ImageView fx:id="selectedUserImage" fitHeight="67.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true" />
+                              <Label fx:id="selectedUserName" alignment="CENTER" layoutX="97.0" layoutY="16.0" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="24.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </HBox>
                </children>
             </AnchorPane>
          </items>

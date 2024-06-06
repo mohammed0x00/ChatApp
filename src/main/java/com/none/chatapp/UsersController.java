@@ -1,5 +1,6 @@
 package com.none.chatapp;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,6 +8,17 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
 
 import com.none.chatapp_commands.*;
 import javafx.beans.binding.Bindings;
@@ -17,17 +29,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import javax.imageio.ImageIO;
 
 
 public class UsersController {
@@ -79,6 +88,10 @@ public class UsersController {
     // For dragging the window
     private double xOffset = 0;
     private double yOffset = 0;
+    private ImageView imageView;
+    private Rectangle cropRect;
+    private ImageView croppedImageView;
+
 
     // List of some emoji image filenames to be added to the picker
 
@@ -88,14 +101,7 @@ public class UsersController {
         // Set the dimensions of the image view to be square
         imageView.setFitWidth(imageSize);
         imageView.setFitHeight(imageSize);
-
-        // Create a circle clipping mask
-        Circle clip = new Circle();
-        clip.setCenterX(imageSize / 2);
-        clip.setCenterY(imageSize / 2);
-        clip.setRadius(imageSize / 2);
-
-        // Apply the clipping mask to the image view
+        Circle clip = new Circle(imageSize / 2, imageSize / 2, imageSize / 2);
         imageView.setClip(clip);
     }
 
@@ -191,7 +197,8 @@ public class UsersController {
                             hbox.setOnMouseEntered(e -> hbox.setStyle("-fx-background-color: #3A3B3C;"));  // Set hover color
                             hbox.setOnMouseExited(e -> hbox.setStyle("-fx-background-color: #242526;"));  // Reset to original color
 
-                            hbox.setOnMouseClicked(e -> messageTextField.appendText(getEmojiText(emojiFile.getName())));
+                            // Modify the click event to insert emoji image instead of text
+                            hbox.setOnMouseClicked(e -> insertEmojiImage(emojiImage));
                             flowPane.getChildren().add(hbox);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
@@ -225,9 +232,13 @@ public class UsersController {
         emojiButton.setOnMouseClicked(event -> emojiPicker.show(emojiButton, event.getScreenX(), event.getScreenY()));
     }
 
-    private String getEmojiText(String fileName) {
-        // This method can be customized to convert the filename to a desired emoji text representation
-        return ":" + fileName.substring(0, fileName.lastIndexOf('.')) + ":";
+    // Method to insert emoji image into the message view
+    private void insertEmojiImage(Image emojiImage) {
+        ImageView emojiImageView = new ImageView(emojiImage);
+        emojiImageView.setFitHeight(20);
+        emojiImageView.setFitWidth(20);
+        HBox hbox = new HBox(emojiImageView);
+        messageViewBox.getChildren().add(hbox);
     }
 
     private void initializeAttachButton() {
@@ -488,17 +499,14 @@ public class UsersController {
         );
         File selectedFile = fileChooser.showOpenDialog(null);
 
-        try{
-            if (selectedFile != null) {
-                Path filePath = Paths.get(selectedFile.getAbsolutePath());
-                byte[] img = Files.readAllBytes(filePath);
-                new ChangeUserImageCommand(img, Utils.getFileExtension(filePath)).SendCommand(HandlerThread.socket);
+        if (selectedFile != null) {
+            try {
+                Image image = new Image(new FileInputStream(selectedFile));
+                showCropWindow(image);
+            } catch (FileNotFoundException e) {
+                Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't load image" + e.toString());
             }
-        }catch (Exception e)
-        {
-            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't load image" + e.toString());
         }
-
     }
 
     private void handleDeleteProfileImage() {
@@ -555,6 +563,115 @@ public class UsersController {
         Stage stage = (Stage) CurrentUserImg.getScene().getWindow();
         stage.close();
     }
+
+    private void showCropWindow(Image image) {
+        Stage cropStage = new Stage(StageStyle.UNDECORATED);
+        cropStage.initModality(Modality.APPLICATION_MODAL);
+
+        BorderPane root = new BorderPane();
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+        Pane imagePane = new Pane(imageView);
+        root.setCenter(imagePane);
+
+        Circle cropCircle = new Circle(100);
+        cropCircle.setStroke(Color.BLUE);
+        cropCircle.setStrokeWidth(2);
+        cropCircle.setFill(Color.TRANSPARENT);
+        cropCircle.setCenterX(image.getWidth() / 2);
+        cropCircle.setCenterY(image.getHeight() / 2);
+        imagePane.getChildren().add(cropCircle);
+
+        // Add event handlers to drag the circle
+        cropCircle.setOnMousePressed(event -> {
+            cropCircle.setUserData(new javafx.geometry.Point2D(event.getSceneX(), event.getSceneY()));
+        });
+
+        cropCircle.setOnMouseDragged(event -> {
+            javafx.geometry.Point2D mousePress = (javafx.geometry.Point2D) cropCircle.getUserData();
+            double deltaX = event.getSceneX() - mousePress.getX();
+            double deltaY = event.getSceneY() - mousePress.getY();
+            cropCircle.setCenterX(cropCircle.getCenterX() + deltaX);
+            cropCircle.setCenterY(cropCircle.getCenterY() + deltaY);
+            cropCircle.setUserData(new javafx.geometry.Point2D(event.getSceneX(), event.getSceneY()));
+        });
+
+        Button cropButton = new Button("Crop");
+        cropButton.setOnAction(e -> {
+            WritableImage croppedImage = cropCircularImage(imageView, cropCircle);
+            if (croppedImage != null) {
+                CurrentUserImg.setImage(croppedImage);
+                saveCroppedImage(croppedImage); // Save the cropped image
+                cropStage.close();
+            }
+        });
+        root.setBottom(cropButton);
+        BorderPane.setAlignment(cropButton, Pos.CENTER);
+        BorderPane.setMargin(cropButton, new javafx.geometry.Insets(10));
+
+        Scene scene = new Scene(root, image.getWidth(), image.getHeight());
+        cropStage.setScene(scene);
+        cropStage.show();
+    }
+    private WritableImage cropCircularImage(ImageView imageView, Circle cropCircle) {
+        int width = (int) (cropCircle.getRadius() * 2);
+        int height = (int) (cropCircle.getRadius() * 2);
+        WritableImage croppedImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = croppedImage.getPixelWriter();
+        PixelReader pixelReader = imageView.getImage().getPixelReader();
+
+        int startX = (int) (cropCircle.getCenterX() - cropCircle.getRadius());
+        int startY = (int) (cropCircle.getCenterY() - cropCircle.getRadius());
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                double distance = Math.sqrt(Math.pow(x - cropCircle.getRadius(), 2) + Math.pow(y - cropCircle.getRadius(), 2));
+                if (distance <= cropCircle.getRadius()) {
+                    int imageX = startX + x;
+                    int imageY = startY + y;
+                    if (imageX >= 0 && imageX < imageView.getImage().getWidth() && imageY >= 0 && imageY < imageView.getImage().getHeight()) {
+                        Color color = pixelReader.getColor(imageX, imageY);
+                        pixelWriter.setColor(x, y, color);
+                    }
+                } else {
+                    pixelWriter.setColor(x, y, Color.TRANSPARENT);
+                }
+            }
+        }
+        return croppedImage;
+    }
+
+
+
+
+    private void saveCroppedImage(WritableImage image) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Image");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PNG Files", "*.png"));
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            try {
+                BufferedImage bufferedImage = new BufferedImage((int) image.getWidth(), (int) image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                for (int y = 0; y < image.getHeight(); y++) {
+                    for (int x = 0; x < image.getWidth(); x++) {
+                        int argb = image.getPixelReader().getArgb(x, y);
+                        bufferedImage.setRGB(x, y, argb);
+                    }
+                }
+                ImageIO.write(bufferedImage, "png", file);
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                Utils.showAlert(Alert.AlertType.ERROR, "Error", "Error occurred while saving the image: " + ex.toString());
+            }
+        }
+    }
+
+
+
+
+
+
 
 
 
