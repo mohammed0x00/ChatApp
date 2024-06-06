@@ -78,6 +78,8 @@ public class UsersController {
     @FXML
     private HBox UserWindow;
 
+    public static Label userIDLabel;
+
     @FXML
     public ImageView CurrentUserImg;
 
@@ -333,10 +335,10 @@ public class UsersController {
         ImageView userProfileImage = new ImageView(CurrentUserImg.getImage());
         initializeCircularImage(userProfileImage, 40);
 
-        Label userInfo = new Label(LoginController.Current_User + " (ID: " + getCurrentUserId() + ")");
-        userInfo.setStyle("-fx-font-weight: bold; -fx-text-fill: white;");
+        userIDLabel = new Label(LoginController.Current_User + " (ID: None)");
+        userIDLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: white;");
 
-        userInfoBox.getChildren().addAll(userProfileImage, userInfo);
+        userInfoBox.getChildren().addAll(userProfileImage, userIDLabel);
         CustomMenuItem userInfoItem = new CustomMenuItem(userInfoBox, false);
 
         // Menu Items
@@ -385,10 +387,6 @@ public class UsersController {
         return menuItem;
     }
 
-    private String getCurrentUserId() {
-        // Return the current user's ID
-        return "123"; // Replace with actual user ID retrieval logic
-    }
 
     private void handleEditStatus() {
         Stage stage = new Stage();
@@ -406,7 +404,9 @@ public class UsersController {
 
         saveButton.setOnAction(e -> {
             String newStatus = textField.getText();
-            // Save the new status logic here
+            try {
+                new ChangeUserInfoCommand.CHANGE_STATUS_MSG(newStatus).SendCommand(HandlerThread.socket);
+            }catch (Exception ignored){Utils.showAlert(Alert.AlertType.ERROR, "Error", "An error occurred");}
             stage.close();
         });
 
@@ -439,7 +439,9 @@ public class UsersController {
 
         saveButton.setOnAction(e -> {
             String newUsername = textField.getText();
-            // Save the new username logic here
+            try {
+                new ChangeUserInfoCommand.CHANGE_USER_NAME(newUsername).SendCommand(HandlerThread.socket);
+            }catch (Exception ignored){Utils.showAlert(Alert.AlertType.ERROR, "Error", "An error occurred");}
             stage.close();
         });
 
@@ -477,7 +479,9 @@ public class UsersController {
         saveButton.setOnAction(e -> {
             String currentPassword = currentPasswordField.getText();
             String newPassword = newPasswordField.getText();
-            // Save the new password logic here
+            try {
+                new ChangeUserInfoCommand.CHANGE_PASSWORD(currentPassword, newPassword).SendCommand(HandlerThread.socket);
+            }catch (Exception ignored){Utils.showAlert(Alert.AlertType.ERROR, "Error", "An error occurred");}
             stage.close();
         });
 
