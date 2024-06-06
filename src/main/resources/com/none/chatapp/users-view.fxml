@@ -192,7 +192,10 @@
                         </RadialGradient>
                      </textFill>
                   </Label>
-                  <ImageView fx:id="CurrentUserImg" fitHeight="69.0" fitWidth="79.0" layoutX="14.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="1457.0" AnchorPane.topAnchor="10.0" />
+                  <ImageView fx:id="CurrentUserImg" fitHeight="69.0" fitWidth="79.0" layoutX="14.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="1457.0" AnchorPane.topAnchor="10.0">
+                     <image>
+                        <Image url="@icons/Default_Profile.png" />
+                     </image></ImageView>
                </children>
                <effect>
                   <DropShadow radius="14.3975" width="38.59">

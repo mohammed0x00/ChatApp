@@ -2,6 +2,8 @@ package com.none.chatapp;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -164,7 +166,7 @@ public class UsersController {
 
 
     private void initializeEmojiPicker() {
-        ContextMenu  emojiPicker = new ContextMenu();
+        ContextMenu emojiPicker = new ContextMenu();
         emojiPicker.setStyle("-fx-background-color: #242526;");
 
         TabPane tabPane = new TabPane();
@@ -172,60 +174,70 @@ public class UsersController {
         tabPane.setPrefSize(300, 200);
         tabPane.setStyle("-fx-background-color: #242526;");
 
-        File emojiDir = new File("C:\\Users\\speedlink\\IdeaProjects\\ChatApp\\src\\main\\resources\\com\\none\\chatapp\\icons\\emojis\\");
-        File[] categoryDirs = emojiDir.listFiles(File::isDirectory);
+        URL emojiDirUrl = getClass().getResource("/com/none/chatapp/icons/emojis");
+        if (emojiDirUrl != null) {
+            File emojiDir = null;
+            try {
+                emojiDir = new File(emojiDirUrl.toURI());
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+            File[] categoryDirs = emojiDir.listFiles(File::isDirectory);
 
-        if (categoryDirs != null) {
-            for (File categoryDir : categoryDirs) {
-                String categoryName = categoryDir.getName();
-                FlowPane flowPane = new FlowPane();
-                flowPane.setStyle("-fx-background-color: #242526;");
-                flowPane.setHgap(5);
-                flowPane.setVgap(5);
-                flowPane.setPrefWrapLength(250);
+            if (categoryDirs != null) {
+                for (File categoryDir : categoryDirs) {
+                    String categoryName = categoryDir.getName();
+                    FlowPane flowPane = new FlowPane();
+                    flowPane.setStyle("-fx-background-color: #242526;");
+                    flowPane.setHgap(5);
+                    flowPane.setVgap(5);
+                    flowPane.setPrefWrapLength(250);
 
-                File[] emojiFiles = categoryDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".png"));
-                if (emojiFiles != null) {
-                    for (File emojiFile : emojiFiles) {
-                        try {
-                            Image emojiImage = new Image(new FileInputStream(emojiFile));
-                            ImageView emojiImageView = new ImageView(emojiImage);
-                            emojiImageView.setFitHeight(20);
-                            emojiImageView.setFitWidth(20);
-                            emojiImageView.setStyle("-fx-opacity: 0.8;");
+                    File[] emojiFiles = categoryDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".png"));
+                    if (emojiFiles != null) {
+                        for (File emojiFile : emojiFiles) {
+                            try {
+                                Image emojiImage = new Image(new FileInputStream(emojiFile));
+                                ImageView emojiImageView = new ImageView(emojiImage);
+                                emojiImageView.setFitHeight(20);
+                                emojiImageView.setFitWidth(20);
+                                emojiImageView.setStyle("-fx-opacity: 0.8;");
 
-                            HBox hbox = new HBox(emojiImageView);
-                            hbox.setStyle("-fx-background-color: #242526;");  // Set background color
-                            hbox.setOnMouseEntered(e -> hbox.setStyle("-fx-background-color: #3A3B3C;"));  // Set hover color
-                            hbox.setOnMouseExited(e -> hbox.setStyle("-fx-background-color: #242526;"));  // Reset to original color
+                                HBox hbox = new HBox(emojiImageView);
+                                hbox.setStyle("-fx-background-color: #242526;");  // Set background color
+                                hbox.setOnMouseEntered(e -> hbox.setStyle("-fx-background-color: #3A3B3C;"));  // Set hover color
+                                hbox.setOnMouseExited(e -> hbox.setStyle("-fx-background-color: #242526;"));  // Reset to original color
 
-                            // Modify the click event to insert emoji image instead of text
-                            hbox.setOnMouseClicked(e -> insertEmojiImage(emojiImage));
-                            flowPane.getChildren().add(hbox);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                                // Modify the click event to insert emoji image instead of text
+                                hbox.setOnMouseClicked(e -> insertEmojiImage(emojiImage));
+                                flowPane.getChildren().add(hbox);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
+
+                    ScrollPane scrollPane = new ScrollPane(flowPane);
+                    scrollPane.setFitToWidth(true);
+                    scrollPane.setFitToHeight(true);
+                    scrollPane.setStyle("-fx-background-color: #242526;");
+
+                    Tab tab = new Tab(categoryName, scrollPane);
+                    tab.setStyle("-fx-background-color: white; -fx-text-fill: white;");
+
+                    tab.setOnSelectionChanged(event -> {
+                        if (tab.isSelected()) {
+                            tab.setStyle("-fx-background-color: #F48967; -fx-text-fill: white;");
+                        } else {
+                            tab.setStyle("-fx-background-color: white; -fx-text-fill: white;");
+                        }
+                    });
+
+                    tabPane.getTabs().add(tab);
                 }
-
-                ScrollPane scrollPane = new ScrollPane(flowPane);
-                scrollPane.setFitToWidth(true);
-                scrollPane.setFitToHeight(true);
-                scrollPane.setStyle("-fx-background-color: #242526;");
-
-                Tab tab = new Tab(categoryName, scrollPane);
-                tab.setStyle("-fx-background-color: white; -fx-text-fill: white;");
-
-                tab.setOnSelectionChanged(event -> {
-                    if (tab.isSelected()) {
-                        tab.setStyle("-fx-background-color: #F48967; -fx-text-fill: white;");
-                    } else {
-                        tab.setStyle("-fx-background-color: white; -fx-text-fill: white;");
-                    }
-                });
-
-                tabPane.getTabs().add(tab);
             }
+        } else {
+            System.err.println("Emoji directory not found.");
         }
 
         CustomMenuItem tabPaneItem = new CustomMenuItem(tabPane, false);
@@ -670,13 +682,5 @@ public class UsersController {
             }
         }
     }
-
-
-
-
-
-
-
-
 
 }
