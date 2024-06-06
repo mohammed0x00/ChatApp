@@ -86,6 +86,7 @@ public class HandlerThread extends Thread {
                             String filename = FTPUploader.saveFile(this.data.id, img_cmd.data, img_cmd.extension);
                             if(filename == null) throw new Exception();
                             DatabaseController.changeUserImage(this.data.id, filename, false);
+                            data.image = filename;
                         }
                         new ResponseImageChangeCommand(true).SendCommand(socket);
                     }
@@ -96,8 +97,22 @@ public class HandlerThread extends Thread {
                 }
                 else if (cmd instanceof RequestProfileImageCommand img_cmd)
                 {
-                    byte[] img = FTPUploader.getFile(data.id, data.image);
-                    new ResponeProfileImageCommand(true, img).SendCommand(socket);
+                    if(img_cmd.user_id == null)
+                    {
+                        byte[] img = FTPUploader.getFile(data.id, data.image);
+                        new ResponeProfileImageCommand(true, img).SendCommand(socket);
+                    }
+                    else
+                    {
+                        byte[] img = null;
+                        try{
+                            String image_file = DatabaseController.getUserDetails(img_cmd.user_id).image;
+                            img = FTPUploader.getFile(img_cmd.user_id, image_file);
+                        }
+                        catch (Exception ignored){}
+                        new ResponeProfileImageCommand(img_cmd.user_id, img != null, img).SendCommand(socket);
+                    }
+
                 }
             }
         }

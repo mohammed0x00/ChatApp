@@ -1,4 +1,5 @@
 package com.none.chatapp;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -9,6 +10,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.control.Label;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+
+import java.io.ByteArrayInputStream;
 
 public class UserItem extends HBox {
     private static final double PADDING = 5;
@@ -22,11 +25,12 @@ public class UserItem extends HBox {
     Label nameLabel;
     private boolean isSelected = false;
     private static UserItem selectedUserItem = null;
+    ImageView imageView;
 
-    public UserItem(EventHandler<MouseEvent> click_event, int id, String name, boolean isOnline, Image image) {
+    public UserItem(EventHandler<MouseEvent> click_event, int id, String name, boolean isOnline) {
         usr_id = id;
         // Create ImageView for the user's image
-        ImageView imageView = new ImageView(image);
+        imageView = new ImageView();
         imageView.setFitWidth(IMAGE_SIZE);
         imageView.setFitHeight(IMAGE_SIZE);
         imageView.setPreserveRatio(true);
@@ -101,5 +105,14 @@ public class UserItem extends HBox {
 
     public String getName() {
         return nameLabel.getText();
+    }
+
+    public void setImage(byte[] data)
+    {
+        if(data != null)
+        {
+            Platform.runLater(() ->imageView.setImage(new Image(new ByteArrayInputStream(data))));
+        }
+
     }
 }

@@ -8,7 +8,7 @@ public class ResponseFileRequestCommand extends ServerCommand implements Seriali
     public String filename;
     public Integer owner_id = null;
 
-    public ResponseFileRequestCommand(String f_name, int owner, boolean stat, byte[] d)
+    public ResponseFileRequestCommand(String f_name, Integer owner, boolean stat, byte[] d)
     {
         if(d != null)
         {

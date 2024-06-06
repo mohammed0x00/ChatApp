@@ -172,6 +172,7 @@ public class LoginController {
 
     @FXML
     public void initialize() {
+
         //SignVBox.setVisible(false);
         new animatefx.animation.FadeIn(anchRoot).play();
 

@@ -68,11 +68,8 @@ public class HandlerThread extends Thread{
                     {
                         for(User item : list_cmd.list)
                         {
-                            if(item.name.equals("Sarah Donald"))
-                                imageUrl = imageUrl2;
-                            else
-                                imageUrl = imageUrl1;
-                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, true, imageUrl);
+                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, true);
+                            ResourceMgr.requestFile(item, user);
                             Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
                         }
                     }
@@ -109,11 +106,8 @@ public class HandlerThread extends Thread{
                     {
                         for(User item : responseCmd.list)
                         {
-                            if(item.name.equals("Sarah Donald"))
-                                imageUrl = imageUrl2;
-                            else
-                                imageUrl = imageUrl1;
-                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, item.isOnline, imageUrl);
+                            UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, item.isOnline);
+                            ResourceMgr.requestFile(item, user);
 
                             if(item.isOnline)
                             {
@@ -128,16 +122,27 @@ public class HandlerThread extends Thread{
                     }
                     else if(cmd instanceof ResponseImageChangeCommand response)
                     {
-                        if(response.result) Platform.runLater(() ->Utils.showAlert(Alert.AlertType.INFORMATION, "Image Changed", "Image Changed/Removed Successfully."));
+                        if(response.result)
+                        {
+                            Platform.runLater(() ->Utils.showAlert(Alert.AlertType.INFORMATION, "Image Changed", "Image Changed/Removed Successfully."));
+                            try{new RequestProfileImageCommand().SendCommand(socket);}catch(Exception ignored){}
+                        }
                         else Platform.runLater(() ->Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't Change/Remove Image."));
                     }
                     else if(cmd instanceof ResponeProfileImageCommand img_cmd && img_cmd.status)
                     {
-                        if(img_cmd.data != null)
+                        if(img_cmd.status && img_cmd.data != null)
                         {
-                            Platform.runLater(() ->controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data))));
-                            // Apply circular clipping to CurrentUserImg
-                            Platform.runLater(() ->controller.initializeCircularImage(controller.CurrentUserImg, 70));
+                            if(img_cmd.owner_id == null)
+                            {
+                                Platform.runLater(() ->controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data))));
+                                Platform.runLater(() ->controller.initializeCircularImage(controller.CurrentUserImg, 70));
+                            }
+                            else
+                            {
+                                ResourceMgr.responseHandler(img_cmd);
+                            }
+
                         }
                     }
                     else if(cmd instanceof ResponseFileRequestCommand response_cmd)

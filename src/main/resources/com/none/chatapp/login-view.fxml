@@ -8,7 +8,7 @@
 <?import javafx.scene.text.*?>
 
 <AnchorPane fx:id="anchRoot" prefHeight="458.0" prefWidth="713.0" stylesheets="@styles/fullpackstyling.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.LoginController">
-   
+
     <children>
       <BorderPane prefHeight="458.0" prefWidth="713.0" style="-fx-background-color: #ffff;">
          <left>
