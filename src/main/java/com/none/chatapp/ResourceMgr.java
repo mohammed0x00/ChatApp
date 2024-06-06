@@ -7,7 +7,7 @@ import java.util.*;
 
 public class ResourceMgr {
     private static Map<String, Node> queue = new HashMap<>();
-    private static String USER_IMAGE_MAGIC = "USER_IMG";
+    private static final String USER_IMAGE_MAGIC = "USER_IMG";
 
     public static void requestFile(Message msg, MessageBubble bubble)
     {

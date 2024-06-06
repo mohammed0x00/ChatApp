@@ -239,6 +239,50 @@ public class DatabaseController {
         }
     }
 
+
+    public static Pair<Boolean, String> changeUserPassword(int usr_id, String old_p, String new_p) throws SQLException {
+        boolean success = false;
+        String output;
+        try (CallableStatement stmt = conn.prepareCall("Call ChangePassword(?, ?, ?, ?, ?);")) {
+            stmt.setInt(1, usr_id);
+            stmt.setString(2, old_p);
+            stmt.setString(3, new_p);
+            stmt.registerOutParameter(4, Types.BOOLEAN);
+            stmt.registerOutParameter(5, Types.VARCHAR);
+            stmt.execute();
+            success = stmt.getBoolean(4);
+            output = stmt.getString(5);
+        } catch (Exception e) {
+            return new Pair<>(false, "Cannot Change Password");
+        }
+        return new Pair<>(success, output);
+    }
+
+    public static boolean changeUserName(int usr_id, String username) throws SQLException {
+        boolean success;
+        try (CallableStatement stmt = conn.prepareCall("Call ChangeUserName(?, ?);")) {
+            stmt.setInt(1, usr_id);
+            stmt.setString(2, username);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean changeUserStatusMessage(int usr_id, String msg) throws SQLException {
+        boolean success;
+        try (CallableStatement stmt = conn.prepareCall("Call ChangeStatusMessage(?, ?);")) {
+            stmt.setInt(1, usr_id);
+            stmt.setString(2, msg);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
     // Close the database connection
     public static void closeConnection() {
         try {
@@ -249,5 +293,8 @@ public class DatabaseController {
             e.printStackTrace();
         }
     }
+
+
+
 }
 
