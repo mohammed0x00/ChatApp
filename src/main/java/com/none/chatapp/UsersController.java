@@ -11,6 +11,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -85,6 +88,8 @@ public class UsersController {
     @FXML
     public ImageView CurrentUserImg;
 
+    public ImageView userProfileImage;
+
     public static int selected_user_id;
     public static int selected_conv_id;
 
@@ -92,9 +97,6 @@ public class UsersController {
     // For dragging the window
     private double xOffset = 0;
     private double yOffset = 0;
-    private ImageView imageView;
-    private Rectangle cropRect;
-    private ImageView croppedImageView;
 
 
     // List of some emoji image filenames to be added to the picker
@@ -248,11 +250,15 @@ public class UsersController {
 
     // Method to insert emoji image into the message view
     private void insertEmojiImage(Image emojiImage) {
-        ImageView emojiImageView = new ImageView(emojiImage);
-        emojiImageView.setFitHeight(20);
-        emojiImageView.setFitWidth(20);
-        HBox hbox = new HBox(emojiImageView);
-        messageViewBox.getChildren().add(hbox);
+        Message msg = new Message();
+        msg.conv_id = selected_conv_id;
+        msg.content = "png";
+        msg.type = Message.Type.image;
+        try {
+            new SendMessageCommand(msg, imageToByteArray(emojiImage)).SendCommand(HandlerThread.socket);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void initializeAttachButton() {
@@ -318,11 +324,7 @@ public class UsersController {
                 System.out.println(event.getSource().toString());
                 new MessagesListRequestCommand(selected_user_id).SendCommand(HandlerThread.socket);
                 selectedUserName.setText(selectedUser.getName());
-                if (selectedUser.getName().equals("Sarah Donald")) {
-                    selectedUserImage.setImage(HandlerThread.imageUrl2);
-                } else {
-                    selectedUserImage.setImage(HandlerThread.imageUrl1);
-                }
+                selectedUserImage.setImage(selectedUser.getImage());
                 messageViewBox.setAlignment(Pos.TOP_LEFT);
                 // Update the isChatSelected property to show the message text field and send button
                 isChatSelected.set(true);
@@ -344,7 +346,7 @@ public class UsersController {
         userInfoBox.setSpacing(10);
         userInfoBox.setStyle("-fx-padding: 10px; -fx-background-color: #3A3B3C;");
 
-        ImageView userProfileImage = new ImageView(CurrentUserImg.getImage());
+        userProfileImage = new ImageView(CurrentUserImg.getImage());
         initializeCircularImage(userProfileImage, 40);
 
         userIDLabel = new Label(LoginController.Current_User + " (ID: None)");
@@ -613,12 +615,21 @@ public class UsersController {
         });
 
         Button cropButton = new Button("Crop");
-        cropButton.setOnAction(e -> {
-            WritableImage croppedImage = cropCircularImage(imageView, cropCircle);
-            if (croppedImage != null) {
-                CurrentUserImg.setImage(croppedImage);
-                saveCroppedImage(croppedImage); // Save the cropped image
-                cropStage.close();
+        cropButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                WritableImage croppedImage = UsersController.this.cropCircularImage(imageView, cropCircle);
+                try {
+                    if (croppedImage != null) {
+                        UsersController.this.saveCroppedImage(croppedImage); // Save the cropped image
+                        byte[] img = writableImageToByteArray(croppedImage);
+                        new ChangeUserImageCommand(img, "png").SendCommand(HandlerThread.socket);
+                        cropStage.close();
+                    }
+                }catch (Exception ignored)
+                {
+                    Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't crop image" + e.toString());
+                }
             }
         });
         root.setBottom(cropButton);
@@ -682,5 +693,49 @@ public class UsersController {
             }
         }
     }
+
+    private static byte[] writableImageToByteArray(WritableImage writableImage) throws IOException {
+        int width = (int) writableImage.getWidth();
+        int height = (int) writableImage.getHeight();
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        PixelReader pixelReader = writableImage.getPixelReader();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int argb = pixelReader.getArgb(x, y);
+                bufferedImage.setRGB(x, y, argb);
+            }
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", baos);
+        return baos.toByteArray();
+    }
+
+    public static byte[] imageToByteArray(Image image) throws IOException {
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+        PixelReader pixelReader = image.getPixelReader();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int argb = pixelReader.getArgb(x, y);
+                bufferedImage.setRGB(x, y, argb);
+            }
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", baos);
+        return baos.toByteArray();
+    }
+
+    public void updateImageViewObjects(byte[] img)
+    {
+        CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img)));
+        initializeCircularImage(CurrentUserImg, 70);
+        userProfileImage.setImage(CurrentUserImg.getImage());
+    }
+
 
 }

@@ -40,24 +40,9 @@ public class HandlerThread extends Thread{
                 try {
                     ServerCommand cmd = ServerCommand.WaitForCommand(socket);
                     switch (cmd) {
-                        case UserStatusCommand stat_cmd -> {
-                            if (stat_cmd.status == UserStatusCommand.Stat.ONLINE) {
-                                for (Node item : controller.offlineUsersViewBox.getChildren())
-                                    if (item instanceof UserItem u)
-                                        if (u.usr_id == stat_cmd.user.id) {
-                                            u.setStatus(true);
-                                            Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().remove(u));
-                                            Platform.runLater(() -> controller.usersViewBox.getChildren().add(u));
-                                        }
-                            } else
-                                for (Node item : controller.usersViewBox.getChildren()) {
-                                    if (item instanceof UserItem u)
-                                        if (u.usr_id == stat_cmd.user.id) {
-                                            u.setStatus(false);
-                                            Platform.runLater(() -> controller.usersViewBox.getChildren().remove(u));
-                                            Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().add(u));
-                                        }
-                                }
+                        case UserStatusCommand stat_cmd ->{
+                            boolean status = stat_cmd.status == UserStatusCommand.Stat.ONLINE;
+                            ResourceMgr.setUserItemStatus(controller, stat_cmd.user, status);
                         }
                         case UserListCommand list_cmd -> {
                             for (User item : list_cmd.list) {
@@ -93,6 +78,7 @@ public class HandlerThread extends Thread{
                             for (User item : responseCmd.list) {
                                 UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, item.isOnline);
                                 ResourceMgr.requestFile(item, user);
+                                ResourceMgr.addUserItem(item, user);
 
                                 if (item.isOnline) {
                                     Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
@@ -115,8 +101,7 @@ public class HandlerThread extends Thread{
                         case ResponeProfileImageCommand img_cmd when img_cmd.status -> {
                             if (img_cmd.status && img_cmd.data != null) {
                                 if (img_cmd.owner_id == null) {
-                                    Platform.runLater(() -> controller.CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img_cmd.data))));
-                                    Platform.runLater(() -> controller.initializeCircularImage(controller.CurrentUserImg, 70));
+                                    Platform.runLater(() -> controller.updateImageViewObjects(img_cmd.data));
                                 } else {
                                     ResourceMgr.responseHandler(img_cmd);
                                 }

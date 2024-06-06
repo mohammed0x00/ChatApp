@@ -116,4 +116,9 @@ public class UserItem extends HBox {
         }
 
     }
+
+    public Image getImage()
+    {
+        return imageView.getImage();
+    }
 }
