@@ -1,31 +1,32 @@
 package com.none.chatapp;
 
 import com.none.chatapp_commands.Message;
-import com.none.chatapp_commands.RequestFileCommand;
-import com.none.chatapp_commands.ResponseFileRequestCommand;
-import com.none.chatapp_commands.ServerCommand;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 class MessageBubble extends HBox {
     private static final double PADDING = 10;
     private static final double ARC_SIZE = 20;
 
     private Text messageText;
+    private ImageView imageView;
     public int msg_id;
+    private Message msg;
 
     public MessageBubble(Message msg) {
+        this.msg = msg;
         msg_id = msg.id;
 
         // Create a Text for the message
@@ -37,17 +38,6 @@ class MessageBubble extends HBox {
         StackPane textContainer = new StackPane(messageText);
         textContainer.setPadding(new Insets(PADDING));
 
-        // Format the timestamp to show only month, day, hour, and minutes
-        /*String formattedDate = "N/A"; // Default value if timestamp is null
-        if (msg.sent_at != null) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                formattedDate = sdf.format(msg.sent_at);
-            } catch (Exception e) {
-                e.printStackTrace(); // Handle potential formatting exceptions
-            }
-        }*/
-
         // Create Labels for time and status
         Label timeLabel = new Label("");
         timeLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: gray;");
@@ -56,8 +46,6 @@ class MessageBubble extends HBox {
         statusLabel.setStyle("-fx-font-size: 10px; -fx-text-fill: gray;");
 
         VBox labelsBox = new VBox(timeLabel, statusLabel);
-        //labelsBox.setAlignment(Pos.BOTTOM_RIGHT);
-        //labelsBox.setSpacing(2);
 
         // Determine the alignment and colors based on sender
         if (msg.sender_id == UsersController.selected_user_id) {
@@ -91,24 +79,78 @@ class MessageBubble extends HBox {
         // Make sure HBox resizes based on VBox width
         this.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(this, Priority.ALWAYS);
-
     }
 
-    public void setImage(byte[] data)
-    {
-        if(data == null)
-        {
-            Platform.runLater(() ->messageText.setVisible(true));
-            Platform.runLater(() ->messageText.setText("Error: Can't Load " + messageText.getText()));
-        }
-        else
-        {
-            Platform.runLater(() ->messageText.setVisible(false));
-            ImageView imageView = new ImageView();
-            Platform.runLater(() ->imageView.setImage(new Image(new ByteArrayInputStream(data))));
-            Platform.runLater(() ->this.getChildren().add(imageView));
-        }
+    public void setImage(byte[] data) {
+        if (data == null) {
+            Platform.runLater(() -> {
+                messageText.setVisible(true);
+                messageText.setText("Error: Can't Load " + messageText.getText());
+            });
+        } else {
+            Platform.runLater(() -> {
+                messageText.setVisible(false);
+                imageView = new ImageView();
+                imageView.setPreserveRatio(true);
+                imageView.setSmooth(true);
+                adjustBubbleSizeForImage(imageView);
 
+                imageView.setImage(new Image(new ByteArrayInputStream(data)));
+                adjustBubbleSizeForImage(imageView);
+
+                // Wrap ImageView in a StackPane with padding and rounded corners
+                StackPane imageContainer = new StackPane(imageView);
+                imageContainer.setPadding(new Insets(PADDING));
+                imageContainer.setBackground(new Background(new BackgroundFill(
+                        msg.sender_id == UsersController.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
+                        new CornerRadii(ARC_SIZE), Insets.EMPTY)));
+
+
+                this.getChildren().clear();
+                if (msg.sender_id == UsersController.selected_user_id) {
+                    this.getChildren().addAll(imageContainer, new VBox());
+                } else {
+                    this.getChildren().addAll(new VBox(), imageContainer);
+                }
+                // Add click event to ImageView
+                imageView.setOnMouseClicked(event -> openImageInNewWindow(imageView.getImage()));
+            });
+        }
     }
 
+    private void adjustBubbleSizeForImage(ImageView imageView) {
+        imageView.imageProperty().addListener((obs, oldImage, newImage) -> {
+            if (newImage != null) {
+                double imageWidth = newImage.getWidth();
+                double imageHeight = newImage.getHeight();
+
+                double maxWidth = 448;
+                double maxHeight = 290;
+
+                if (imageWidth > maxWidth || imageHeight > maxHeight) {
+                    double widthScale = maxWidth / imageWidth;
+                    double heightScale = maxHeight / imageHeight;
+                    double scale = Math.min(widthScale, heightScale);
+
+                    imageView.setFitWidth(imageWidth * scale);
+                    imageView.setFitHeight(imageHeight * scale);
+                } else {
+                    imageView.setFitWidth(imageWidth);
+                    imageView.setFitHeight(imageHeight);
+                }
+            }
+        });
+    }
+    private void openImageInNewWindow(Image image) {
+        Stage stage = new Stage();
+        ImageView imageView = new ImageView(image);
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+
+        BorderPane root = new BorderPane(imageView);
+        Scene scene = new Scene(root, image.getWidth(), image.getHeight());
+        stage.setScene(scene);
+        stage.setTitle("Image Viewer");
+        stage.show();
+    }
 }
