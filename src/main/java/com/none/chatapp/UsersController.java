@@ -732,7 +732,10 @@ public class UsersController {
 
     public void updateImageViewObjects(byte[] img)
     {
-        CurrentUserImg.setImage(new Image(new ByteArrayInputStream(img)));
+        Image image;
+        if(img == null) image = new Image(String.valueOf(getClass().getResource("/com/none/chatapp/icons/Default_Profile.png")));
+        else image = new Image(new ByteArrayInputStream(img));
+        CurrentUserImg.setImage(image);
         initializeCircularImage(CurrentUserImg, 70);
         userProfileImage.setImage(CurrentUserImg.getImage());
     }

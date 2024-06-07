@@ -64,7 +64,7 @@ public class ResourceMgr {
     {
         String key = USER_IMAGE_MAGIC + String.valueOf(response.owner_id);
         Node caller = queue.get(key);
-        if(caller instanceof UserItem usr)
+        if(caller instanceof UserItem usr && response.data != null)
         {
             usr.setImage(response.data);
         }

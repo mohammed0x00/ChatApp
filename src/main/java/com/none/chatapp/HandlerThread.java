@@ -102,7 +102,7 @@ public class HandlerThread extends Thread{
                                 Platform.runLater(() -> Utils.showAlert(Alert.AlertType.ERROR, "Error", "Can't Change/Remove Image."));
                         }
                         case ResponeProfileImageCommand img_cmd when img_cmd.status -> {
-                            if (img_cmd.status && img_cmd.data != null) {
+                            if (img_cmd.status) {
                                 if (img_cmd.owner_id == null) {
                                     Platform.runLater(() -> controller.updateImageViewObjects(img_cmd.data));
                                 } else {

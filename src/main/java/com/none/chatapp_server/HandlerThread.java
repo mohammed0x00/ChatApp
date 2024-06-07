@@ -68,6 +68,7 @@ public class HandlerThread extends Thread {
                         try {
                             if (img_cmd.remove_image) {
                                 DatabaseController.changeUserImage(this.data.id, "", true);
+                                data.image = null;
                             } else {
                                 String filename = FTPUploader.saveFile(this.data.id, img_cmd.data, img_cmd.extension);
                                 if (filename == null) throw new Exception();

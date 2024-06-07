@@ -3,7 +3,7 @@ package com.none.chatapp_commands;
 import java.io.Serializable;
 
 public class ResponseFileRequestCommand extends ServerCommand implements Serializable {
-    public byte[] data;
+    public byte[] data = null;
     public boolean status;
     public String filename;
     public Integer owner_id = null;
