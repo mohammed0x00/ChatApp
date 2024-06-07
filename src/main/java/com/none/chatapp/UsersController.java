@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.SnapshotParameters;
@@ -94,6 +97,12 @@ public class UsersController {
     public static int selected_conv_id = Integer.MIN_VALUE;
 
     private BooleanProperty isChatSelected = new SimpleBooleanProperty(false);
+    private IntegerProperty conv_id = new SimpleIntegerProperty(selected_user_id);
+
+    // Create a BooleanBinding for the condition selected_conv_id != -1
+    BooleanBinding isConversationSelected = conv_id.isNotEqualTo(-1);
+    BooleanBinding isChatAndConversationSelected = isChatSelected.and(isConversationSelected);
+
     // For dragging the window
     private double xOffset = 0;
     private double yOffset = 0;
@@ -127,10 +136,10 @@ public class UsersController {
 
         // Bind the visibility of the message text field and send button to the isChatSelected property
         UserWindow.visibleProperty().bind(isChatSelected);
-        messageTextField.visibleProperty().bind(isChatSelected);
-        sendImgbtn.visibleProperty().bind(isChatSelected.and(Bindings.isNotEmpty(messageTextField.textProperty())));
-        emojiButton.visibleProperty().bind(isChatSelected);
-        AttachBtn.visibleProperty().bind(isChatSelected);
+        messageTextField.visibleProperty().bind(isChatAndConversationSelected);
+        sendImgbtn.visibleProperty().bind(isChatAndConversationSelected.and(Bindings.isNotEmpty(messageTextField.textProperty())));
+        emojiButton.visibleProperty().bind(isChatAndConversationSelected);
+        AttachBtn.visibleProperty().bind(isChatAndConversationSelected);
 
         // Initialize emoji picker
         initializeEmojiPicker();
@@ -328,6 +337,7 @@ public class UsersController {
                 messageViewBox.setAlignment(Pos.TOP_LEFT);
                 // Update the isChatSelected property to show the message text field and send button
                 isChatSelected.set(true);
+                conv_id.setValue(selected_user_id);
             }
             catch (IOException e)
             {
