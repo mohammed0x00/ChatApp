@@ -12,9 +12,6 @@ public class User implements Serializable {
     public int age;
     public String status_msg;
     public boolean isOnline;
-
-
-
 }
 
 

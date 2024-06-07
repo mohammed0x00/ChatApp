@@ -44,8 +44,6 @@ public class ResourceMgr {
         queue.put(USER_ITEM_MAGIC + String.valueOf(usr.id), usr_item);
     }
 
-
-
     public static void responseHandler(ResponseFileRequestCommand response)
     {
         String key = String.valueOf(response.owner_id) + response.filename;

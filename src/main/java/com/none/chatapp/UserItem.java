@@ -30,7 +30,7 @@ public class UserItem extends HBox {
     public UserItem(EventHandler<MouseEvent> click_event, int id, String name, boolean isOnline) {
         usr_id = id;
         // Create ImageView for the user's image
-        ImageView image = new ImageView(getClass().getResource("/com/none/chatapp/icons/Default_Profile.png").toExternalForm());
+        ImageView image = new ImageView(getClass().getResource("/com/none/chatapp/icons/" + ((id == -1) ? "Server_User_Profile.png" :"Default_Profile.png")).toExternalForm());
         imageView = new ImageView(image.getImage());
         imageView.setFitWidth(IMAGE_SIZE);
         imageView.setFitHeight(IMAGE_SIZE);

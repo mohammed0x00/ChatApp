@@ -10,24 +10,11 @@ public class OnlineUsers{
     public static ArrayList<HandlerThread> onlineUsers = new ArrayList<>();
     public static ArrayList<Message> broadcastMessages = new ArrayList<>();
 
-    public static void SendListToSocket(HandlerThread thread) throws IOException {
-        UserListCommand cmd = new UserListCommand();
-        for(HandlerThread i : onlineUsers)
-        {
-            if(i != thread)
-            {
-                cmd.list.add(i.data);
-            }
-        }
-        try
-        {
-            cmd.SendCommand(thread.socket);
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.getMessage());
-        }
-    }
+    public static User serverUser = new User(){{
+        id = -1;
+        name = "Chatbus Server";
+        isOnline = false;
+    }};
 
     public static void add(HandlerThread thread)
     {
@@ -77,6 +64,11 @@ public class OnlineUsers{
     {
         for(User item : lst)
         {
+            if(item.id == -1) {
+                item.isOnline = serverUser.isOnline;
+                continue;
+            }
+
             item.isOnline = false;
             for(HandlerThread onlineUser : onlineUsers)
             {
@@ -89,28 +81,34 @@ public class OnlineUsers{
         }
     }
 
-    public void broardcastMessage(String msg)
+    public static void broardcastMessage(String msg)
     {
         Message new_msg = new Message();
         new_msg.content = msg;
         new_msg.id = -1;
         new_msg.type = Message.Type.text;
         new_msg.conv_id = -1;
+        new_msg.sender_id = -1;
         broadcastMessages.add(new_msg);
+        if(!serverUser.isOnline)
+        {
+            serverUser.isOnline = true;
+            UserStatusCommand cmd = new UserStatusCommand(serverUser, UserStatusCommand.Stat.ONLINE);
+            for (HandlerThread i : onlineUsers)
+            {
+                try {
+                    cmd.SendCommand(i.socket);
+                } catch (IOException e) {
+                    // Ok, No Problem
+                }
+            }
+        }
         for (HandlerThread usr : onlineUsers)
         {
             try {
                 new ClientNotifyMessageCommand(new_msg).SendCommand(usr.socket);
             }catch (Exception ignored){}
         }
-    }
-    public void notifyBroadcastedMessages(HandlerThread thread)
-    {
-        for (Message msg : broadcastMessages) try
-        {
-            new ClientNotifyMessageCommand(msg).SendCommand(thread.socket);
-        }
-        catch (Exception ignored){}
     }
 
 }

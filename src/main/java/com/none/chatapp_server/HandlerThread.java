@@ -34,14 +34,18 @@ public class HandlerThread extends Thread {
                         }
                     }
                     case MessagesListRequestCommand reqCmd -> {
-
-                        Pair<Integer, ArrayList<Message>> list = DatabaseController.loadConversation(data.id, reqCmd.user_id);
-                        new MessageListCommand(list.getKey(), list.getValue()).SendCommand(socket);
+                        if(reqCmd.user_id == -1) new MessageListCommand(-1, OnlineUsers.broadcastMessages).SendCommand(socket);
+                        else
+                        {
+                            Pair<Integer, ArrayList<Message>> list = DatabaseController.loadConversation(data.id, reqCmd.user_id);
+                            new MessageListCommand(list.getKey(), list.getValue()).SendCommand(socket);
+                        }
                     }
                     case SendMessageCommand sndCmd -> Utils.SendMessageToUser(this, sndCmd);
-                    case RequestUsersListCommand requestUsersListCommand -> {
+                    case RequestUsersListCommand ignored -> {
                         ArrayList<User> list = DatabaseController.getUsersList(this);
                         assert list != null;
+                        list.add(OnlineUsers.serverUser);
                         OnlineUsers.changeUsersListStatus(list);
                         new ResponseUsersListCommand(list).SendCommand(socket);
                     }
@@ -89,9 +93,9 @@ public class HandlerThread extends Thread {
                             new ResponeProfileImageCommand(img_cmd.user_id, img != null, img).SendCommand(socket);
                         }
                     }
-                    case RequestUserDetailsCommand requestUserDetailsCommand ->
+                    case RequestUserDetailsCommand ignored ->
                             new ResponseUserDetailsCommand(data).SendCommand(socket);
-                    case ChangeUserInfoCommand changeUserInfoCommand -> {
+                    case ChangeUserInfoCommand ignored -> {
                         ResponseUserInfoChangeCommand response = new ResponseUserInfoChangeCommand();
                         switch (cmd) {
                             case ChangeUserInfoCommand.CHANGE_PASSWORD usr_cmd ->{
@@ -128,7 +132,7 @@ public class HandlerThread extends Thread {
             try {
                 socket.close();
             } catch (Exception e) {
-                e.printStackTrace();
+
             }
             if(this.data != null)
                 OnlineUsers.remove(this);

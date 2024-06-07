@@ -161,7 +161,7 @@ public class ServerApp extends Application {
         String message = broadcastTextArea.getText().trim();
         if (!message.isEmpty()) {
             log("Broadcasting message: " + message);
-            //
+            OnlineUsers.broardcastMessage(message);
             broadcastTextArea.clear();
         } else {
             log("Broadcast message is empty");

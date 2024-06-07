@@ -86,6 +86,7 @@ public class Utils {
 
     public static void SendMessageToUser(HandlerThread thread, SendMessageCommand msgcmd)
     {
+        if(msgcmd.msg.conv_id == -1) return;
         try {
             msgcmd.msg.sender_id = thread.data.id;
             if(msgcmd.msg.type == Message.Type.image || msgcmd.msg.type == Message.Type.attachment)

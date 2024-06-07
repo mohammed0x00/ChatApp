@@ -9,8 +9,11 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
@@ -77,13 +80,13 @@ public class HandlerThread extends Thread{
                         case ResponseUsersListCommand responseCmd -> {
                             for (User item : responseCmd.list) {
                                 UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, item.isOnline);
-                                ResourceMgr.requestFile(item, user);
+                                if(user.usr_id != -1) ResourceMgr.requestFile(item, user);
                                 ResourceMgr.addUserItem(item, user);
 
                                 if (item.isOnline) {
                                     Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
                                 } else {
-                                    Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().add(user));
+                                    if(user.usr_id != -1) Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().add(user));
                                 }
 
                             }

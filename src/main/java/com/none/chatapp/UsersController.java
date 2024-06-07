@@ -90,8 +90,8 @@ public class UsersController {
 
     public ImageView userProfileImage;
 
-    public static int selected_user_id;
-    public static int selected_conv_id;
+    public static int selected_user_id = Integer.MIN_VALUE;
+    public static int selected_conv_id = Integer.MIN_VALUE;
 
     private BooleanProperty isChatSelected = new SimpleBooleanProperty(false);
     // For dragging the window
