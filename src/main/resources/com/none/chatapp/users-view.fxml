@@ -1,211 +1,241 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchRoot" prefHeight="679.0" prefWidth="1506.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
+<AnchorPane fx:id="anchRoot" prefHeight="679.0" prefWidth="1506.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
    <children>
-      <SplitPane fx:id="SplitP" dividerPositions="0.2836" layoutX="-3.0" layoutY="85.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="594.0" prefWidth="1553.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-3.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="85.0">
-         <items>
-            <AnchorPane minHeight="0.0" minWidth="-Infinity" prefHeight="598.0" prefWidth="322.0" style="-fx-background-color: #202020;">
+      <VBox layoutX="-18.0" layoutY="-14.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox prefHeight="89.0" prefWidth="1553.0">
                <children>
-                  <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" style="-fx-border-color: #1a1a1a; -fx-border-width: 2; -fx-background-color: #1a1a1a;" HBox.hgrow="ALWAYS">
                      <children>
-                        <AnchorPane maxWidth="-Infinity" prefWidth="58.0" style="-fx-background-color: #242526;" HBox.hgrow="ALWAYS">
+                        <ImageView fx:id="CurrentUserImg" fitHeight="69.0" fitWidth="79.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/Default_Profile.png" />
+                           </image>
+                           <HBox.margin>
+                              <Insets bottom="7.0" left="7.0" top="7.0" />
+                           </HBox.margin>
+                        </ImageView>
+                        <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                            <children>
-                              <ImageView blendMode="SCREEN" fitHeight="31.0" fitWidth="33.0" layoutX="14.0" layoutY="90.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="477.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="90.0">
-                                 <image>
-                                    <Image url="@icons/iconizer-speech-bubble_1_.png" />
-                                 </image>
-                                 <effect>
-                                    <DropShadow />
-                                 </effect>
-                              </ImageView>
-                              <ImageView blendMode="SCREEN" fitHeight="40.0" fitWidth="31.0" layoutX="14.0" layoutY="139.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="140.0">
-                                 <image>
-                                    <Image url="@icons/iconfinder-256(1).png" />
-                                 </image>
-                                 <effect>
-                                    <DropShadow />
-                                 </effect>
-                              </ImageView>
-                              <ImageView fitHeight="31.0" fitWidth="33.0" layoutX="14.0" layoutY="545.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0">
-                                 <image>
-                                    <Image url="@icons/iconizer-sign-out.png" />
-                                 </image>
-                                 <effect>
-                                    <DropShadow />
-                                 </effect>
-                              </ImageView>
-                           </children>
-                        </AnchorPane>
-                        <VBox prefHeight="550.0" prefWidth="278.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Label prefHeight="35.0" prefWidth="79.0" text="Chats" textFill="#fffbfb" VBox.vgrow="ALWAYS">
-                                 <font>
-                                    <Font name="System Bold" size="24.0" />
-                                 </font>
-                                 <VBox.margin>
-                                    <Insets left="10.0" top="5.0" />
-                                 </VBox.margin>
-                              </Label>
-                              <AnchorPane stylesheets="@styles/fullpackstyling.css">
-                                 <VBox.margin>
-                                    <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
-                                 </VBox.margin>
+                              <HBox maxHeight="1.7976931348623157E308">
                                  <children>
-                                    <TextField prefHeight="26.0" prefWidth="218.0" stylesheets="@styles/fullpackstyling.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="50.0">
-                                       <styleClass>
-                                          <String fx:value="transparent-background" />
-                                          <String fx:value="txtfield" />
-                                       </styleClass>
-                                    </TextField>
-                                    <ImageView fitHeight="30.0" fitWidth="34.0" layoutX="221.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="10.0">
+                                    <Label opacity="0.61" prefHeight="77.0" prefWidth="203.0" text="Chatbus">
+                                       <font>
+                                          <Font name="Californian FB Italic" size="64.0" />
+                                       </font>
+                                       <textFill>
+                                          <RadialGradient centerX="0.3666666666666667" centerY="0.24285714285714288" focusAngle="135.0" focusDistance="0.04651162790697683" radius="1.0">
+                                             <stops>
+                                                <Stop color="#f8744c" />
+                                                <Stop color="#fcfcfc" offset="1.0" />
+                                             </stops>
+                                          </RadialGradient>
+                                       </textFill>
+                                    </Label>
+                                    <ImageView fx:id="LogoImg" fitHeight="57.0" fitWidth="79.0" opacity="0.74" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@icons/search-934-32.png" />
+                                          <Image url="@icons/chat.png" />
                                        </image>
                                     </ImageView>
                                  </children>
+                                 <padding>
+                                    <Insets top="4.0" />
+                                 </padding>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </HBox>
+               </children>
+            </HBox>
+            <SplitPane fx:id="SplitP" dividerPositions="0.2836" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
+               <items>
+                  <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="400.0" minWidth="300.0" prefWidth="322.0" style="-fx-background-color: #202020;">
+                     <children>
+                        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="50.0" prefWidth="50.0" style="-fx-background-color: #242526;" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <ImageView blendMode="SCREEN" fitHeight="31.0" fitWidth="33.0" layoutX="14.0" layoutY="90.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="90.0">
+                                       <image>
+                                          <Image url="@icons/iconizer-speech-bubble_1_.png" />
+                                       </image>
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
+                                    </ImageView>
+                                    <ImageView blendMode="SCREEN" fitHeight="40.0" fitWidth="31.0" layoutX="14.0" layoutY="139.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="140.0">
+                                       <image>
+                                          <Image url="@icons/iconfinder-256(1).png" />
+                                       </image>
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
+                                    </ImageView>
+                                    <ImageView fitHeight="31.0" fitWidth="33.0" layoutX="14.0" layoutY="545.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0">
+                                       <image>
+                                          <Image url="@icons/iconizer-sign-out.png" />
+                                       </image>
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
+                                    </ImageView>
+                                 </children>
+                              </AnchorPane>
+                              <VBox prefHeight="550.0" prefWidth="278.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label prefHeight="35.0" prefWidth="79.0" text="Chats" textFill="#fffbfb" VBox.vgrow="ALWAYS">
+                                       <font>
+                                          <Font name="System Bold" size="24.0" />
+                                       </font>
+                                       <VBox.margin>
+                                          <Insets left="10.0" top="5.0" />
+                                       </VBox.margin>
+                                    </Label>
+                                    <AnchorPane stylesheets="@styles/fullpackstyling.css">
+                                       <VBox.margin>
+                                          <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
+                                       </VBox.margin>
+                                       <children>
+                                          <TextField prefHeight="26.0" prefWidth="218.0" stylesheets="@styles/fullpackstyling.css" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="50.0">
+                                             <styleClass>
+                                                <String fx:value="transparent-background" />
+                                                <String fx:value="txtfield" />
+                                             </styleClass>
+                                          </TextField>
+                                          <ImageView fitHeight="30.0" fitWidth="34.0" layoutX="221.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="10.0">
+                                             <image>
+                                                <Image url="@icons/search-934-32.png" />
+                                             </image>
+                                          </ImageView>
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="dark-mode-background1" />
+                                          <String fx:value="radius" />
+                                       </styleClass>
+                                    </AnchorPane>
+                                    <TabPane fx:id="StatusTab" prefHeight="471.0" prefWidth="268.0" stylesheets="@styles/fullpackstyling.css" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                                       <tabs>
+                                          <Tab text="ONLINE">
+                                             <content>
+                                                <ScrollPane fitToWidth="true" prefHeight="462.0" prefWidth="288.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css">
+                                                   <VBox fx:id="usersViewBox" prefHeight="462.0" prefWidth="286.0" />
+                                                </ScrollPane>
+                                             </content>
+                                          </Tab>
+                                          <Tab text="OFFLINE">
+                                             <content>
+                                                <ScrollPane fitToWidth="true" prefHeight="462.0" prefWidth="288.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css">
+                                                   <content>
+                                                      <VBox fx:id="offlineUsersViewBox" prefHeight="462.0" prefWidth="254.0" />
+                                                   </content>
+                                                </ScrollPane>
+                                             </content>
+                                          </Tab>
+                                       </tabs>
+                                    </TabPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane minHeight="0.0" minWidth="-Infinity" prefHeight="598.0" prefWidth="375.0" style="-fx-background-color: #202020;">
+                     <children>
+                        <HBox alignment="CENTER" layoutY="547.0" prefHeight="51.0" prefWidth="346.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                           <children>
+                              <ImageView fx:id="AttachBtn" fitHeight="37.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@icons/interface.png" />
+                                 </image>
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                              </ImageView>
+                              <ImageView fx:id="emojiButton" fitHeight="37.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@icons/emoji1.png" />
+                                 </image>
+                              </ImageView>
+                              <TextField fx:id="messageTextField" prefHeight="35.0" promptText="Type a message..." style="-fx-background-radius: 15; -fx-border-radius: 15; -fx-background-color: #404040; -fx-text-fill: white;" HBox.hgrow="ALWAYS">
                                  <styleClass>
                                     <String fx:value="dark-mode-background1" />
                                     <String fx:value="radius" />
+                                    <String fx:value="txtfield" />
                                  </styleClass>
-                              </AnchorPane>
-                              <TabPane fx:id="StatusTab" prefHeight="471.0" prefWidth="268.0" stylesheets="@styles/fullpackstyling.css" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
-                                 <tabs>
-                                    <Tab text="ONLINE">
-                                       <content>
-                                          <ScrollPane fitToWidth="true" prefHeight="462.0" prefWidth="288.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css">
-                                             <VBox fx:id="usersViewBox" prefHeight="462.0" prefWidth="286.0" />
-                                          </ScrollPane>
-                                       </content>
-                                    </Tab>
-                                    <Tab text="OFFLINE">
-                                       <content>
-                                          <ScrollPane fitToWidth="true" prefHeight="462.0" prefWidth="288.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css">
-                                             <content>
-                                                <VBox fx:id="offlineUsersViewBox" prefHeight="462.0" prefWidth="254.0" />
-                                             </content>
-                                          </ScrollPane>
-                                       </content>
-                                    </Tab>
-                                 </tabs>
-                              </TabPane>
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                              <ImageView fx:id="sendImgbtn" fitHeight="40.0" fitWidth="37.0" onMouseClicked="#handleSendButtonEvent" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+                                 <image>
+                                    <Image url="@icons/send(2).png" />
+                                 </image>
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                              </ImageView>
                            </children>
-                        </VBox>
-                     </children>
-                  </HBox>
-               </children>
-            </AnchorPane>
-            <AnchorPane minHeight="0.0" minWidth="-Infinity" prefHeight="598.0" prefWidth="375.0" style="-fx-background-color: #202020;">
-               <children>
-                  <HBox alignment="CENTER" layoutY="547.0" prefHeight="51.0" prefWidth="346.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                     <children>
-                        <ImageView fx:id="AttachBtn" fitHeight="37.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/interface.png" />
-                           </image>
-                           <HBox.margin>
-                              <Insets left="10.0" />
-                           </HBox.margin>
-                        </ImageView>
-                        <ImageView fx:id="emojiButton" fitHeight="37.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icons/emoji1.png" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="messageTextField" prefHeight="35.0" promptText="Type a message..." style="-fx-background-radius: 15; -fx-border-radius: 15; -fx-background-color: #404040; -fx-text-fill: white;" HBox.hgrow="ALWAYS">
-                           <styleClass>
-                              <String fx:value="dark-mode-background1" />
-                              <String fx:value="radius" />
-                              <String fx:value="txtfield" />
-                           </styleClass>
-                           <HBox.margin>
-                              <Insets left="5.0" />
-                           </HBox.margin>
-                        </TextField>
-                        <ImageView fx:id="sendImgbtn" fitHeight="40.0" fitWidth="37.0" onMouseClicked="#handleSendButtonEvent" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
-                           <image>
-                              <Image url="@icons/send(2).png" />
-                           </image>
-                           <HBox.margin>
-                              <Insets right="5.0" />
-                           </HBox.margin>
-                        </ImageView>
-                     </children>
-                  </HBox>
-                  <ScrollPane fitToWidth="true" layoutY="67.0" prefHeight="478.0" prefWidth="1114.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css" AnchorPane.bottomAnchor="53.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-6.0" AnchorPane.topAnchor="67.0">
-                     <VBox fx:id="messageViewBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="476.0" prefWidth="1129.0">
-                        <children>
-                           <ImageView blendMode="DARKEN" fitHeight="84.0" fitWidth="83.0" opacity="0.47" pickOnBounds="true" preserveRatio="true">
-                              <image>
-                                 <Image url="@icons/message(1).png" />
-                              </image>
-                           </ImageView>
-                           <Label opacity="0.89" prefHeight="17.0" prefWidth="115.0" text="   No Chat Selected" />
-                        </children>
-                     </VBox>
-                  </ScrollPane>
-                  <HBox fx:id="UserWindow" layoutX="-1.0" layoutY="-50.0" prefHeight="69.0" prefWidth="1114.0" style="-fx-border-color: white; -fx-border-width: 1;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-6.0" AnchorPane.topAnchor="0.0">
-                     <children>
-                        <AnchorPane prefHeight="83.0" prefWidth="2801.0" style="-fx-background-color: #222222;" HBox.hgrow="ALWAYS">
+                        </HBox>
+                        <ScrollPane fitToWidth="true" layoutY="67.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css" AnchorPane.bottomAnchor="53.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="67.0">
+                           <VBox fx:id="messageViewBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="476.0" prefWidth="1129.0">
+                              <children>
+                                 <ImageView blendMode="DARKEN" fitHeight="84.0" fitWidth="83.0" opacity="0.47" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                       <Image url="@icons/message(1).png" />
+                                    </image>
+                                 </ImageView>
+                                 <Label opacity="0.89" prefHeight="17.0" prefWidth="115.0" text="   No Chat Selected" />
+                              </children>
+                           </VBox>
+                           <padding>
+                              <Insets top="15.0" />
+                           </padding>
+                        </ScrollPane>
+                        <HBox fx:id="UserWindow" layoutX="-1.0" layoutY="-50.0" prefHeight="69.0" prefWidth="1114.0" style="-fx-border-color: white; -fx-border-width: 1;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-6.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <ImageView fx:id="selectedUserImage" fitHeight="67.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true" />
-                              <Label fx:id="selectedUserName" alignment="CENTER" layoutX="97.0" layoutY="16.0" textFill="WHITE">
-                                 <font>
-                                    <Font name="System Bold" size="24.0" />
-                                 </font>
-                              </Label>
+                              <AnchorPane prefHeight="83.0" style="-fx-background-color: #222222;" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <ImageView fx:id="selectedUserImage" fitHeight="67.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true" />
+                                    <Label fx:id="selectedUserName" alignment="CENTER" layoutX="97.0" layoutY="16.0" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="24.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </AnchorPane>
                            </children>
-                        </AnchorPane>
+                        </HBox>
                      </children>
-                  </HBox>
-               </children>
-            </AnchorPane>
-         </items>
-      </SplitPane>
-      <HBox prefHeight="89.0" prefWidth="1553.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="2355.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <AnchorPane prefHeight="86.0" prefWidth="1378.0" style="-fx-background-color: #1a1a1a; -fx-border-width: 2; -fx-border-color: #1a1a1a;" HBox.hgrow="ALWAYS">
-               <children>
-                  <ImageView fx:id="LogoImg" fitHeight="57.0" fitWidth="79.0" layoutX="608.0" layoutY="16.0" opacity="0.74" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="608.0" AnchorPane.rightAnchor="844.0" AnchorPane.topAnchor="16.0">
-                     <image>
-                        <Image url="@icons/chat.png" />
-                     </image>
-                  </ImageView>
-                  <Label layoutX="416.0" layoutY="6.0" opacity="0.61" prefHeight="77.0" prefWidth="203.0" text="Chatbus" AnchorPane.leftAnchor="415.0" AnchorPane.rightAnchor="891.0" AnchorPane.topAnchor="5.0">
-                     <font>
-                        <Font name="Californian FB Italic" size="64.0" />
-                     </font>
-                     <textFill>
-                        <RadialGradient centerX="0.3666666666666667" centerY="0.24285714285714288" focusAngle="135.0" focusDistance="0.04651162790697683" radius="1.0">
-                           <stops>
-                              <Stop color="#f8744c" />
-                              <Stop color="#fcfcfc" offset="1.0" />
-                           </stops>
-                        </RadialGradient>
-                     </textFill>
-                  </Label>
-                  <ImageView fx:id="CurrentUserImg" fitHeight="69.0" fitWidth="79.0" layoutX="14.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="1457.0" AnchorPane.topAnchor="10.0">
-                     <image>
-                        <Image url="@icons/Default_Profile.png" />
-                     </image></ImageView>
-               </children>
-               <effect>
-                  <DropShadow radius="14.3975" width="38.59">
-                     <color>
-                        <Color red="0.95686274766922" green="0.5372549295425415" blue="0.40392157435417175" />
-                     </color>
-                  </DropShadow>
-               </effect>
-            </AnchorPane>
+                  </AnchorPane>
+               </items>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </SplitPane>
          </children>
-      </HBox>
+      </VBox>
    </children>
 </AnchorPane>
