@@ -3,12 +3,12 @@ package com.none.chatapp_server;
 import com.none.chatapp_commands.*;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.util.ArrayList;
 
 public class OnlineUsers{
 
     public static ArrayList<HandlerThread> onlineUsers = new ArrayList<>();
+    public static ArrayList<Message> broadcastMessages = new ArrayList<>();
 
     public static void SendListToSocket(HandlerThread thread) throws IOException {
         UserListCommand cmd = new UserListCommand();
@@ -87,6 +87,30 @@ public class OnlineUsers{
                 }
             }
         }
+    }
+
+    public void broardcastMessage(String msg)
+    {
+        Message new_msg = new Message();
+        new_msg.content = msg;
+        new_msg.id = -1;
+        new_msg.type = Message.Type.text;
+        new_msg.conv_id = -1;
+        broadcastMessages.add(new_msg);
+        for (HandlerThread usr : onlineUsers)
+        {
+            try {
+                new ClientNotifyMessageCommand(new_msg).SendCommand(usr.socket);
+            }catch (Exception ignored){}
+        }
+    }
+    public void notifyBroadcastedMessages(HandlerThread thread)
+    {
+        for (Message msg : broadcastMessages) try
+        {
+            new ClientNotifyMessageCommand(msg).SendCommand(thread.socket);
+        }
+        catch (Exception ignored){}
     }
 
 }

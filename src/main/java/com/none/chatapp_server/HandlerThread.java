@@ -1,7 +1,6 @@
 package com.none.chatapp_server;
 
 import java.io.*;
-import java.net.Socket;
 import java.util.ArrayList;
 
 import com.none.chatapp_commands.*;
@@ -9,10 +8,10 @@ import javafx.scene.image.Image;
 import javafx.util.Pair;
 
 public class HandlerThread extends Thread {
-    public Socket socket;
+    public LockableSocket socket;
     User data;
 
-    public HandlerThread(Socket socket) {
+    public HandlerThread(LockableSocket socket) {
         this.socket = socket;
     }
 

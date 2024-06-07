@@ -32,4 +32,11 @@ public abstract class ServerCommand implements Serializable {
         new ObjectOutputStream(socket.getOutputStream()).writeObject(this);
     }
 
+    public void SendCommand(LockableSocket socket) throws IOException {
+        while (socket.isLocked() || socket.isLockedByOtherThread());
+        socket.lockSocket();
+        new ObjectOutputStream(socket.getOutputStream()).writeObject(this);
+        socket.unlockSocket();
+    }
+
 }

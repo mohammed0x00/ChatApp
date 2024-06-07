@@ -1,6 +1,7 @@
 package com.none.chatapp_server;
 
-import com.none.chatapp_commands.Message;
+import com.none.chatapp_commands.LockableServerSocket;
+import com.none.chatapp_commands.LockableSocket;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -9,9 +10,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -19,13 +18,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URL;
 
 public class ServerApp extends Application {
     private final static int SERVER_PORT = 12345;
 
-    private ServerSocket serverSocket;
+    private LockableServerSocket serverSocket;
     private Thread serverThread;
     private TextArea logTextArea;
     private Button toggleButton;
@@ -97,7 +94,7 @@ public class ServerApp extends Application {
 
     private void startServer() {
         try {
-            serverSocket = new ServerSocket(SERVER_PORT);
+            serverSocket = new LockableServerSocket(SERVER_PORT);
             log("Server is listening on port " + SERVER_PORT);
             toggleButton.setText("Stop Server");
             toggleButton.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
@@ -105,7 +102,7 @@ public class ServerApp extends Application {
             serverThread = new Thread(() -> {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
-                        Socket socket = serverSocket.accept();
+                        LockableSocket socket = serverSocket.accept();
                         log("New client connected: " + socket.getInetAddress().getHostAddress());
                         new HandlerThread(socket).start();
                     } catch (IOException e) {
