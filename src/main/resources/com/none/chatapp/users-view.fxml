@@ -25,7 +25,7 @@
                               <Insets bottom="7.0" left="7.0" top="7.0" />
                            </HBox.margin>
                         </ImageView>
-                        <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="1114.0" HBox.hgrow="ALWAYS">
                            <children>
                               <HBox maxHeight="1.7976931348623157E308">
                                  <children>

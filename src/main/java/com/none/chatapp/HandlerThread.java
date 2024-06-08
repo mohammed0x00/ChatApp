@@ -60,7 +60,8 @@ public class HandlerThread extends Thread{
                             for (Message item : listCommand.list) {
                                 MessageBubble tmp = new MessageBubble(item);
                                 ResourceMgr.requestFile(item, tmp);
-                                Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
+                                controller.addToMessageList(tmp);
+                                //Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
                             }
                         }
                         case ClientNotifyMessageCommand ncmd -> {

@@ -144,6 +144,11 @@ public class UsersController {
         emojiButton.visibleProperty().bind(isChatAndConversationSelected);
         AttachBtn.visibleProperty().bind(isChatAndConversationSelected);
 
+        messageViewBox.heightProperty().addListener((observable, oldValue, newValue) -> {
+            messagesScrollPane.layout();
+            messagesScrollPane.setVvalue(1.0);
+        });
+
         // Initialize emoji picker
         initializeEmojiPicker();
         // Initialize attachment button
@@ -753,14 +758,12 @@ public class UsersController {
         userProfileImage.setImage(CurrentUserImg.getImage());
     }
 
-    public void addToMessageList(MessageBubble bub)
-    {
-        Platform.runLater(() ->{
-            messageViewBox.getChildren().add(bub);
-            Platform.runLater(() -> {
-                messagesScrollPane.layout();
-                messagesScrollPane.setVvalue(1.0);
-            });
+    public void addToMessageList(MessageBubble bub) {
+        Platform.runLater(() -> {
+            // Ensure no duplicates are added
+            if (!messageViewBox.getChildren().contains(bub)) {
+                messageViewBox.getChildren().add(bub);
+            }
         });
     }
 

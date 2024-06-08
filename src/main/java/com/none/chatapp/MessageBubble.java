@@ -11,7 +11,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
@@ -19,8 +18,9 @@ import java.io.ByteArrayInputStream;
 class MessageBubble extends HBox {
     private static final double PADDING = 10;
     private static final double ARC_SIZE = 20;
+    private static final double MAX_BUBBLE_WIDTH = 448; // Set the maximum width for the bubble
 
-    private Text messageText;
+    private TextFlow messageTextFlow;
     private ImageView imageView;
     public int msg_id;
     private Message msg;
@@ -30,13 +30,14 @@ class MessageBubble extends HBox {
         msg_id = msg.id;
 
         // Create a Text for the message
-        messageText = new Text(msg.content);
+        Text messageText = new Text(msg.content);
         messageText.setTextAlignment(TextAlignment.LEFT);
         messageText.setFill(Color.WHITE);
 
-        // Create a StackPane for the text to apply padding
-        StackPane textContainer = new StackPane(messageText);
-        textContainer.setPadding(new Insets(PADDING));
+        // Create a TextFlow for the text to apply wrapping
+        messageTextFlow = new TextFlow(messageText);
+        messageTextFlow.setMaxWidth(MAX_BUBBLE_WIDTH); // Set maximum width for the bubble
+        messageTextFlow.setPadding(new Insets(PADDING));
 
         // Create Labels for time and status
         Label timeLabel = new Label("");
@@ -52,25 +53,17 @@ class MessageBubble extends HBox {
             labelsBox.setAlignment(Pos.BOTTOM_LEFT);
             labelsBox.setSpacing(2);
             this.setAlignment(Pos.CENTER_RIGHT);
-            textContainer.setBackground(new Background(new BackgroundFill(
+            messageTextFlow.setBackground(new Background(new BackgroundFill(
                     Color.web("#303030"), new CornerRadii(ARC_SIZE), Insets.EMPTY)));
-            this.getChildren().addAll(labelsBox, textContainer); // Sent messages: labels on the left
+            this.getChildren().addAll(labelsBox, messageTextFlow); // Sent messages: labels on the left
         } else {
             labelsBox.setAlignment(Pos.BOTTOM_RIGHT);
             labelsBox.setSpacing(2);
             this.setAlignment(Pos.CENTER_LEFT);
-            textContainer.setBackground(new Background(new BackgroundFill(
+            messageTextFlow.setBackground(new Background(new BackgroundFill(
                     Color.web("#B8684D"), new CornerRadii(ARC_SIZE), Insets.EMPTY)));
-            this.getChildren().addAll(textContainer, labelsBox); // Received messages: labels on the right
+            this.getChildren().addAll(messageTextFlow, labelsBox); // Received messages: labels on the right
         }
-
-        // Adjust the width of the text container based on the content
-        messageText.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
-            double textWidth = newBounds.getWidth() + PADDING * 2;
-            double maxWidth = this.getScene() != null ? this.getScene().getWidth() * 0.6 : 400; // Max width is 60% of scene width or 400 if scene is not available
-            textContainer.setMaxWidth(Math.min(textWidth, maxWidth));
-            textContainer.setMinWidth(Region.USE_PREF_SIZE); // Use the preferred size
-        });
 
         // Add padding around the HBox
         this.setSpacing(10); // Space between bubble and labels
@@ -84,12 +77,13 @@ class MessageBubble extends HBox {
     public void setImage(byte[] data) {
         if (data == null) {
             Platform.runLater(() -> {
-                messageText.setVisible(true);
-                messageText.setText("Error: Can't Load " + messageText.getText());
+                messageTextFlow.setVisible(true);
+                messageTextFlow.getChildren().clear();
+                messageTextFlow.getChildren().add(new Text("Error: Can't Load " + msg.content));
             });
         } else {
             Platform.runLater(() -> {
-                messageText.setVisible(false);
+                messageTextFlow.setVisible(false);
                 imageView = new ImageView();
                 imageView.setPreserveRatio(true);
                 imageView.setSmooth(true);
@@ -105,12 +99,12 @@ class MessageBubble extends HBox {
                         msg.sender_id == UsersController.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
                         new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
-
                 this.getChildren().clear();
+                VBox spacer = new VBox(); // Empty VBox for spacing consistency
                 if (msg.sender_id == UsersController.selected_user_id) {
-                    this.getChildren().addAll(imageContainer, new VBox());
+                    this.getChildren().addAll(spacer, imageContainer);
                 } else {
-                    this.getChildren().addAll(new VBox(), imageContainer);
+                    this.getChildren().addAll(imageContainer, spacer);
                 }
                 // Add click event to ImageView
                 imageView.setOnMouseClicked(event -> openImageInNewWindow(imageView.getImage()));
@@ -141,6 +135,7 @@ class MessageBubble extends HBox {
             }
         });
     }
+
     private void openImageInNewWindow(Image image) {
         Stage stage = new Stage();
         ImageView imageView = new ImageView(image);
@@ -152,7 +147,6 @@ class MessageBubble extends HBox {
 
         // Apply styles directly to the ImageView
         imageView.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 10, 0.5, 0, 0);");
-
 
         Scene scene = new Scene(root, image.getWidth(), image.getHeight());
         stage.setScene(scene);
