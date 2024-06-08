@@ -94,6 +94,9 @@ public class UsersController {
     @FXML
     public ImageView CurrentUserImg;
 
+    @FXML
+    public ImageView RecordButton;
+
     public ImageView userProfileImage;
 
     public static int selected_user_id = Integer.MIN_VALUE;

@@ -157,12 +157,20 @@
                      <children>
                         <HBox alignment="CENTER" layoutY="547.0" prefHeight="51.0" prefWidth="346.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                            <children>
+                              <ImageView fx:id="RecordButton" fitHeight="37.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <HBox.margin>
+                                    <Insets left="10.0" />
+                                 </HBox.margin>
+                                 <image>
+                                    <Image url="@icons/microphone.png" />
+                                 </image>
+                              </ImageView>
                               <ImageView fx:id="AttachBtn" fitHeight="37.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@icons/interface.png" />
                                  </image>
                                  <HBox.margin>
-                                    <Insets left="10.0" />
+                                    <Insets />
                                  </HBox.margin>
                               </ImageView>
                               <ImageView fx:id="emojiButton" fitHeight="37.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">

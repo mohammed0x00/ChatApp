@@ -6,14 +6,24 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 
 class MessageBubble extends HBox {
     private static final double PADDING = 10;
@@ -24,6 +34,8 @@ class MessageBubble extends HBox {
     private ImageView imageView;
     public int msg_id;
     private Message msg;
+    private MediaPlayer mediaPlayer;
+    private HBox audioControls;
 
     public MessageBubble(Message msg) {
         this.msg = msg;
@@ -109,6 +121,135 @@ class MessageBubble extends HBox {
                 // Add click event to ImageView
                 imageView.setOnMouseClicked(event -> openImageInNewWindow(imageView.getImage()));
             });
+        }
+    }
+
+    public void setAudio(byte[] data) {
+        if (data == null) {
+            Platform.runLater(() -> {
+                messageTextFlow.setVisible(true);
+                messageTextFlow.getChildren().clear();
+                messageTextFlow.getChildren().add(new Text("Error: Can't Load Audio"));
+            });
+        } else {
+            Platform.runLater(() -> {
+                messageTextFlow.setVisible(false);
+
+                File audioFile;
+                try {
+                    audioFile = File.createTempFile("audio_message", ".mp3");
+                    Files.write(audioFile.toPath(), data, StandardOpenOption.CREATE);
+                    audioFile.deleteOnExit();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+                Media media = new Media(audioFile.toURI().toString());
+                mediaPlayer = new MediaPlayer(media);
+
+                Slider progressSlider = new Slider();
+                progressSlider.setMaxWidth(MAX_BUBBLE_WIDTH);
+
+                mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+                    if (!progressSlider.isValueChanging()) {
+                        progressSlider.setValue(newTime.toSeconds());
+                    }
+                });
+
+                mediaPlayer.setOnReady(() -> {
+                    progressSlider.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
+                });
+
+                progressSlider.valueChangingProperty().addListener((obs, wasChanging, isChanging) -> {
+                    if (!isChanging) {
+                        mediaPlayer.seek(javafx.util.Duration.seconds(progressSlider.getValue()));
+                    }
+                });
+
+                progressSlider.setOnMousePressed(event -> {
+                    mediaPlayer.seek(javafx.util.Duration.seconds(progressSlider.getValue()));
+                });
+
+                Label playPauseLabel = new Label("▶");
+                playPauseLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: white;");
+                playPauseLabel.setOnMouseClicked(event -> {
+                    if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                        mediaPlayer.pause();
+                        playPauseLabel.setText("▶");
+                    } else {
+                        mediaPlayer.play();
+                        playPauseLabel.setText("⏸");
+                    }
+                });
+
+                audioControls = new HBox(playPauseLabel, progressSlider);
+                audioControls.setSpacing(10);
+                audioControls.setAlignment(Pos.CENTER_LEFT);
+                audioControls.setPadding(new Insets(PADDING));
+                audioControls.setBackground(new Background(new BackgroundFill(
+                        msg.sender_id == UsersController.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
+                        new CornerRadii(ARC_SIZE), Insets.EMPTY)));
+
+                this.getChildren().clear();
+                VBox spacer = new VBox();
+                if (msg.sender_id == UsersController.selected_user_id) {
+                    this.getChildren().addAll(spacer, audioControls);
+                } else {
+                    this.getChildren().addAll(audioControls, spacer);
+                }
+            });
+        }
+    }
+
+    public void setAttachment(String attachmentName, byte[] data) {
+        if (data == null) {
+            Platform.runLater(() -> {
+                messageTextFlow.setVisible(true);
+                messageTextFlow.getChildren().clear();
+                messageTextFlow.getChildren().add(new Text("Error: Can't Load Attachment"));
+            });
+        } else {
+            Platform.runLater(() -> {
+                messageTextFlow.setVisible(false);
+
+                Label attachmentLabel = new Label(attachmentName);
+                attachmentLabel.setTextFill(Color.WHITE);
+                attachmentLabel.setStyle("-fx-underline: true;");
+                attachmentLabel.setOnMouseClicked(event -> saveAttachment(attachmentName, data));
+
+                HBox attachmentBox = new HBox(attachmentLabel);
+                attachmentBox.setAlignment(Pos.CENTER_LEFT);
+                attachmentBox.setPadding(new Insets(PADDING));
+                attachmentBox.setBackground(new Background(new BackgroundFill(
+                        msg.sender_id == UsersController.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
+                        new CornerRadii(ARC_SIZE), Insets.EMPTY)));
+
+                this.getChildren().clear();
+                VBox spacer = new VBox(); // Empty VBox for spacing consistency
+                if (msg.sender_id == UsersController.selected_user_id) {
+                    this.getChildren().addAll(spacer, attachmentBox);
+                } else {
+                    this.getChildren().addAll(attachmentBox, spacer);
+                }
+            });
+        }
+    }
+
+    private void saveAttachment(String attachmentName, byte[] data) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName(attachmentName);
+        File file = fileChooser.showSaveDialog(null);
+
+        if (file != null) {
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(data);
+                Platform.runLater(() -> {
+                    System.out.println("File saved: " + file.getAbsolutePath());
+                });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
