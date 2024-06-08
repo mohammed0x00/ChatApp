@@ -50,6 +50,9 @@ import javax.imageio.ImageIO;
 public class UsersController {
 
     @FXML
+    public ScrollPane messagesScrollPane;
+
+    @FXML
     private AnchorPane anchRoot;
     @FXML
     private SplitPane SplitP;
@@ -748,6 +751,17 @@ public class UsersController {
         CurrentUserImg.setImage(image);
         initializeCircularImage(CurrentUserImg, 70);
         userProfileImage.setImage(CurrentUserImg.getImage());
+    }
+
+    public void addToMessageList(MessageBubble bub)
+    {
+        Platform.runLater(() ->{
+            messageViewBox.getChildren().add(bub);
+            Platform.runLater(() -> {
+                messagesScrollPane.layout();
+                messagesScrollPane.setVvalue(1.0);
+            });
+        });
     }
 
 

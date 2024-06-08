@@ -67,14 +67,15 @@ public class HandlerThread extends Thread{
                             if (controller.selected_user_id == ncmd.msg.sender_id) {
                                 MessageBubble bub = new MessageBubble(ncmd.msg);
                                 ResourceMgr.requestFile(ncmd.msg, bub);
-                                Platform.runLater(() -> controller.messageViewBox.getChildren().add(bub));
+                                controller.addToMessageList(bub);
+
                             }
                         }
                         case MessageConfirmationCommand confcmd -> {
                             if (controller.selected_conv_id == confcmd.msg.conv_id) {
                                 MessageBubble bub = new MessageBubble(confcmd.msg);
                                 ResourceMgr.requestFile(confcmd.msg, bub);
-                                Platform.runLater(() -> controller.messageViewBox.getChildren().add(bub));
+                                controller.addToMessageList(bub);
                             }
                         }
                         case ResponseUsersListCommand responseCmd -> {
