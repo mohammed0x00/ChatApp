@@ -146,6 +146,8 @@ public class UsersController {
         sendImgbtn.visibleProperty().bind(isChatAndConversationSelected.and(Bindings.isNotEmpty(messageTextField.textProperty())));
         emojiButton.visibleProperty().bind(isChatAndConversationSelected);
         AttachBtn.visibleProperty().bind(isChatAndConversationSelected);
+        RecordButton.visibleProperty().bind(isChatAndConversationSelected);
+        messagesScrollPane.visibleProperty().bind(isChatAndConversationSelected);
 
         messageViewBox.heightProperty().addListener((observable, oldValue, newValue) -> {
             messagesScrollPane.layout();
