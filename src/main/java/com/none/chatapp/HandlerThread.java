@@ -132,7 +132,10 @@ public class HandlerThread{
                         case ResponseFileRequestCommand response_cmd -> rscMgr.responseHandler(response_cmd);
                         case ResponseUserDetailsCommand response -> {
                             my_details = response.me;
-                            controller.userIDLabel.setText(my_details.name + " (ID: " + String.valueOf(my_details.id) + ")");
+                            Platform.runLater(() ->{
+                                controller.userIDLabel.setText(my_details.name + " (ID: " + String.valueOf(my_details.id) + ")");
+                                controller.userFrontUiLabel.setText(my_details.name);
+                            });
                         }
                         case ResponseUserInfoChangeCommand response -> {
                             switch (response.responseType)

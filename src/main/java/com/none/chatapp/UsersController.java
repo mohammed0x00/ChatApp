@@ -58,6 +58,8 @@ public class UsersController {
     @FXML
     public ScrollPane messagesScrollPane;
 
+    public Label userFrontUiLabel;
+
     @FXML
     private AnchorPane anchRoot;
     @FXML
