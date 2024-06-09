@@ -331,7 +331,7 @@ public class UsersController {
                 byte[] file = Files.readAllBytes(filePath);
                 Message msg = new Message();
                 msg.conv_id = selected_conv_id;
-                msg.content = Utils.getFileExtension(filePath);
+                msg.content = Utils.getFileExtension(filePath).toLowerCase();
                 switch (msg.content)
                 {
                     case "png":

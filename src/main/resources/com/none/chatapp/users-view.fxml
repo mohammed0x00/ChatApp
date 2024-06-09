@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchRoot" prefHeight="679.0" prefWidth="1506.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
+<AnchorPane fx:id="anchRoot" prefHeight="679.0" prefWidth="1506.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
    <children>
       <VBox layoutX="-18.0" layoutY="-14.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox prefHeight="89.0" prefWidth="1553.0">
                <children>
-                  <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" style="-fx-border-color: #1a1a1a; -fx-border-width: 2; -fx-background-color: #1a1a1a;" HBox.hgrow="ALWAYS">
+                  <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" style="-fx-border-color: #1a1a1a; -fx-border-width: 2; -fx-background-color: #1a1a1a;" HBox.hgrow="ALWAYS">
                      <children>
                         <ImageView fx:id="CurrentUserImg" fitHeight="69.0" fitWidth="79.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -25,7 +34,12 @@
                               <Insets bottom="7.0" left="7.0" top="7.0" />
                            </HBox.margin>
                         </ImageView>
-                        <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="1114.0" HBox.hgrow="ALWAYS">
+                        <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="250.0" minWidth="100.0" prefWidth="250.0" text="#################################" textAlignment="CENTER" textFill="#da1212" HBox.hgrow="ALWAYS">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                        <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="83.0" prefWidth="1066.0" HBox.hgrow="ALWAYS">
                            <children>
                               <HBox maxHeight="1.7976931348623157E308">
                                  <children>
@@ -54,6 +68,12 @@
                               </HBox>
                            </children>
                         </HBox>
+                        <AnchorPane prefWidth="80.0">
+                           <children>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                              <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="5.0" />
+                           </children>
+                        </AnchorPane>
                      </children>
                      <HBox.margin>
                         <Insets />

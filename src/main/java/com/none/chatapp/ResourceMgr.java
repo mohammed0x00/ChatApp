@@ -105,5 +105,12 @@ public class ResourceMgr {
             if(status) Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
             else Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().add(user));
         }
+        else
+        {
+            UserItem user_item = new UserItem(controller::handleUserItemMouseClick, usr.id, usr.name, status);
+            addUserItem(usr, user_item);
+            if(status) Platform.runLater(() -> controller.usersViewBox.getChildren().add(user_item));
+            else Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().add(user_item));
+        }
     }
 }
