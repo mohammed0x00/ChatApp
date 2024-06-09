@@ -258,7 +258,7 @@ public class DatabaseController {
         return new Pair<>(success, output);
     }
 
-    public static boolean changeUserName(int usr_id, String username) throws SQLException {
+    public static boolean changeUserName(int usr_id, String username) {
         boolean success;
         try (CallableStatement stmt = conn.prepareCall("Call ChangeUserName(?, ?);")) {
             stmt.setInt(1, usr_id);
@@ -270,7 +270,7 @@ public class DatabaseController {
         }
     }
 
-    public static boolean changeUserStatusMessage(int usr_id, String msg) throws SQLException {
+    public static boolean changeUserStatusMessage(int usr_id, String msg) {
         boolean success;
         try (CallableStatement stmt = conn.prepareCall("Call ChangeStatusMessage(?, ?);")) {
             stmt.setInt(1, usr_id);
@@ -280,6 +280,23 @@ public class DatabaseController {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static boolean deleteAccount(int usr_id, String usr_password) {
+        try (PreparedStatement stmt = conn.prepareStatement("Call DeleteUser(?, ?);")) {
+            stmt.setInt(1, usr_id);
+            stmt.setString(2, usr_password);
+
+            ResultSet rs = stmt.executeQuery();
+            if(!rs.isBeforeFirst())
+            {
+                return true;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 
 

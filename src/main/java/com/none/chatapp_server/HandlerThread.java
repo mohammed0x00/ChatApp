@@ -119,6 +119,11 @@ public class HandlerThread extends Thread {
                         }
                         response.SendCommand(socket);
                     }
+                    case DeleteAccountCommand com ->
+                    {
+                        boolean ret = DatabaseController.deleteAccount(data.id, com.password);;
+                        new ResponseDeleteAccountCommand(ret).SendCommand(socket);
+                    }
                     case null, default -> {}
                 }
             }

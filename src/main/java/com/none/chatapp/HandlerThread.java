@@ -144,6 +144,11 @@ public class HandlerThread{
                                 }
                             }
                         }
+                        case ResponseDeleteAccountCommand response ->
+                        {
+                            if(response.status) Platform.runLater(() -> controller.handleLogout());
+                            else Platform.runLater(() -> Utils.showAlert(Alert.AlertType.ERROR, "Error", "Unable to Delete Your Account"));
+                        }
                         case null, default -> {
                         }
                     }

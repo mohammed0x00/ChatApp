@@ -613,8 +613,12 @@ public class UsersController {
 
         deleteButton.setOnAction(e -> {
             String password = passwordField.getText();
-            // Logic to request account deletion with the provided password
-            stage.close();
+            try {
+                new DeleteAccountCommand(password).SendCommand(current_thread.socket);
+            } catch (IOException ex) {
+                Utils.showAlert(Alert.AlertType.ERROR, "Error", "Unable to Delete Your Account");
+            }
+            stage.close();;
         });
 
         cancelButton.setOnAction(e -> stage.close());
@@ -628,7 +632,7 @@ public class UsersController {
         stage.show();
     }
 
-    private void handleLogout() {
+    public void handleLogout() {
         Stage stage = (Stage) CurrentUserImg.getScene().getWindow();
         stage.close();
         current_thread.login_stage.show();
