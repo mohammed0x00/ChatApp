@@ -170,8 +170,6 @@ class MessageBubble extends HBox {
                 Label playPauseLabel = new Label("▶");
                 playPauseLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: white;");
 
-                Label timeLabel = new Label("00:00 / 00:00");
-                timeLabel.setStyle("-fx-text-fill: white;");
 
                 boolean[] isMediaEnded = {false};
 
@@ -179,12 +177,11 @@ class MessageBubble extends HBox {
                     if (!progressSlider.isValueChanging()) {
                         progressSlider.setValue(newTime.toSeconds());
                     }
-                    timeLabel.setText(formatTime(newTime, mediaPlayer.getTotalDuration()));
+
                 });
 
                 mediaPlayer.setOnReady(() -> {
                     progressSlider.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
-                    timeLabel.setText(formatTime(mediaPlayer.getCurrentTime(), mediaPlayer.getTotalDuration()));
                 });
 
                 progressSlider.valueChangingProperty().addListener((obs, wasChanging, isChanging) -> {
@@ -203,18 +200,21 @@ class MessageBubble extends HBox {
                         playPauseLabel.setText("▶");
                     } else {
                         if (isMediaEnded[0]) {
-                            mediaPlayer.seek(javafx.util.Duration.ZERO);
                             isMediaEnded[0] = false;
+                            mediaPlayer.seek(mediaPlayer.getCurrentTime()); // Seek to the current slider position
                         }
                         mediaPlayer.play();
                         playPauseLabel.setText("⏸");
                     }
                 });
 
+                // Ensure mediaPlayer is not looping
+                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                 mediaPlayer.setOnEndOfMedia(() -> {
                     playPauseLabel.setText("▶");
                     progressSlider.setValue(progressSlider.getMin());
                     isMediaEnded[0] = true;
+                    mediaPlayer.pause(); // Ensure it does not restart automatically
                 });
 
                 progressSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
@@ -223,7 +223,7 @@ class MessageBubble extends HBox {
                     }
                 });
 
-                HBox audioControls = new HBox(playPauseLabel, progressSlider, timeLabel);
+                HBox audioControls = new HBox(playPauseLabel, progressSlider);
                 audioControls.setSpacing(10);
                 audioControls.setAlignment(Pos.CENTER_LEFT);
                 audioControls.setPadding(new Insets(PADDING));
@@ -240,40 +240,6 @@ class MessageBubble extends HBox {
         });
     }
 
-    private String formatTime(javafx.util.Duration elapsed, javafx.util.Duration duration) {
-        int intElapsed = (int) Math.floor(elapsed.toSeconds());
-        int elapsedHours = intElapsed / (60 * 60);
-        if (elapsedHours > 0) {
-            intElapsed -= elapsedHours * 60 * 60;
-        }
-        int elapsedMinutes = intElapsed / 60;
-        int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
-
-        if (duration.greaterThan(javafx.util.Duration.ZERO)) {
-            int intDuration = (int) Math.floor(duration.toSeconds());
-            int durationHours = intDuration / (60 * 60);
-            if (durationHours > 0) {
-                intDuration -= durationHours * 60 * 60;
-            }
-            int durationMinutes = intDuration / 60;
-            int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
-            if (durationHours > 0) {
-                return String.format("%d:%02d:%02d / %d:%02d:%02d",
-                        elapsedHours, elapsedMinutes, elapsedSeconds,
-                        durationHours, durationMinutes, durationSeconds);
-            } else {
-                return String.format("%02d:%02d / %02d:%02d",
-                        elapsedMinutes, elapsedSeconds,
-                        durationMinutes, durationSeconds);
-            }
-        } else {
-            if (elapsedHours > 0) {
-                return String.format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
-            } else {
-                return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
-            }
-        }
-    }
 
 
 
