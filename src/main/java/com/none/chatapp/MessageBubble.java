@@ -1,11 +1,9 @@
 package com.none.chatapp;
 
 import com.none.chatapp_commands.Message;
-import com.none.chatapp_commands.RequestFileCommand;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -39,7 +37,7 @@ class MessageBubble extends HBox {
     private MediaPlayer mediaPlayer;
     private HBox audioControls;
 
-    public MessageBubble(Message msg) {
+    public MessageBubble(UsersController controller, ResourceMgr rscMgr, Message msg) {
         this.msg = msg;
         msg_id = msg.id;
 
@@ -63,7 +61,7 @@ class MessageBubble extends HBox {
         VBox labelsBox = new VBox(timeLabel, statusLabel);
 
         // Determine the alignment and colors based on sender
-        if (msg.sender_id == UsersController.selected_user_id) {
+        if (msg.sender_id == controller.selected_user_id) {
             labelsBox.setAlignment(Pos.BOTTOM_LEFT);
             labelsBox.setSpacing(2);
             this.setAlignment(Pos.CENTER_RIGHT);
@@ -94,12 +92,12 @@ class MessageBubble extends HBox {
                 messageTextFlow.setStyle("-fx-font-weight: bold;");
                 if (messageTextFlow.getChildren().getFirst() instanceof Text txt)
                     txt.setStyle("-fx-fill: #010927;-fx-underline: true;");
-                messageTextFlow.setOnMouseClicked(event -> ResourceMgr.requestFile(msg, this));
+                messageTextFlow.setOnMouseClicked(event -> rscMgr.requestFile(msg, this));
             });
         }
     }
 
-    public void setImage(byte[] data) {
+    public void setImage(UsersController controller, byte[] data) {
         if (data == null) {
             Platform.runLater(() -> {
                 messageTextFlow.setVisible(true);
@@ -121,12 +119,12 @@ class MessageBubble extends HBox {
                 StackPane imageContainer = new StackPane(imageView);
                 imageContainer.setPadding(new Insets(PADDING));
                 imageContainer.setBackground(new Background(new BackgroundFill(
-                        msg.sender_id == UsersController.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
+                        msg.sender_id == controller.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
                         new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
                 this.getChildren().clear();
                 VBox spacer = new VBox(); // Empty VBox for spacing consistency
-                if (msg.sender_id == UsersController.selected_user_id) {
+                if (msg.sender_id == controller.selected_user_id) {
                     this.getChildren().addAll(spacer, imageContainer);
                 } else {
                     this.getChildren().addAll(imageContainer, spacer);
@@ -137,7 +135,7 @@ class MessageBubble extends HBox {
         }
     }
 
-    public void setAudio(byte[] data) {
+    public void setAudio(UsersController controller, byte[] data) {
         // It consumes a huge space of memory - Improve me please
         if (data == null) {
             Platform.runLater(() -> {
@@ -202,12 +200,12 @@ class MessageBubble extends HBox {
                 audioControls.setAlignment(Pos.CENTER_LEFT);
                 audioControls.setPadding(new Insets(PADDING));
                 audioControls.setBackground(new Background(new BackgroundFill(
-                        msg.sender_id == UsersController.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
+                        msg.sender_id == controller.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
                         new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
                 this.getChildren().clear();
                 VBox spacer = new VBox();
-                if (msg.sender_id == UsersController.selected_user_id) {
+                if (msg.sender_id == controller.selected_user_id) {
                     this.getChildren().addAll(spacer, audioControls);
                 } else {
                     this.getChildren().addAll(audioControls, spacer);

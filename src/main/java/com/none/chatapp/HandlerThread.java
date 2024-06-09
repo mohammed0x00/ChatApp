@@ -18,11 +18,21 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
 public class HandlerThread extends Thread{
-    public static Socket socket;
-    static UsersController controller;
-    static EventHandler<MouseEvent> userItemMouseEvent;
-    private static User my_details;
-    private static final Thread me = new Thread(new Runnable() {
+    public Socket socket;
+    UsersController controller;
+    EventHandler<MouseEvent> userItemMouseEvent;
+    public ResourceMgr rscMgr;
+    private User my_details;
+
+    public HandlerThread(Socket socket, UsersController controller)
+    {
+        this.socket = socket;
+        this.controller = controller;
+        rscMgr = new ResourceMgr(this);
+        userItemMouseEvent = controller::handleUserItemMouseClick;
+    }
+
+    private Thread me = new Thread(new Runnable() {
         @Override
         public void run()
         {
@@ -42,12 +52,12 @@ public class HandlerThread extends Thread{
                     switch (cmd) {
                         case UserStatusCommand stat_cmd ->{
                             boolean status = stat_cmd.status == UserStatusCommand.Stat.ONLINE;
-                            ResourceMgr.setUserItemStatus(controller, stat_cmd.user, status);
+                            rscMgr.setUserItemStatus(controller, stat_cmd.user, status);
                         }
                         case UserListCommand list_cmd -> {
                             for (User item : list_cmd.list) {
                                 UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, true);
-                                ResourceMgr.requestFile(item, user);
+                                rscMgr.requestFile(item, user);
                                 Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
                             }
                         }
@@ -55,35 +65,35 @@ public class HandlerThread extends Thread{
                             controller.selected_conv_id = listCommand.Conversation_id;
                             Platform.runLater(() -> controller.messageViewBox.getChildren().clear());
                             for (Message item : listCommand.list) {
-                                MessageBubble tmp = new MessageBubble(item);
+                                MessageBubble tmp = new MessageBubble(controller, rscMgr, item);
                                 if (item.type == Message.Type.audio || item.type ==  Message.Type.image)
-                                    ResourceMgr.requestFile(item, tmp);
+                                    rscMgr.requestFile(item, tmp);
                                 controller.addToMessageList(tmp);
                                 //Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
                             }
                         }
                         case ClientNotifyMessageCommand ncmd -> {
                             if (controller.selected_user_id == ncmd.msg.sender_id) {
-                                MessageBubble bub = new MessageBubble(ncmd.msg);
+                                MessageBubble bub = new MessageBubble(controller, rscMgr, ncmd.msg);
                                 if (ncmd.msg.type == Message.Type.audio || ncmd.msg.type ==  Message.Type.image)
-                                    ResourceMgr.requestFile(ncmd.msg, bub);
+                                    rscMgr.requestFile(ncmd.msg, bub);
                                 controller.addToMessageList(bub);
 
                             }
                         }
                         case MessageConfirmationCommand confcmd -> {
                             if (controller.selected_conv_id == confcmd.msg.conv_id) {
-                                MessageBubble bub = new MessageBubble(confcmd.msg);
+                                MessageBubble bub = new MessageBubble(controller, rscMgr, confcmd.msg);
                                 if (confcmd.msg.type == Message.Type.audio || confcmd.msg.type ==  Message.Type.image)
-                                    ResourceMgr.requestFile(confcmd.msg, bub);
+                                    rscMgr.requestFile(confcmd.msg, bub);
                                 controller.addToMessageList(bub);
                             }
                         }
                         case ResponseUsersListCommand responseCmd -> {
                             for (User item : responseCmd.list) {
                                 UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, item.isOnline);
-                                if(user.usr_id != -1) ResourceMgr.requestFile(item, user);
-                                ResourceMgr.addUserItem(item, user);
+                                if(user.usr_id != -1) rscMgr.requestFile(item, user);
+                                rscMgr.addUserItem(item, user);
 
                                 if (item.isOnline) {
                                     Platform.runLater(() -> controller.usersViewBox.getChildren().add(user));
@@ -108,15 +118,15 @@ public class HandlerThread extends Thread{
                                 if (img_cmd.owner_id == null) {
                                     Platform.runLater(() -> controller.updateImageViewObjects(img_cmd.data));
                                 } else {
-                                    ResourceMgr.responseHandler(img_cmd);
+                                    rscMgr.responseHandler(img_cmd);
                                 }
 
                             }
                         }
-                        case ResponseFileRequestCommand response_cmd -> ResourceMgr.responseHandler(response_cmd);
+                        case ResponseFileRequestCommand response_cmd -> rscMgr.responseHandler(response_cmd);
                         case ResponseUserDetailsCommand response -> {
                             my_details = response.me;
-                            UsersController.userIDLabel.setText(my_details.name + " (ID: " + String.valueOf(my_details.id) + ")");
+                            controller.userIDLabel.setText(my_details.name + " (ID: " + String.valueOf(my_details.id) + ")");
                         }
                         case ResponseUserInfoChangeCommand response -> {
                             switch (response.responseType)
@@ -142,7 +152,7 @@ public class HandlerThread extends Thread{
 
     });
 
-    public static void startThread()
+    public void startThread()
     {
         me.start();
     }

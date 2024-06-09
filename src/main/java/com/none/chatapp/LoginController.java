@@ -123,10 +123,13 @@ public class LoginController {
                                 System.exit(0);
                             }
                         });
-                        HandlerThread.controller = loader.getController();
-                        HandlerThread.socket = socket;
+
                         newStage.show();
-                        HandlerThread.startThread();
+
+                        HandlerThread user_thread = new HandlerThread(socket, loader.getController());
+                        ((UsersController)loader.getController()).current_thread = user_thread;
+                        user_thread.startThread();
+
                         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                         currentStage.close();
                     } else {
@@ -138,7 +141,9 @@ public class LoginController {
                     }
                 }
             } catch (Exception e) {
-                System.out.println(e.toString());
+                System.out.println(e.toString() + e.getMessage()+e.getLocalizedMessage());
+                e.printStackTrace();
+
 
                 Utils.showAlert(Alert.AlertType.ERROR, "Connection Failed", "Cannot Connect to Server"+ e.getMessage() + e.toString());
             }

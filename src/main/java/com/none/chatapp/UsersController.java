@@ -53,6 +53,8 @@ import javax.sound.sampled.spi.AudioFileWriter;
 
 public class UsersController {
 
+    public HandlerThread current_thread;
+
     @FXML
     public ScrollPane messagesScrollPane;
 
@@ -93,7 +95,7 @@ public class UsersController {
     @FXML
     private HBox UserWindow;
 
-    public static Label userIDLabel;
+    public Label userIDLabel;
 
     @FXML
     public ImageView CurrentUserImg;
@@ -101,10 +103,11 @@ public class UsersController {
     @FXML
     public ImageView RecordButton;
 
+
     public ImageView userProfileImage;
 
-    public static int selected_user_id = Integer.MIN_VALUE;
-    public static int selected_conv_id = Integer.MIN_VALUE;
+    public int selected_user_id = Integer.MIN_VALUE;
+    public int selected_conv_id = Integer.MIN_VALUE;
 
     private BooleanProperty isChatSelected = new SimpleBooleanProperty(false);
     private IntegerProperty conv_id = new SimpleIntegerProperty(selected_user_id);
@@ -145,7 +148,6 @@ public class UsersController {
         initializeCircularImage(selectedUserImage, 70);
         initializeCircularImage(CurrentUserImg, 70);
 
-        HandlerThread.userItemMouseEvent = this::handleUserItemMouseClick;
 
 
         // Make the UserWindow draggable
@@ -158,7 +160,7 @@ public class UsersController {
         emojiButton.visibleProperty().bind(isChatAndConversationSelected);
         AttachBtn.visibleProperty().bind(isChatAndConversationSelected);
         RecordButton.visibleProperty().bind(isChatAndConversationSelected);
-        messagesScrollPane.visibleProperty().bind(isChatAndConversationSelected);
+        messagesScrollPane.visibleProperty().bind(isChatSelected);
 
         messageViewBox.heightProperty().addListener((observable, oldValue, newValue) -> {
             messagesScrollPane.layout();
@@ -289,7 +291,7 @@ public class UsersController {
         msg.content = "png";
         msg.type = Message.Type.image;
         try {
-            new SendMessageCommand(msg, imageToByteArray(emojiImage)).SendCommand(HandlerThread.socket);
+            new SendMessageCommand(msg, imageToByteArray(emojiImage)).SendCommand(current_thread.socket);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -330,7 +332,7 @@ public class UsersController {
                 }
 
                 try {
-                    new SendMessageCommand(msg, file).SendCommand(HandlerThread.socket);
+                    new SendMessageCommand(msg, file).SendCommand(current_thread.socket);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -351,7 +353,7 @@ public class UsersController {
         msg.content = messageTextField.getText();
         msg.type = Message.Type.text;
         try {
-            new SendMessageCommand(msg).SendCommand(HandlerThread.socket);
+            new SendMessageCommand(msg).SendCommand(current_thread.socket);
             messageTextField.clear();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -370,7 +372,7 @@ public class UsersController {
             selected_user_id = selectedUser.usr_id;
             try {
                 System.out.println(event.getSource().toString());
-                new MessagesListRequestCommand(selected_user_id).SendCommand(HandlerThread.socket);
+                new MessagesListRequestCommand(selected_user_id).SendCommand(current_thread.socket);
                 selectedUserName.setText(selectedUser.getName());
                 selectedUserImage.setImage(selectedUser.getImage());
                 messageViewBox.setAlignment(Pos.TOP_LEFT);
@@ -468,7 +470,7 @@ public class UsersController {
         saveButton.setOnAction(e -> {
             String newStatus = textField.getText();
             try {
-                new ChangeUserInfoCommand.CHANGE_STATUS_MSG(newStatus).SendCommand(HandlerThread.socket);
+                new ChangeUserInfoCommand.CHANGE_STATUS_MSG(newStatus).SendCommand(current_thread.socket);
             }catch (Exception ignored){Utils.showAlert(Alert.AlertType.ERROR, "Error", "An error occurred");}
             stage.close();
         });
@@ -503,7 +505,7 @@ public class UsersController {
         saveButton.setOnAction(e -> {
             String newUsername = textField.getText();
             try {
-                new ChangeUserInfoCommand.CHANGE_USER_NAME(newUsername).SendCommand(HandlerThread.socket);
+                new ChangeUserInfoCommand.CHANGE_USER_NAME(newUsername).SendCommand(current_thread.socket);
             }catch (Exception ignored){Utils.showAlert(Alert.AlertType.ERROR, "Error", "An error occurred");}
             stage.close();
         });
@@ -543,7 +545,7 @@ public class UsersController {
             String currentPassword = currentPasswordField.getText();
             String newPassword = newPasswordField.getText();
             try {
-                new ChangeUserInfoCommand.CHANGE_PASSWORD(currentPassword, newPassword).SendCommand(HandlerThread.socket);
+                new ChangeUserInfoCommand.CHANGE_PASSWORD(currentPassword, newPassword).SendCommand(current_thread.socket);
             }catch (Exception ignored){Utils.showAlert(Alert.AlertType.ERROR, "Error", "An error occurred");}
             stage.close();
         });
@@ -578,7 +580,7 @@ public class UsersController {
 
     private void handleDeleteProfileImage() {
         try{
-            new ChangeUserImageCommand(true).SendCommand(HandlerThread.socket);
+            new ChangeUserImageCommand(true).SendCommand(current_thread.socket);
         }
         catch (Exception e)
         {
@@ -672,7 +674,7 @@ public class UsersController {
                     if (croppedImage != null) {
                         UsersController.this.saveCroppedImage(croppedImage); // Save the cropped image
                         byte[] img = writableImageToByteArray(croppedImage);
-                        new ChangeUserImageCommand(img, "png").SendCommand(HandlerThread.socket);
+                        new ChangeUserImageCommand(img, "png").SendCommand(current_thread.socket);
                         cropStage.close();
                     }
                 }catch (Exception ignored)
@@ -924,7 +926,7 @@ public class UsersController {
             ByteArrayOutputStream wavOut = new ByteArrayOutputStream();
             AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavOut);
 
-            new SendMessageCommand(msg, wavOut.toByteArray()).SendCommand(HandlerThread.socket);
+            new SendMessageCommand(msg, wavOut.toByteArray()).SendCommand(current_thread.socket);
             audioData = null;
         }catch (Exception ignored){audioData=null;throw new Exception();}
     }

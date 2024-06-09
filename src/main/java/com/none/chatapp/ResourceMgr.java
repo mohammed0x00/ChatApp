@@ -4,35 +4,42 @@ import com.none.chatapp_commands.*;
 import javafx.application.Platform;
 import javafx.scene.Node;
 
+import java.net.Socket;
 import java.util.*;
 
 public class ResourceMgr {
-    private static Map<String, Node> queue = new HashMap<>();
+    private Map<String, Node> queue = new HashMap<>();
     private static final String USER_IMAGE_MAGIC = "USER_IMG";
     private static final String USER_ITEM_MAGIC = "USER_ITEM";
+    HandlerThread handlerThread;
 
-    public static void requestFile(Message msg, MessageBubble bubble)
+    public ResourceMgr(HandlerThread thread)
+    {
+        handlerThread = thread;
+    }
+
+    public void requestFile(Message msg, MessageBubble bubble)
     {
         queue.put(String.valueOf(msg.sender_id) + msg.content, bubble);
         try {
-            new RequestFileCommand(msg.content, msg.sender_id).SendCommand(HandlerThread.socket);
+            new RequestFileCommand(msg.content, msg.sender_id).SendCommand(handlerThread.socket);
         }
         catch(Exception e)
         {
             switch (msg.type)
             {
-                case Message.Type.image -> bubble.setImage(null);
-                case Message.Type.audio -> bubble.setAudio(null);
+                case Message.Type.image -> bubble.setImage(handlerThread.controller, null);
+                case Message.Type.audio -> bubble.setAudio(handlerThread.controller, null);
                 case Message.Type.attachment -> bubble.saveAttachment(null);
             }
         }
     }
 
-    public static void requestFile(User usr, UserItem usr_item)
+    public void requestFile(User usr, UserItem usr_item)
     {
         queue.put(USER_IMAGE_MAGIC + String.valueOf(usr.id), usr_item);
         try {
-            new RequestProfileImageCommand(usr.id).SendCommand(HandlerThread.socket);
+            new RequestProfileImageCommand(usr.id).SendCommand(handlerThread.socket);
         }
         catch(Exception ignored)
         {
@@ -40,12 +47,12 @@ public class ResourceMgr {
         }
     }
 
-    public static void addUserItem(User usr, UserItem usr_item)
+    public void addUserItem(User usr, UserItem usr_item)
     {
         queue.put(USER_ITEM_MAGIC + String.valueOf(usr.id), usr_item);
     }
 
-    public static void responseHandler(ResponseFileRequestCommand response)
+    public void responseHandler(ResponseFileRequestCommand response)
     {
         String key = String.valueOf(response.owner_id) + response.filename;
         Node caller = queue.get(key);
@@ -54,15 +61,15 @@ public class ResourceMgr {
             if (response.status)
                 switch (bubble.msg.type)
                 {
-                    case Message.Type.image -> bubble.setImage(response.data);
-                    case Message.Type.audio -> {bubble.setAudio(response.data);response.data = null;}
+                    case Message.Type.image -> bubble.setImage(handlerThread.controller, response.data);
+                    case Message.Type.audio -> {bubble.setAudio(handlerThread.controller, response.data);response.data = null;}
                     case Message.Type.attachment -> bubble.saveAttachment(response.data);
                 }
             else
                 switch (bubble.msg.type)
                 {
-                    case Message.Type.image -> bubble.setImage(null);
-                    case Message.Type.audio -> bubble.setAudio(null);
+                    case Message.Type.image -> bubble.setImage(handlerThread.controller, null);
+                    case Message.Type.audio -> bubble.setAudio(handlerThread.controller, null);
                     case Message.Type.attachment -> bubble.saveAttachment(null);
                 }
         }
@@ -73,7 +80,7 @@ public class ResourceMgr {
 
     }
 
-    public static void responseHandler(ResponeProfileImageCommand response)
+    public void responseHandler(ResponeProfileImageCommand response)
     {
         String key = USER_IMAGE_MAGIC + String.valueOf(response.owner_id);
         Node caller = queue.get(key);
@@ -88,7 +95,7 @@ public class ResourceMgr {
 
     }
 
-    public static void setUserItemStatus(UsersController controller, User usr, boolean status)
+    public void setUserItemStatus(UsersController controller, User usr, boolean status)
     {
         String key = USER_ITEM_MAGIC + String.valueOf(usr.id);
         Node item = queue.get(key);
