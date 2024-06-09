@@ -786,5 +786,10 @@ public class UsersController {
         });
     }
 
+    @FXML
+    public void handleAudioRecordButtonEvent(MouseEvent event) {
+
+    }
+
 
 }
