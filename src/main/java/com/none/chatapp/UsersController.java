@@ -835,11 +835,10 @@ public class UsersController {
         sendButton.setOnAction(event -> {
             stopRecording();
             try {
-                saveRecordingAsWav();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                sendRecording();
+            } catch (Exception e) {
+                Utils.showAlert(Alert.AlertType.ERROR, "Error", "Unable to send Voice");
             }
-            sendRecording();
             recordingStage.close();
         });
 
@@ -912,26 +911,22 @@ public class UsersController {
         }
     }
 
-    private void sendRecording() {
+    private void sendRecording() throws Exception {
         byte[] audioData = out.toByteArray();
-
-        // Implement the logic to send the recorded audio data
-        // Example: new SendMessageCommand(audioData).SendCommand(HandlerThread.socket);
-    }
-
-    private void saveRecordingAsWav() throws IOException {
-        byte[] audioData = out.toByteArray();
+        Message msg = new Message();
+        msg.conv_id = selected_conv_id;
+        msg.content = "mp3";
+        msg.type = Message.Type.audio;
         try (ByteArrayInputStream bais = new ByteArrayInputStream(audioData);
              AudioInputStream audioInputStream = new AudioInputStream(bais, audioFormat, audioData.length)) {
 
-            File wavFile = new File("recording.wav");
-            AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile);
-        }
-    }
+            // Write the AudioInputStream to a new ByteArrayOutputStream in WAV format
+            ByteArrayOutputStream wavOut = new ByteArrayOutputStream();
+            AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavOut);
 
-    @FXML
-    public void handleAudioRecordButtonEvent(MouseEvent event) {
-
+            new SendMessageCommand(msg, wavOut.toByteArray()).SendCommand(HandlerThread.socket);
+            audioData = null;
+        }catch (Exception ignored){audioData=null;throw new Exception();}
     }
 
 

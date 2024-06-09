@@ -151,7 +151,7 @@ class MessageBubble extends HBox {
 
                 File audioFile;
                 try {
-                    audioFile = File.createTempFile("audio_message", ".mp3");
+                    audioFile = File.createTempFile("audio_message", ".wav");
                     Files.write(audioFile.toPath(), data, StandardOpenOption.CREATE);
                     audioFile.deleteOnExit();
                 } catch (Exception e) {
