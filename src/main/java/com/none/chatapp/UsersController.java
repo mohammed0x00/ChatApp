@@ -920,6 +920,7 @@ public class UsersController {
         stopButton.setOnAction(event -> stopRecording());
         cancelButton.setOnAction(event -> {
             stopRecording();
+            recordingTime.set("00:00");
             recordingStage.close();
         });
         sendButton.setOnAction(event -> {
@@ -1015,6 +1016,7 @@ public class UsersController {
             AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavOut);
 
             new SendMessageCommand(msg, wavOut.toByteArray()).SendCommand(current_thread.socket);
+            recordingTime.set("00:00");
             audioData = null;
         }catch (Exception ignored){audioData=null;throw new Exception();}
     }

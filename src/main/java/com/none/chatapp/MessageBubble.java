@@ -91,7 +91,11 @@ class MessageBubble extends HBox {
                 messageTextFlow.setVisible(true);
                 messageTextFlow.setStyle("-fx-font-weight: bold;");
                 if (messageTextFlow.getChildren().getFirst() instanceof Text txt)
-                    txt.setStyle("-fx-fill: #010927;-fx-underline: true;");
+                    if (msg.sender_id == controller.selected_user_id)
+                        txt.setStyle("-fx-fill: #47e4f1;-fx-underline: true;");
+                    else
+                        txt.setStyle("-fx-fill: #010927;-fx-underline: true;");
+
                 messageTextFlow.setOnMouseClicked(event -> rscMgr.requestFile(msg, this));
             });
         }
@@ -136,15 +140,15 @@ class MessageBubble extends HBox {
     }
 
     public void setAudio(UsersController controller, byte[] data) {
-        // It consumes a huge space of memory - Improve me please
-        if (data == null) {
-            Platform.runLater(() -> {
+        Platform.runLater(() -> {
+            this.getChildren().clear();
+            VBox spacer = new VBox();
+
+            if (data == null) {
                 messageTextFlow.setVisible(true);
                 messageTextFlow.getChildren().clear();
                 messageTextFlow.getChildren().add(new Text("Error: Can't Load Audio: " + msg.content));
-            });
-        } else {
-            Platform.runLater(() -> {
+            } else {
                 messageTextFlow.setVisible(false);
 
                 File audioFile;
@@ -158,19 +162,29 @@ class MessageBubble extends HBox {
                 }
 
                 Media media = new Media(audioFile.toURI().toString());
-                mediaPlayer = new MediaPlayer(media);
+                MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 Slider progressSlider = new Slider();
                 progressSlider.setMaxWidth(MAX_BUBBLE_WIDTH);
+
+                Label playPauseLabel = new Label("▶");
+                playPauseLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: white;");
+
+                Label timeLabel = new Label("00:00 / 00:00");
+                timeLabel.setStyle("-fx-text-fill: white;");
+
+                boolean[] isMediaEnded = {false};
 
                 mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
                     if (!progressSlider.isValueChanging()) {
                         progressSlider.setValue(newTime.toSeconds());
                     }
+                    timeLabel.setText(formatTime(newTime, mediaPlayer.getTotalDuration()));
                 });
 
                 mediaPlayer.setOnReady(() -> {
                     progressSlider.setMax(mediaPlayer.getMedia().getDuration().toSeconds());
+                    timeLabel.setText(formatTime(mediaPlayer.getCurrentTime(), mediaPlayer.getTotalDuration()));
                 });
 
                 progressSlider.valueChangingProperty().addListener((obs, wasChanging, isChanging) -> {
@@ -183,19 +197,33 @@ class MessageBubble extends HBox {
                     mediaPlayer.seek(javafx.util.Duration.seconds(progressSlider.getValue()));
                 });
 
-                Label playPauseLabel = new Label("▶");
-                playPauseLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: white;");
                 playPauseLabel.setOnMouseClicked(event -> {
                     if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
                         mediaPlayer.pause();
                         playPauseLabel.setText("▶");
                     } else {
+                        if (isMediaEnded[0]) {
+                            mediaPlayer.seek(javafx.util.Duration.ZERO);
+                            isMediaEnded[0] = false;
+                        }
                         mediaPlayer.play();
                         playPauseLabel.setText("⏸");
                     }
                 });
 
-                audioControls = new HBox(playPauseLabel, progressSlider);
+                mediaPlayer.setOnEndOfMedia(() -> {
+                    playPauseLabel.setText("▶");
+                    progressSlider.setValue(progressSlider.getMin());
+                    isMediaEnded[0] = true;
+                });
+
+                progressSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                    if (Math.abs(newVal.doubleValue() - progressSlider.getMax()) < 0.1) {
+                        playPauseLabel.setText("▶");
+                    }
+                });
+
+                HBox audioControls = new HBox(playPauseLabel, progressSlider, timeLabel);
                 audioControls.setSpacing(10);
                 audioControls.setAlignment(Pos.CENTER_LEFT);
                 audioControls.setPadding(new Insets(PADDING));
@@ -203,16 +231,51 @@ class MessageBubble extends HBox {
                         msg.sender_id == controller.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
                         new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
-                this.getChildren().clear();
-                VBox spacer = new VBox();
                 if (msg.sender_id == controller.selected_user_id) {
                     this.getChildren().addAll(spacer, audioControls);
                 } else {
                     this.getChildren().addAll(audioControls, spacer);
                 }
-            });
+            }
+        });
+    }
+
+    private String formatTime(javafx.util.Duration elapsed, javafx.util.Duration duration) {
+        int intElapsed = (int) Math.floor(elapsed.toSeconds());
+        int elapsedHours = intElapsed / (60 * 60);
+        if (elapsedHours > 0) {
+            intElapsed -= elapsedHours * 60 * 60;
+        }
+        int elapsedMinutes = intElapsed / 60;
+        int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
+
+        if (duration.greaterThan(javafx.util.Duration.ZERO)) {
+            int intDuration = (int) Math.floor(duration.toSeconds());
+            int durationHours = intDuration / (60 * 60);
+            if (durationHours > 0) {
+                intDuration -= durationHours * 60 * 60;
+            }
+            int durationMinutes = intDuration / 60;
+            int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
+            if (durationHours > 0) {
+                return String.format("%d:%02d:%02d / %d:%02d:%02d",
+                        elapsedHours, elapsedMinutes, elapsedSeconds,
+                        durationHours, durationMinutes, durationSeconds);
+            } else {
+                return String.format("%02d:%02d / %02d:%02d",
+                        elapsedMinutes, elapsedSeconds,
+                        durationMinutes, durationSeconds);
+            }
+        } else {
+            if (elapsedHours > 0) {
+                return String.format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
+            } else {
+                return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
+            }
         }
     }
+
+
 
     public void saveAttachment(byte[] data) {
         Platform.runLater(() ->{
