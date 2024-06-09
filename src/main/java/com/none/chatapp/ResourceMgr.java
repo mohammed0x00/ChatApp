@@ -13,17 +13,18 @@ public class ResourceMgr {
 
     public static void requestFile(Message msg, MessageBubble bubble)
     {
-        if (msg.type == Message.Type.image)
+        queue.put(String.valueOf(msg.sender_id) + msg.content, bubble);
+        try {
+            new RequestFileCommand(msg.content, msg.sender_id).SendCommand(HandlerThread.socket);
+        }
+        catch(Exception e)
         {
-            queue.put(String.valueOf(msg.sender_id) + msg.content, bubble);
-            try {
-                new RequestFileCommand(msg.content, msg.sender_id).SendCommand(HandlerThread.socket);
-            }
-            catch(Exception e)
+            switch (msg.type)
             {
-                bubble.setImage(null);
+                case Message.Type.image -> bubble.setImage(null);
+                case Message.Type.audio -> bubble.setAudio(null);
+                case Message.Type.attachment -> bubble.saveAttachment(null);
             }
-
         }
     }
 
@@ -50,8 +51,20 @@ public class ResourceMgr {
         Node caller = queue.get(key);
         if(caller instanceof MessageBubble bubble)
         {
-            if (response.status) bubble.setImage(response.data);
-            else bubble.setImage(null);
+            if (response.status)
+                switch (bubble.msg.type)
+                {
+                    case Message.Type.image -> bubble.setImage(response.data);
+                    case Message.Type.audio -> {bubble.setAudio(response.data);response.data = null;}
+                    case Message.Type.attachment -> bubble.saveAttachment(response.data);
+                }
+            else
+                switch (bubble.msg.type)
+                {
+                    case Message.Type.image -> bubble.setImage(null);
+                    case Message.Type.audio -> bubble.setAudio(null);
+                    case Message.Type.attachment -> bubble.saveAttachment(null);
+                }
         }
 
         try{

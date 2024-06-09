@@ -1,9 +1,11 @@
 package com.none.chatapp;
 
 import com.none.chatapp_commands.Message;
+import com.none.chatapp_commands.RequestFileCommand;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -33,7 +35,7 @@ class MessageBubble extends HBox {
     private TextFlow messageTextFlow;
     private ImageView imageView;
     public int msg_id;
-    private Message msg;
+    public Message msg;
     private MediaPlayer mediaPlayer;
     private HBox audioControls;
 
@@ -84,6 +86,17 @@ class MessageBubble extends HBox {
         // Make sure HBox resizes based on VBox width
         this.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(this, Priority.ALWAYS);
+
+        if(msg.type == Message.Type.attachment)
+        {
+            Platform.runLater(() -> {
+                messageTextFlow.setVisible(true);
+                messageTextFlow.setStyle("-fx-font-weight: bold;");
+                if (messageTextFlow.getChildren().getFirst() instanceof Text txt)
+                    txt.setStyle("-fx-fill: #010927;-fx-underline: true;");
+                messageTextFlow.setOnMouseClicked(event -> ResourceMgr.requestFile(msg, this));
+            });
+        }
     }
 
     public void setImage(byte[] data) {
@@ -125,11 +138,12 @@ class MessageBubble extends HBox {
     }
 
     public void setAudio(byte[] data) {
+        // It consumes a huge space of memory - Improve me please
         if (data == null) {
             Platform.runLater(() -> {
                 messageTextFlow.setVisible(true);
                 messageTextFlow.getChildren().clear();
-                messageTextFlow.getChildren().add(new Text("Error: Can't Load Audio"));
+                messageTextFlow.getChildren().add(new Text("Error: Can't Load Audio: " + msg.content));
             });
         } else {
             Platform.runLater(() -> {
@@ -202,55 +216,38 @@ class MessageBubble extends HBox {
         }
     }
 
-    public void setAttachment(String attachmentName, byte[] data) {
-        if (data == null) {
-            Platform.runLater(() -> {
-                messageTextFlow.setVisible(true);
-                messageTextFlow.getChildren().clear();
-                messageTextFlow.getChildren().add(new Text("Error: Can't Load Attachment"));
-            });
-        } else {
-            Platform.runLater(() -> {
-                messageTextFlow.setVisible(false);
+    public void saveAttachment(byte[] data) {
+        Platform.runLater(() ->{
+            if(data != null)
+            {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setInitialFileName(msg.content);
+                File file = fileChooser.showSaveDialog(null);
 
-                Label attachmentLabel = new Label(attachmentName);
-                attachmentLabel.setTextFill(Color.WHITE);
-                attachmentLabel.setStyle("-fx-underline: true;");
-                attachmentLabel.setOnMouseClicked(event -> saveAttachment(attachmentName, data));
-
-                HBox attachmentBox = new HBox(attachmentLabel);
-                attachmentBox.setAlignment(Pos.CENTER_LEFT);
-                attachmentBox.setPadding(new Insets(PADDING));
-                attachmentBox.setBackground(new Background(new BackgroundFill(
-                        msg.sender_id == UsersController.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
-                        new CornerRadii(ARC_SIZE), Insets.EMPTY)));
-
-                this.getChildren().clear();
-                VBox spacer = new VBox(); // Empty VBox for spacing consistency
-                if (msg.sender_id == UsersController.selected_user_id) {
-                    this.getChildren().addAll(spacer, attachmentBox);
-                } else {
-                    this.getChildren().addAll(attachmentBox, spacer);
+                if (file != null) {
+                    try (FileOutputStream fos = new FileOutputStream(file)) {
+                        fos.write(data);
+                        Platform.runLater(() -> {
+                            System.out.println("File saved: " + file.getAbsolutePath());
+                        });
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            });
-        }
-    }
-
-    private void saveAttachment(String attachmentName, byte[] data) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialFileName(attachmentName);
-        File file = fileChooser.showSaveDialog(null);
-
-        if (file != null) {
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(data);
-                Platform.runLater(() -> {
-                    System.out.println("File saved: " + file.getAbsolutePath());
-                });
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
-        }
+            else
+            {
+                messageTextFlow.setStyle("-fx-underline: false;");
+                messageTextFlow.setOnMouseClicked(null);
+                messageTextFlow.setStyle("-fx-font-weight: normal;");
+                if (messageTextFlow.getChildren().getFirst() instanceof Text txt)
+                {
+                    txt.setStyle("-fx-fill: #ffffff;-fx-underline: false;");
+                    txt.setText("Couldn't Download File: " + txt.getText());
+                }
+
+            }
+        });
     }
 
     private void adjustBubbleSizeForImage(ImageView imageView) {

@@ -289,7 +289,7 @@ public class UsersController {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+                new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         File selectedFile = fileChooser.showOpenDialog(null);
 
@@ -300,7 +300,21 @@ public class UsersController {
                 Message msg = new Message();
                 msg.conv_id = selected_conv_id;
                 msg.content = Utils.getFileExtension(filePath);
-                msg.type = Message.Type.image;
+                switch (msg.content)
+                {
+                    case "png":
+                    case "jpg":
+                    case "jpeg":
+                        msg.type = Message.Type.image;
+                        break;
+                    case "mp3":
+                        msg.type = Message.Type.audio;
+                        break;
+                    default:
+                        msg.type = Message.Type.attachment;
+                        break;
+                }
+
                 try {
                     new SendMessageCommand(msg, file).SendCommand(HandlerThread.socket);
                 } catch (IOException e) {

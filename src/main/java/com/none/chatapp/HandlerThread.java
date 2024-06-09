@@ -59,7 +59,8 @@ public class HandlerThread extends Thread{
                             Platform.runLater(() -> controller.messageViewBox.getChildren().clear());
                             for (Message item : listCommand.list) {
                                 MessageBubble tmp = new MessageBubble(item);
-                                ResourceMgr.requestFile(item, tmp);
+                                if (item.type == Message.Type.audio || item.type ==  Message.Type.image)
+                                    ResourceMgr.requestFile(item, tmp);
                                 controller.addToMessageList(tmp);
                                 //Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
                             }
@@ -67,7 +68,8 @@ public class HandlerThread extends Thread{
                         case ClientNotifyMessageCommand ncmd -> {
                             if (controller.selected_user_id == ncmd.msg.sender_id) {
                                 MessageBubble bub = new MessageBubble(ncmd.msg);
-                                ResourceMgr.requestFile(ncmd.msg, bub);
+                                if (ncmd.msg.type == Message.Type.audio || ncmd.msg.type ==  Message.Type.image)
+                                    ResourceMgr.requestFile(ncmd.msg, bub);
                                 controller.addToMessageList(bub);
 
                             }
@@ -75,7 +77,8 @@ public class HandlerThread extends Thread{
                         case MessageConfirmationCommand confcmd -> {
                             if (controller.selected_conv_id == confcmd.msg.conv_id) {
                                 MessageBubble bub = new MessageBubble(confcmd.msg);
-                                ResourceMgr.requestFile(confcmd.msg, bub);
+                                if (confcmd.msg.type == Message.Type.audio || confcmd.msg.type ==  Message.Type.image)
+                                    ResourceMgr.requestFile(confcmd.msg, bub);
                                 controller.addToMessageList(bub);
                             }
                         }

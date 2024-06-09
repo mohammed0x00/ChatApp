@@ -26,6 +26,9 @@ public class Utils {
 
     public static String getFileExtension(Path path) {
         String fileName = path.getFileName().toString();
+        return getFileExtension(fileName);
+    }
+    public static String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
         if (dotIndex >= 0 && dotIndex < fileName.length() - 1) {
             return fileName.substring(dotIndex + 1);
