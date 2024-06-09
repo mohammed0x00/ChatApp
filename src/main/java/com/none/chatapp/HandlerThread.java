@@ -21,9 +21,6 @@ public class HandlerThread extends Thread{
     public static Socket socket;
     static UsersController controller;
     static EventHandler<MouseEvent> userItemMouseEvent;
-    public static Image imageUrl2 = new Image("https://w7.pngwing.com/pngs/129/292/png-transparent-female-avatar-girl-face-woman-user-flat-classy-users-icon.png");
-    public static Image imageUrl1 = new Image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKBH5DbCnCmwQCpcjv__106JSjG3U2oVNZRw&s");
-    static Image imageUrl;
     private static User my_details;
     private static final Thread me = new Thread(new Runnable() {
         @Override
