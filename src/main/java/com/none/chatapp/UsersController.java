@@ -400,7 +400,7 @@ public class UsersController {
         userProfileImage = new ImageView(CurrentUserImg.getImage());
         initializeCircularImage(userProfileImage, 40);
 
-        userIDLabel = new Label(LoginController.Current_User + " (ID: None)");
+        userIDLabel = new Label("None (ID: None)");
         userIDLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: white;");
 
         userInfoBox.getChildren().addAll(userProfileImage, userIDLabel);
@@ -631,6 +631,12 @@ public class UsersController {
     private void handleLogout() {
         Stage stage = (Stage) CurrentUserImg.getScene().getWindow();
         stage.close();
+        current_thread.login_stage.show();
+        try{
+            current_thread.close_request = true;
+            current_thread.socket.close();
+        } catch (IOException e) {}
+
     }
 
     private void showCropWindow(Image image) {

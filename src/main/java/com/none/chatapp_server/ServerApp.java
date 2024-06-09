@@ -135,6 +135,7 @@ public class ServerApp extends Application {
         if (serverSocket != null) {
             try {
                 DatabaseController.closeConnection();
+                OnlineUsers.clearAll();
                 serverSocket.close();
                 serverThread.interrupt();
                 log("Server stopped");

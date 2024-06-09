@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -17,36 +18,39 @@ import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 
-public class HandlerThread extends Thread{
+public class HandlerThread{
     public Socket socket;
     UsersController controller;
     EventHandler<MouseEvent> userItemMouseEvent;
     public ResourceMgr rscMgr;
     private User my_details;
+    public Stage login_stage;
+    public boolean close_request = false;
+    LoginController login_controller;
 
-    public HandlerThread(Socket socket, UsersController controller)
+    public HandlerThread(LoginController login_cont, Stage login, Socket socket, UsersController controller)
     {
         this.socket = socket;
         this.controller = controller;
         rscMgr = new ResourceMgr(this);
         userItemMouseEvent = controller::handleUserItemMouseClick;
+        login_stage = login;
+        login_controller = login_cont;
     }
 
     private Thread me = new Thread(new Runnable() {
         @Override
         public void run()
         {
-
             try {
-                new RequestUsersListCommand().SendCommand(socket);
-                new RequestProfileImageCommand().SendCommand(socket);
-                new RequestUserDetailsCommand().SendCommand(socket);
+                initEnvironment();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
             while(true)
             {
+                if(close_request) break;
                 try {
                     ServerCommand cmd = ServerCommand.WaitForCommand(socket);
                     switch (cmd) {
@@ -55,6 +59,7 @@ public class HandlerThread extends Thread{
                             rscMgr.setUserItemStatus(controller, stat_cmd.user, status);
                         }
                         case UserListCommand list_cmd -> {
+                            Platform.runLater(() -> controller.usersViewBox.getChildren().clear());
                             for (User item : list_cmd.list) {
                                 UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, true);
                                 rscMgr.requestFile(item, user);
@@ -69,7 +74,6 @@ public class HandlerThread extends Thread{
                                 if (item.type == Message.Type.audio || item.type ==  Message.Type.image)
                                     rscMgr.requestFile(item, tmp);
                                 controller.addToMessageList(tmp);
-                                //Platform.runLater(() -> controller.messageViewBox.getChildren().add(tmp));
                             }
                         }
                         case ClientNotifyMessageCommand ncmd -> {
@@ -90,6 +94,8 @@ public class HandlerThread extends Thread{
                             }
                         }
                         case ResponseUsersListCommand responseCmd -> {
+                            Platform.runLater(() -> controller.usersViewBox.getChildren().clear());
+                            Platform.runLater(() -> controller.offlineUsersViewBox.getChildren().clear());
                             for (User item : responseCmd.list) {
                                 UserItem user = new UserItem(userItemMouseEvent, item.id, item.name, item.isOnline);
                                 if(user.usr_id != -1) rscMgr.requestFile(item, user);
@@ -143,14 +149,31 @@ public class HandlerThread extends Thread{
                     }
 
 
-
                 } catch (IOException | ClassNotFoundException e) {
                     System.out.println(e.toString() + " " + e.getMessage());
+                    if(close_request) break;
+                    try {
+                        if(login_controller.login())
+                        {
+                            socket = login_controller.socket;
+                            System.out.println("Reconnected");
+                            initEnvironment();
+                        }
+                    } catch (Exception ignored) {
+                    }
+
                 }
             }
         }
 
     });
+
+    void initEnvironment() throws IOException {
+        new RequestUsersListCommand().SendCommand(socket);
+        new RequestProfileImageCommand().SendCommand(socket);
+        new RequestUserDetailsCommand().SendCommand(socket);
+    }
+
 
     public void startThread()
     {

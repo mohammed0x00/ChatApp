@@ -45,8 +45,7 @@ public class LockableSocket extends Socket {
     public void close() throws IOException {
         try {
             super.close();
-        } finally {
             unlockSocket();
-        }
+        } catch (Exception ignored) {}
     }
 }

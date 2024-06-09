@@ -83,7 +83,9 @@ public class LoginController {
     @FXML
     private VBox SignVBox;
 
-    public static String Current_User;
+    private String username;
+    private String password;
+
 
 
     // Fields to store initial mouse click coordinates
@@ -98,47 +100,40 @@ public class LoginController {
             pnSign.toFront();
         }
         if (event.getSource().equals(btnLog)) {
-            String username = txfUser.getText();
-            Current_User = username;
-            String password = txfPass.getText();
+            username = txfUser.getText();
+            password = txfPass.getText();
             try {
-                socket = new Socket(hostname, port);
-                new LoginCommand(username, password).SendCommand(socket);
-                // Wait for the response
-                ServerCommand response = ServerCommand.WaitForCommand(socket, 7);
+                if (login()) {
+                    // Login successful, proceed to the next scene or dashboard
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("users-view.fxml"));
+                    Scene scene = new Scene(loader.load(), 950, 700);
+                    Stage newStage = new Stage();
+                    newStage.setTitle("Chat Bus");
+                    newStage.setScene(scene);
+                    newStage.initStyle(StageStyle.TRANSPARENT);
+                    newStage.setResizable(true);
+                    newStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                        @Override
+                        public void handle(WindowEvent event) {
+                            System.exit(0);
+                        }
+                    });
 
-                if (response instanceof LoginResponseCommand loginResponse) {
-                    if (loginResponse.isSuccess) {
-                        // Login successful, proceed to the next scene or dashboard
-                        FXMLLoader loader = new FXMLLoader(getClass().getResource("users-view.fxml"));
-                        Scene scene = new Scene(loader.load(), 950, 700);
-                        Stage newStage = new Stage();
-                        newStage.setTitle("Chat Bus");
-                        newStage.setScene(scene);
-                        newStage.initStyle(StageStyle.TRANSPARENT);
-                        newStage.setResizable(true);
-                        newStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                            @Override
-                            public void handle(WindowEvent event) {
-                                System.exit(0);
-                            }
-                        });
+                    newStage.show();
+                    Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    HandlerThread user_thread = new HandlerThread(this, currentStage, socket, loader.getController());
+                    ((UsersController)loader.getController()).current_thread = user_thread;
+                    user_thread.startThread();
 
-                        newStage.show();
-
-                        HandlerThread user_thread = new HandlerThread(socket, loader.getController());
-                        ((UsersController)loader.getController()).current_thread = user_thread;
-                        user_thread.startThread();
-
-                        Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                        currentStage.close();
-                    } else {
-                        // Login failed, show error message
-                        Utils.showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid username or password.");
-                        txfUser.setText("");
-                        txfPass.setText("");
-                        socket.close();
-                    }
+                    txfUser.setText("");
+                    txfPass.setText("");
+                    currentStage.hide();
+                } else {
+                    // Login failed, show error message
+                    Utils.showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid username or password.");
+                    txfUser.setText("");
+                    txfPass.setText("");
+                    socket.close();
                 }
             } catch (Exception e) {
                 System.out.println(e.toString() + e.getMessage()+e.getLocalizedMessage());
@@ -148,6 +143,18 @@ public class LoginController {
                 Utils.showAlert(Alert.AlertType.ERROR, "Connection Failed", "Cannot Connect to Server"+ e.getMessage() + e.toString());
             }
         }
+    }
+
+    public boolean login() throws IOException, ClassNotFoundException {
+        socket = new Socket(hostname, port);
+        new LoginCommand(username, password).SendCommand(socket);
+        // Wait for the response
+        ServerCommand response = ServerCommand.WaitForCommand(socket, 7);
+        if (response instanceof LoginResponseCommand loginResponse)
+        {
+            return loginResponse.isSuccess;
+        }
+        return false;
     }
 
     @FXML

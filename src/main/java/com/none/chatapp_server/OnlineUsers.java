@@ -111,4 +111,16 @@ public class OnlineUsers{
         }
     }
 
+    public static void clearAll()
+    {
+        for(HandlerThread thread : onlineUsers)
+        {
+            try {
+                thread.socket.close();
+            } catch (IOException e) {}
+        }
+        onlineUsers.clear();
+        broadcastMessages.clear();
+    }
+
 }
