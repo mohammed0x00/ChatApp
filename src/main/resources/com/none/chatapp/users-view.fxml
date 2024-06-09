@@ -34,7 +34,7 @@
                               <Insets bottom="7.0" left="7.0" top="7.0" />
                            </HBox.margin>
                         </ImageView>
-                        <Label fx:id="userFrontUiLabel" maxHeight="-Infinity" maxWidth="250.0" minWidth="100.0" prefWidth="250.0" text="#" textFill="WHITE" HBox.hgrow="ALWAYS">
+                        <Label fx:id="userFrontUiLabel" maxHeight="-Infinity" maxWidth="250.0" minWidth="-Infinity" prefWidth="250.0" text="#" textFill="WHITE" HBox.hgrow="ALWAYS">
                            <padding>
                               <Insets left="10.0" />
                            </padding>
@@ -46,7 +46,7 @@
                            <children>
                               <HBox maxHeight="1.7976931348623157E308" minWidth="260.0" prefWidth="260.0">
                                  <children>
-                                    <Label maxWidth="203.0" minWidth="203.0" opacity="0.61" prefHeight="77.0" prefWidth="203.0" text="Chatbus">
+                                    <Label maxWidth="203.0" minWidth="-Infinity" opacity="0.61" prefHeight="77.0" prefWidth="203.0" text="Chatbus">
                                        <font>
                                           <Font name="Californian FB Italic" size="64.0" />
                                        </font>
@@ -71,12 +71,6 @@
                               </HBox>
                            </children>
                         </HBox>
-                        <AnchorPane maxWidth="80.0" minWidth="80.0" prefWidth="80.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                              <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" AnchorPane.rightAnchor="40.0" AnchorPane.topAnchor="5.0" />
-                           </children>
-                        </AnchorPane>
                      </children>
                      <HBox.margin>
                         <Insets />
