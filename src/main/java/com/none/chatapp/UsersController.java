@@ -9,12 +9,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.SnapshotParameters;
@@ -30,8 +32,6 @@ import javafx.scene.shape.Rectangle;
 
 import com.none.chatapp_commands.*;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -39,12 +39,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
+import javax.sound.sampled.spi.AudioFileWriter;
 
 
 public class UsersController {
@@ -105,6 +109,13 @@ public class UsersController {
     private BooleanProperty isChatSelected = new SimpleBooleanProperty(false);
     private IntegerProperty conv_id = new SimpleIntegerProperty(selected_user_id);
 
+    private AudioFormat audioFormat;
+    private TargetDataLine targetDataLine;
+    private ByteArrayOutputStream out;
+    private Timeline timeline;
+    private BooleanProperty isRecording = new SimpleBooleanProperty(false);
+    private StringProperty recordingTime = new SimpleStringProperty("00:00");
+
     // Create a BooleanBinding for the condition selected_conv_id != -1
     BooleanBinding isConversationSelected = conv_id.isNotEqualTo(-1);
     BooleanBinding isChatAndConversationSelected = isChatSelected.and(isConversationSelected);
@@ -159,6 +170,7 @@ public class UsersController {
         // Initialize attachment button
         initializeAttachButton();
         initializeDropdownMenu();
+        RecordButton.setOnMouseClicked(event -> showRecordingWindow());
 
     }
 
@@ -784,6 +796,137 @@ public class UsersController {
                 messageViewBox.getChildren().add(bub);
             }
         });
+    }
+
+    private void showRecordingWindow() {
+        Stage recordingStage = new Stage(StageStyle.UNDECORATED);
+        recordingStage.initModality(Modality.APPLICATION_MODAL);
+
+        VBox root = new VBox();
+        root.setAlignment(Pos.CENTER);
+        root.setSpacing(10);
+        root.setStyle("-fx-background-color: #242526; -fx-padding: 20px;");
+
+        Label timerLabel = new Label();
+        timerLabel.textProperty().bind(recordingTime);
+        timerLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+
+        Button startButton = new Button("Start");
+        Button stopButton = new Button("Stop");
+        Button cancelButton = new Button("Cancel");
+        Button sendButton = new Button("Send");
+
+        HBox buttonBox = new HBox(startButton, stopButton, cancelButton, sendButton);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setSpacing(10);
+
+        root.getChildren().addAll(timerLabel, buttonBox);
+
+        Scene scene = new Scene(root, 300, 150);
+        recordingStage.setScene(scene);
+        recordingStage.show();
+
+        startButton.setOnAction(event -> startRecording());
+        stopButton.setOnAction(event -> stopRecording());
+        cancelButton.setOnAction(event -> {
+            stopRecording();
+            recordingStage.close();
+        });
+        sendButton.setOnAction(event -> {
+            stopRecording();
+            try {
+                saveRecordingAsWav();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            sendRecording();
+            recordingStage.close();
+        });
+
+        isRecording.addListener((obs, wasRecording, isNowRecording) -> {
+            startButton.setDisable(isNowRecording);
+            stopButton.setDisable(!isNowRecording);
+            sendButton.setDisable(!wasRecording);
+        });
+
+        stopButton.setDisable(true);
+        sendButton.setDisable(true);
+    }
+
+    private void startRecording() {
+        audioFormat = new AudioFormat(16000, 16, 2, true, true);
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
+
+        try {
+            targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
+            targetDataLine.open(audioFormat);
+            targetDataLine.start();
+
+            out = new ByteArrayOutputStream();
+            isRecording.set(true);
+            recordingTime.set("00:00");
+
+            new Thread(() -> {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while (isRecording.get()) {
+                    bytesRead = targetDataLine.read(buffer, 0, buffer.length);
+                    out.write(buffer, 0, bytesRead);
+                }
+            }).start();
+
+            timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+                String[] timeParts = recordingTime.get().split(":");
+                int minutes = Integer.parseInt(timeParts[0]);
+                int seconds = Integer.parseInt(timeParts[1]);
+
+                if (seconds < 59) {
+                    seconds++;
+                } else {
+                    minutes++;
+                    seconds = 0;
+                }
+
+                recordingTime.set(String.format("%02d:%02d", minutes, seconds));
+
+                if (minutes == 3) {
+                    stopRecording();
+                }
+            }));
+            timeline.setCycleCount(Timeline.INDEFINITE);
+            timeline.play();
+
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopRecording() {
+        if (targetDataLine != null) {
+            isRecording.set(false);
+            targetDataLine.stop();
+            targetDataLine.close();
+            if (timeline != null) {
+                timeline.stop();
+            }
+        }
+    }
+
+    private void sendRecording() {
+        byte[] audioData = out.toByteArray();
+
+        // Implement the logic to send the recorded audio data
+        // Example: new SendMessageCommand(audioData).SendCommand(HandlerThread.socket);
+    }
+
+    private void saveRecordingAsWav() throws IOException {
+        byte[] audioData = out.toByteArray();
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(audioData);
+             AudioInputStream audioInputStream = new AudioInputStream(bais, audioFormat, audioData.length)) {
+
+            File wavFile = new File("recording.wav");
+            AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE, wavFile);
+        }
     }
 
     @FXML
