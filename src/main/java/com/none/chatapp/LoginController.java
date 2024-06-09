@@ -75,7 +75,7 @@ public class LoginController {
     private RadioButton RdFemale;
 
     @FXML
-    private RadioButton RdOther;
+        private RadioButton RdOther;
 
     @FXML
     private DatePicker BrthDate;
@@ -211,7 +211,127 @@ public class LoginController {
             }
         });
 
+        // Add key event listeners for text fields
+        txfUser.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    txfPass.requestFocus();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        txfPass.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    btnLog.fire();
+                    break;
+                default:
+                    break;
+            }
+        });
+        // Add key event listeners for text fields in signup window
+        signupEmailTextField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    signupUsernameTextField.requestFocus();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        signupUsernameTextField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    BrthDate.requestFocus();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        BrthDate.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    RdMale.requestFocus();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        // Add focus traversal for radio buttons
+        RdMale.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    RdMale.setSelected(true);
+                    break;
+                case DOWN:
+                    signupPasswordTextField.requestFocus();
+                    break;
+                case RIGHT:
+                    RdFemale.requestFocus();
+                    break;
+                case LEFT:
+                    RdOther.requestFocus();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+
+        RdFemale.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    RdFemale.setSelected(true);
+                    break;
+                case DOWN:
+                    signupPasswordTextField.requestFocus();
+                    break;
+                case RIGHT:
+                    RdOther.requestFocus();
+                    break;
+                case LEFT:
+                    RdMale.requestFocus();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        RdOther.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    RdOther.setSelected(true);
+                    break;
+                case DOWN:
+                    signupPasswordTextField.requestFocus();
+                    break;
+                case RIGHT:
+                    RdMale.requestFocus();
+                    break;
+                case LEFT:
+                    RdFemale.requestFocus();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        signupPasswordTextField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    btnSignUp.fire();
+                    break;
+                default:
+                    break;
+            }
+        });
     }
+
 
     private void handleRadioButtonSelection(RadioButton selectedRadioButton) {
         RdMale.setSelected(selectedRadioButton == RdMale);

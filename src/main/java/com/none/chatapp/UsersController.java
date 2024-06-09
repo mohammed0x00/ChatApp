@@ -174,10 +174,26 @@ public class UsersController {
         initializeDropdownMenu();
         RecordButton.setOnMouseClicked(event -> showRecordingWindow());
 
+        // Add key event listener for messageTextField
+        messageTextField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    if (!messageTextField.getText().trim().isEmpty()) {
+                        sendImgbtn.fireEvent(new MouseEvent(
+                                MouseEvent.MOUSE_CLICKED,
+                                0, 0, 0, 0,
+                                MouseButton.PRIMARY,
+                                1, true, true, true, true,
+                                true, true, true, true, true, true, null
+                        ));
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+
     }
-
-
-
 
     private void makeWindowDraggable() {
         // Event handlers for dragging the window
@@ -477,6 +493,20 @@ public class UsersController {
 
         cancelButton.setOnAction(e -> stage.close());
 
+        // Add key event listener for messageTextField
+        textField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    saveButton.fire();
+                    break;
+                case ESCAPE:
+                    cancelButton.fire();
+                    break;
+                default:
+                    break;
+            }
+        });
+
         HBox buttons = new HBox(saveButton, cancelButton);
         buttons.setSpacing(10);
 
@@ -512,6 +542,18 @@ public class UsersController {
 
         cancelButton.setOnAction(e -> stage.close());
 
+        textField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    saveButton.fire();
+                    break;
+                case ESCAPE:
+                    cancelButton.fire();
+                    break;
+                default:
+                    break;
+            }
+        });
         HBox buttons = new HBox(saveButton, cancelButton);
         buttons.setSpacing(10);
 
@@ -551,6 +593,29 @@ public class UsersController {
         });
 
         cancelButton.setOnAction(e -> stage.close());
+
+        currentPasswordField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    newPasswordField.requestFocus();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        newPasswordField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    saveButton.fire();
+                    break;
+                case ESCAPE:
+                    cancelButton.fire();
+                    break;
+                default:
+                    break;
+            }
+        });
 
         HBox buttons = new HBox(saveButton, cancelButton);
         buttons.setSpacing(10);
@@ -622,6 +687,19 @@ public class UsersController {
         });
 
         cancelButton.setOnAction(e -> stage.close());
+
+        passwordField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    deleteButton.fire();
+                    break;
+                case ESCAPE:
+                    cancelButton.fire();
+                    break;
+                default:
+                    break;
+            }
+        });
 
         HBox buttons = new HBox(deleteButton, cancelButton);
         buttons.setSpacing(10);
