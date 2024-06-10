@@ -61,7 +61,7 @@ class MessageBubble extends HBox {
         VBox labelsBox = new VBox(timeLabel, statusLabel);
 
         // Determine the alignment and colors based on sender
-        if (msg.sender_id == controller.selected_user_id) {
+        if (msg.sender_id != controller.selected_user_id) {
             labelsBox.setAlignment(Pos.BOTTOM_LEFT);
             labelsBox.setSpacing(2);
             this.setAlignment(Pos.CENTER_RIGHT);
