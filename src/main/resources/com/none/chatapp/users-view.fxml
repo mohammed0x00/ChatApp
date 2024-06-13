@@ -18,7 +18,7 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchRoot" prefHeight="679.0" prefWidth="1506.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
+<AnchorPane fx:id="anchRoot" prefHeight="679.0" prefWidth="1506.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.none.chatapp.UsersController">
    <children>
       <VBox layoutX="-18.0" layoutY="-14.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -102,9 +102,17 @@
                                           <DropShadow />
                                        </effect>
                                     </ImageView>
-                                    <ImageView fitHeight="31.0" fitWidth="33.0" layoutX="14.0" layoutY="545.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0">
+                                    <ImageView fx:id="CLoseBtn" fitHeight="31.0" fitWidth="33.0" layoutX="14.0" layoutY="545.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0">
                                        <image>
                                           <Image url="@icons/iconizer-sign-out.png" />
+                                       </image>
+                                       <effect>
+                                          <DropShadow />
+                                       </effect>
+                                    </ImageView>
+                                    <ImageView fx:id="MinimizeBtn" fitHeight="31.0" fitWidth="33.0" layoutX="14.0" layoutY="487.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="13.0">
+                                       <image>
+                                          <Image url="@icons/minus.png" />
                                        </image>
                                        <effect>
                                           <DropShadow />

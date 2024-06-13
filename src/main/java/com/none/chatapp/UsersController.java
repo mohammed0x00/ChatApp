@@ -105,6 +105,12 @@ public class UsersController {
     @FXML
     public ImageView RecordButton;
 
+    @FXML
+    private ImageView CLoseBtn;
+
+    @FXML
+    private ImageView MinimizeBtn;
+
 
     public ImageView userProfileImage;
 
@@ -175,6 +181,8 @@ public class UsersController {
         initializeAttachButton();
         initializeDropdownMenu();
         RecordButton.setOnMouseClicked(event -> showRecordingWindow());
+        CLoseBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, this::closeApp);
+        MinimizeBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, this::minimizeApp);
 
         // Add key event listener for messageTextField
         messageTextField.setOnKeyPressed(event -> {
@@ -1021,6 +1029,17 @@ public class UsersController {
             recordingTime.set("00:00");
             audioData = null;
         }catch (Exception ignored){audioData=null;throw new Exception();}
+    }
+
+    private void closeApp(MouseEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+        System.exit(0);
+    }
+
+    private void minimizeApp(MouseEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setIconified(true);
     }
 
 

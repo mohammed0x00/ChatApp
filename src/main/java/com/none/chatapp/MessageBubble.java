@@ -61,19 +61,19 @@ class MessageBubble extends HBox {
         VBox labelsBox = new VBox(timeLabel, statusLabel);
 
         // Determine the alignment and colors based on sender
-        if (msg.sender_id != controller.selected_user_id) {
+        if (msg.sender_id == controller.selected_user_id) {
             labelsBox.setAlignment(Pos.BOTTOM_LEFT);
             labelsBox.setSpacing(2);
             this.setAlignment(Pos.CENTER_RIGHT);
             messageTextFlow.setBackground(new Background(new BackgroundFill(
-                    Color.web("#303030"), new CornerRadii(ARC_SIZE), Insets.EMPTY)));
+                    Color.web("#B8684D"), new CornerRadii(ARC_SIZE), Insets.EMPTY)));
             this.getChildren().addAll(labelsBox, messageTextFlow); // Sent messages: labels on the left
         } else {
             labelsBox.setAlignment(Pos.BOTTOM_RIGHT);
             labelsBox.setSpacing(2);
             this.setAlignment(Pos.CENTER_LEFT);
             messageTextFlow.setBackground(new Background(new BackgroundFill(
-                    Color.web("#B8684D"), new CornerRadii(ARC_SIZE), Insets.EMPTY)));
+                    Color.web("#303030"), new CornerRadii(ARC_SIZE), Insets.EMPTY)));
             this.getChildren().addAll(messageTextFlow, labelsBox); // Received messages: labels on the right
         }
 
@@ -92,9 +92,9 @@ class MessageBubble extends HBox {
                 messageTextFlow.setStyle("-fx-font-weight: bold;");
                 if (messageTextFlow.getChildren().getFirst() instanceof Text txt)
                     if (msg.sender_id == controller.selected_user_id)
-                        txt.setStyle("-fx-fill: #47e4f1;-fx-underline: true;");
-                    else
                         txt.setStyle("-fx-fill: #010927;-fx-underline: true;");
+                    else
+                        txt.setStyle("-fx-fill: #47e4f1;-fx-underline: true;");
 
                 messageTextFlow.setOnMouseClicked(event -> rscMgr.requestFile(msg, this));
             });
@@ -123,7 +123,7 @@ class MessageBubble extends HBox {
                 StackPane imageContainer = new StackPane(imageView);
                 imageContainer.setPadding(new Insets(PADDING));
                 imageContainer.setBackground(new Background(new BackgroundFill(
-                        msg.sender_id == controller.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
+                        msg.sender_id == controller.selected_user_id ? Color.web("#B8684D") : Color.web("#303030"),
                         new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
                 this.getChildren().clear();
@@ -228,7 +228,7 @@ class MessageBubble extends HBox {
                 audioControls.setAlignment(Pos.CENTER_LEFT);
                 audioControls.setPadding(new Insets(PADDING));
                 audioControls.setBackground(new Background(new BackgroundFill(
-                        msg.sender_id == controller.selected_user_id ? Color.web("#303030") : Color.web("#B8684D"),
+                        msg.sender_id == controller.selected_user_id ? Color.web("#B8684D") : Color.web("#303030"),
                         new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
                 if (msg.sender_id == controller.selected_user_id) {

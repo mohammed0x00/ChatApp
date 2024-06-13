@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import java.io.IOException;
 
+
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
@@ -19,7 +20,6 @@ public class HelloApplication extends Application {
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
         stage.show();
-
     }
 
     public static void main(String[] args) {
