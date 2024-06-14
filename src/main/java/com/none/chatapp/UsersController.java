@@ -7,10 +7,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -158,7 +155,7 @@ public class UsersController {
         // Bind the visibility of the message text field and send button to the isChatSelected property
         UserWindow.visibleProperty().bind(isChatSelected);
         messageTextField.visibleProperty().bind(isChatAndConversationSelected);
-        sendImgbtn.visibleProperty().bind(isChatAndConversationSelected.and(Bindings.isNotEmpty(messageTextField.textProperty())));
+        sendImgbtn.visibleProperty().bind(isChatAndConversationSelected.or(new SimpleBooleanProperty(true))/*.and(Bindings.isNotEmpty(messageTextField.textProperty()))*/);
         emojiButton.visibleProperty().bind(isChatAndConversationSelected);
         AttachBtn.visibleProperty().bind(isChatAndConversationSelected);
         RecordButton.visibleProperty().bind(isChatAndConversationSelected);
@@ -325,10 +322,18 @@ public class UsersController {
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
-        File selectedFile = fileChooser.showOpenDialog(null);
+        List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
 
         try{
-            if (selectedFile != null) {
+            if ((selectedFiles != null) && (!selectedFiles.isEmpty())) {
+                for(File selectedFile : selectedFiles)
+                {
+                    AttachmentItem item = new AttachmentItem(Paths.get(selectedFile.getAbsolutePath()));
+                    Platform.runLater(() -> {
+                        messageViewBox.getChildren().add(item);
+                    });
+                }
+                /*
                 Path filePath = Paths.get(selectedFile.getAbsolutePath());
                 byte[] file = Files.readAllBytes(filePath);
                 Message msg = new Message();
@@ -354,10 +359,12 @@ public class UsersController {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+
+                 */
             }
         }catch (Exception e)
         {
-            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Error occurred while sending file" + e.toString());
+            Utils.showAlert(Alert.AlertType.ERROR, "Error", "Error occurred while loading the file" + e.toString());
         }
 
 
@@ -371,8 +378,18 @@ public class UsersController {
         msg.content = messageTextField.getText();
         msg.type = Message.Type.text;
         try {
-            new SendMessageCommand(msg).SendCommand(current_thread.socket);
-            messageTextField.clear();
+            if(!Objects.equals(messageTextField.getText(), ""))
+            {
+                new SendMessageCommand(msg).SendCommand(current_thread.socket);
+                messageTextField.clear();
+            }
+            for(Node item : messageViewBox.getChildren())
+            {
+                if(item instanceof  AttachmentItem att)
+                {
+                    att.upload(current_thread, selected_conv_id);
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
