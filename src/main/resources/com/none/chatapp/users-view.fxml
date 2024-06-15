@@ -180,6 +180,15 @@
                   </AnchorPane>
                   <AnchorPane minHeight="0.0" minWidth="-Infinity" prefHeight="598.0" prefWidth="375.0" style="-fx-background-color: #202020;">
                      <children>
+                        <ScrollPane fx:id="attachmentScrollPane" layoutX="136.0" layoutY="423.0" maxHeight="-Infinity" maxWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" opacity="0.5" prefHeight="130.0" prefWidth="911.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css" vbarPolicy="NEVER" AnchorPane.leftAnchor="136.0" AnchorPane.rightAnchor="51.0">
+                          <content>
+                              <HBox fx:id="attachmentViewBox" alignment="BOTTOM_LEFT" fillHeight="false" maxHeight="-Infinity" prefHeight="100.0">
+                                 <padding>
+                                    <Insets bottom="20.0" />
+                                 </padding>
+                              </HBox>
+                          </content>
+                        </ScrollPane>
                         <HBox alignment="CENTER" layoutY="547.0" prefHeight="51.0" prefWidth="346.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                            <children>
                               <ImageView fx:id="RecordButton" fitHeight="37.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -223,8 +232,8 @@
                               </ImageView>
                            </children>
                         </HBox>
-                        <ScrollPane fx:id="messagesScrollPane" fitToWidth="true" layoutY="67.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css" AnchorPane.bottomAnchor="53.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="67.0">
-                           <VBox fx:id="messageViewBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="476.0" prefWidth="1129.0">
+                        <ScrollPane fx:id="messagesScrollPane" fitToWidth="true" layoutY="67.0" prefHeight="488.0" prefWidth="1098.0" styleClass="transparent-background" stylesheets="@styles/fullpackstyling.css" AnchorPane.bottomAnchor="43.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="67.0">
+                           <VBox fx:id="messageViewBox" alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="470.0" prefWidth="1085.0">
                               <children>
                                  <ImageView blendMode="DARKEN" fitHeight="84.0" fitWidth="83.0" opacity="0.47" pickOnBounds="true" preserveRatio="true">
                                     <image>

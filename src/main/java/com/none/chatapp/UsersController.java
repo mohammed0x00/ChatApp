@@ -108,6 +108,12 @@ public class UsersController {
     @FXML
     private ImageView MinimizeBtn;
 
+    @FXML
+    private ScrollPane attachmentScrollPane;
+
+    @FXML
+    private HBox attachmentViewBox;
+
 
     public ImageView userProfileImage;
 
@@ -161,11 +167,13 @@ public class UsersController {
         // Bind the visibility of the message text field and send button to the isChatSelected property
         UserWindow.visibleProperty().bind(isChatSelected);
         messageTextField.visibleProperty().bind(isChatAndConversationSelected);
-        sendImgbtn.visibleProperty().bind(isChatAndConversationSelected.or(new SimpleBooleanProperty(true))/*.and(Bindings.isNotEmpty(messageTextField.textProperty()))*/);
+        sendImgbtn.visibleProperty().bind((isChatAndConversationSelected.and(Bindings.isNotEmpty(messageTextField.textProperty()))).or(Bindings.isNotEmpty(attachmentViewBox.getChildren())));
         emojiButton.visibleProperty().bind(isChatAndConversationSelected);
         AttachBtn.visibleProperty().bind(isChatAndConversationSelected);
         RecordButton.visibleProperty().bind(isChatAndConversationSelected);
         messagesScrollPane.visibleProperty().bind(isChatSelected);
+        attachmentScrollPane.visibleProperty().bind(Bindings.isNotEmpty(attachmentViewBox.getChildren()));
+        
 
         messageViewBox.heightProperty().addListener((observable, oldValue, newValue) -> {
             messagesScrollPane.layout();
@@ -334,11 +342,13 @@ public class UsersController {
 
         try{
             if ((selectedFiles != null) && (!selectedFiles.isEmpty())) {
+                attachmentScrollPane.toFront();
                 for(File selectedFile : selectedFiles)
                 {
                     AttachmentItem item = new AttachmentItem(Paths.get(selectedFile.getAbsolutePath()));
                     Platform.runLater(() -> {
-                        messageViewBox.getChildren().add(item);
+                        //messageViewBox.getChildren().add(item);
+                        attachmentViewBox.getChildren().add(item);
                     });
                 }
                 /*
@@ -391,14 +401,16 @@ public class UsersController {
                 new SendMessageCommand(msg).SendCommand(current_thread.socket);
                 messageTextField.clear();
             }
-            for(Node item : messageViewBox.getChildren())
+            for(Node item : attachmentViewBox.getChildren())
             {
                 if(item instanceof  AttachmentItem att)
                 {
                     att.upload(current_thread, selected_conv_id);
                 }
             }
+            attachmentViewBox.getChildren().clear();
         } catch (IOException e) {
+            attachmentViewBox.getChildren().clear();
             throw new RuntimeException(e);
         }
     }
@@ -407,6 +419,7 @@ public class UsersController {
 
     void handleUserItemMouseClick(MouseEvent event) {
         messageViewBox.getChildren().clear();
+        attachmentViewBox.getChildren().clear();
 
         Object caller = event.getSource();
         if(!(caller instanceof UserItem)) caller = ((Node)caller).getParent();

@@ -244,8 +244,8 @@ class AttachmentItem extends HBox {
                 double imageWidth = newImage.getWidth();
                 double imageHeight = newImage.getHeight();
 
-                double maxWidth = 448;
-                double maxHeight = 290;
+                double maxWidth = 112.0;
+                double maxHeight = 72.5;
 
                 if (imageWidth > maxWidth || imageHeight > maxHeight) {
                     double widthScale = maxWidth / imageWidth;
@@ -270,7 +270,6 @@ class AttachmentItem extends HBox {
         msg.type = fileType;
 
         try {
-            deleteMe();
             new SendMessageCommand(msg, content).SendCommand(thread.socket);
         } catch (IOException e) {
             throw new RuntimeException(e);
