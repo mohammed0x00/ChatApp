@@ -47,6 +47,8 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import javax.sound.sampled.spi.AudioFileWriter;
 
+import static com.none.chatapp.Utils.*;
+
 
 public class UsersController {
 
@@ -278,7 +280,9 @@ public class UsersController {
                                 hbox.setOnMouseExited(e -> hbox.setStyle("-fx-background-color: #242526;"));  // Reset to original color
 
                                 // Modify the click event to insert emoji image instead of text
-                                hbox.setOnMouseClicked(e -> insertEmojiImage(emojiImage));
+                                hbox.setOnMouseClicked(e -> {
+                                    messageTextField.setText(messageTextField.getText() + hexToUnicodeString(getFilenameWithoutExtension(emojiFile)));
+                                });
                                 flowPane.getChildren().add(hbox);
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
@@ -315,19 +319,6 @@ public class UsersController {
         emojiButton.setOnMouseClicked(event -> emojiPicker.show(emojiButton, event.getScreenX(), event.getScreenY()));
     }
 
-    // Method to insert emoji image into the message view
-    private void insertEmojiImage(Image emojiImage) {
-        Message msg = new Message();
-        msg.conv_id = selected_conv_id;
-        msg.content = "png";
-        msg.type = Message.Type.image;
-        try {
-            new SendMessageCommand(msg, imageToByteArray(emojiImage)).SendCommand(current_thread.socket);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void initializeAttachButton() {
         AttachBtn.setOnMouseClicked(event -> handleAttachButtonEvent());
     }
@@ -351,34 +342,6 @@ public class UsersController {
                         attachmentViewBox.getChildren().add(item);
                     });
                 }
-                /*
-                Path filePath = Paths.get(selectedFile.getAbsolutePath());
-                byte[] file = Files.readAllBytes(filePath);
-                Message msg = new Message();
-                msg.conv_id = selected_conv_id;
-                msg.content = Utils.getFileExtension(filePath).toLowerCase();
-                switch (msg.content)
-                {
-                    case "png":
-                    case "jpg":
-                    case "jpeg":
-                        msg.type = Message.Type.image;
-                        break;
-                    case "mp3":
-                        msg.type = Message.Type.audio;
-                        break;
-                    default:
-                        msg.type = Message.Type.attachment;
-                        break;
-                }
-
-                try {
-                    new SendMessageCommand(msg, file).SendCommand(current_thread.socket);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                 */
             }
         }catch (Exception e)
         {

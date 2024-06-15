@@ -1,5 +1,6 @@
 package com.none.chatapp;
 
+import animatefx.animation.FlipOutX;
 import com.none.chatapp_commands.Message;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -18,12 +19,11 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class MessageBubble extends HBox {
     private static final double PADDING = 10;
@@ -42,12 +42,12 @@ class MessageBubble extends HBox {
         msg_id = msg.id;
 
         // Create a Text for the message
-        Text messageText = new Text(msg.content);
-        messageText.setTextAlignment(TextAlignment.LEFT);
-        messageText.setFill(Color.WHITE);
+        //Text messageText = new Text(msg.content);
+        //messageText.setTextAlignment(TextAlignment.LEFT);
+        //messageText.setFill(Color.WHITE);
 
         // Create a TextFlow for the text to apply wrapping
-        messageTextFlow = new TextFlow(messageText);
+        messageTextFlow = createTextFlowWithEmojis(msg.content);
         messageTextFlow.setMaxWidth(MAX_BUBBLE_WIDTH); // Set maximum width for the bubble
         messageTextFlow.setPadding(new Insets(PADDING));
 
@@ -317,5 +317,47 @@ class MessageBubble extends HBox {
         stage.setScene(scene);
         stage.setTitle("Image Viewer");
         stage.show();
+    }
+
+    private TextFlow createTextFlowWithEmojis(String text) {
+        TextFlow textFlow = new TextFlow();
+        Pattern emojiPattern = Pattern.compile("[\\x{1F600}-\\x{1F64F}]|" + // Emoticons
+                "[\\x{1F300}-\\x{1F5FF}]|" + // Misc Symbols and Pictographs
+                "[\\x{1F680}-\\x{1F6FF}]|" + // Transport and Map Symbols
+                "[\\x{1F700}-\\x{1F77F}]|" + // Alchemical Symbols
+                "[\\x{1F780}-\\x{1F7FF}]|" + // Geometric Shapes Extended
+                "[\\x{1F800}-\\x{1F8FF}]|" + // Supplemental Arrows-C
+                "[\\x{1F900}-\\x{1F9FF}]|" + // Supplemental Symbols and Pictographs
+                "[\\x{1FA00}-\\x{1FA6F}]|" + // Chess Symbols
+                "[\\x{1FA70}-\\x{1FAFF}]");  // Symbols and Pictographs Extended-A
+        Matcher matcher = emojiPattern.matcher(text);
+
+        int lastMatchEnd = 0;
+        while (matcher.find()) {
+            // Add preceding text
+            if (matcher.start() > lastMatchEnd) {
+                String precedingText = text.substring(lastMatchEnd, matcher.start());
+                Text txt = new Text(precedingText);
+                txt.setTextAlignment(TextAlignment.LEFT);
+                txt.setFill(Color.WHITE);
+                textFlow.getChildren().add(txt);
+            }
+
+            // Add emoji image
+            String emojiHex = Integer.toHexString(matcher.group().codePointAt(0));
+            ImageView emojiImageView = new ImageView(new Image(getClass().getResourceAsStream("/com/none/chatapp/icons/emojis/all/"+ emojiHex +".png")));
+            emojiImageView.setFitHeight(20);
+            emojiImageView.setFitWidth(20);
+            textFlow.getChildren().add(emojiImageView);
+            lastMatchEnd = matcher.end();
+        }
+
+        // Add any remaining text after the last emoji
+        if (lastMatchEnd < text.length()) {
+            String remainingText = text.substring(lastMatchEnd);
+            textFlow.getChildren().add(new Text(remainingText));
+        }
+
+        return textFlow;
     }
 }

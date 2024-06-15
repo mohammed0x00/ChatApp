@@ -3,6 +3,7 @@ package com.none.chatapp;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.*;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.Period;
@@ -35,6 +36,20 @@ public class Utils {
         } else {
             return ""; // No extension found
         }
+    }
+    public static String getFilenameWithoutExtension(File file) {
+        String fileName = file.getName();
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex != -1) {
+            return fileName.substring(0, dotIndex);
+        }
+        return fileName;
+    }
+    public static String hexToUnicodeString(String hex) {
+        // Convert the hexadecimal string to an integer
+        int codePoint = Integer.parseInt(hex, 16);
+        // Use Character.toChars to handle supplementary characters
+        return new String(Character.toChars(codePoint));
     }
 
 }
