@@ -32,7 +32,7 @@ import com.none.chatapp_commands.SendMessageCommand;
 class AttachmentItem extends HBox {
     private static final double PADDING = 10;
     private static final double ARC_SIZE = 20;
-    private static final double MAX_BUBBLE_WIDTH = 448; // Set the maximum width for the bubble
+    private static final double MAX_BUBBLE_WIDTH = 200; // Set the maximum width for the bubble
 
     private TextFlow messageTextFlow;
     private ImageView imageView;
@@ -42,6 +42,7 @@ class AttachmentItem extends HBox {
     byte[] content;
     Message.Type fileType;
     String ext;
+    private Button closeButton; // Define closeButton here
 
     public AttachmentItem(Path path) throws IOException {
         filePath = path;
@@ -61,26 +62,27 @@ class AttachmentItem extends HBox {
                 Color.web("#303030"), new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
         // Create a close button
-        Button closeButton = new Button("X");
+        closeButton = new Button("✖");
         closeButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
         closeButton.setOnAction(event -> {
             // Remove this AttachmentItem from its parent
             deleteMe();
         });
 
-        // Create a StackPane to position the close button and TextFlow
-        StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(messageTextFlow, closeButton);
-        StackPane.setAlignment(closeButton, Pos.TOP_RIGHT);
-        StackPane.setMargin(closeButton, new Insets(5)); // Add some margin to position the button
+        // Create a HBox for the close button and text
+        HBox textAndCloseButtonBox = new HBox(messageTextFlow, closeButton);
+        HBox.setHgrow(messageTextFlow, Priority.ALWAYS);
+        textAndCloseButtonBox.setSpacing(5);
+        textAndCloseButtonBox.setPadding(new Insets(PADDING));
 
-        // Create a VBox to hold the StackPane and ensure it grows with the parent
-        VBox vBox = new VBox(stackPane);
-        vBox.setMaxWidth(Double.MAX_VALUE);
-        VBox.setVgrow(stackPane, Priority.ALWAYS);
+        // Wrap the HBox in a StackPane to add padding and rounded corners
+        StackPane textContainer = new StackPane(textAndCloseButtonBox);
+        textContainer.setBackground(new Background(new BackgroundFill(
+                Color.web("#303030"), new CornerRadii(ARC_SIZE), Insets.EMPTY)));
+        textContainer.setPadding(new Insets(PADDING));
 
-        // Add the VBox to the HBox
-        this.getChildren().add(vBox);
+        // Add the StackPane to the main HBox
+        this.getChildren().add(textContainer);
 
         // Add padding around the HBox
         this.setSpacing(10); // Space between bubble and labels
@@ -121,6 +123,7 @@ class AttachmentItem extends HBox {
             });
         } else {
             Platform.runLater(() -> {
+                this.getChildren().clear(); // Remove this line if you want to retain the text bubble
                 messageTextFlow.setVisible(false);
                 imageView = new ImageView();
                 imageView.setPreserveRatio(true);
@@ -136,8 +139,12 @@ class AttachmentItem extends HBox {
                 imageContainer.setBackground(new Background(new BackgroundFill(Color.web("#303030"),
                         new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
-                //this.getChildren().clear();
-                this.getChildren().addAll(imageContainer);
+                // Add imageContainer and closeButton to a StackPane
+                StackPane imageStack = new StackPane(imageContainer, closeButton);
+                StackPane.setAlignment(closeButton, Pos.TOP_RIGHT);
+                StackPane.setMargin(closeButton, new Insets(5));
+
+                this.getChildren().add(imageStack);
             });
         }
     }
@@ -172,14 +179,12 @@ class AttachmentItem extends HBox {
                 Label playPauseLabel = new Label("▶");
                 playPauseLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: white;");
 
-
                 boolean[] isMediaEnded = {false};
 
                 mediaPlayer.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
                     if (!progressSlider.isValueChanging()) {
                         progressSlider.setValue(newTime.toSeconds());
                     }
-
                 });
 
                 mediaPlayer.setOnReady(() -> {
@@ -232,8 +237,12 @@ class AttachmentItem extends HBox {
                 audioControls.setBackground(new Background(new BackgroundFill(Color.web("#303030"),
                         new CornerRadii(ARC_SIZE), Insets.EMPTY)));
 
+                // Add audioControls and closeButton to a StackPane
+                StackPane audioStack = new StackPane(audioControls, closeButton);
+                StackPane.setAlignment(closeButton, Pos.TOP_RIGHT);
+                StackPane.setMargin(closeButton, new Insets(5));
 
-                this.getChildren().addAll(audioControls);
+                this.getChildren().add(audioStack);
             }
         });
     }

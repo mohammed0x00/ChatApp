@@ -41,13 +41,9 @@ class MessageBubble extends HBox {
         this.msg = msg;
         msg_id = msg.id;
 
-        // Create a Text for the message
-        //Text messageText = new Text(msg.content);
-        //messageText.setTextAlignment(TextAlignment.LEFT);
-        //messageText.setFill(Color.WHITE);
-
         // Create a TextFlow for the text to apply wrapping
-        messageTextFlow = createTextFlowWithEmojis(msg.content);
+        boolean isAttachment = (msg.type == Message.Type.attachment);
+        messageTextFlow = createTextFlowWithEmojis(msg.content, isAttachment);
         messageTextFlow.setMaxWidth(MAX_BUBBLE_WIDTH); // Set maximum width for the bubble
         messageTextFlow.setPadding(new Insets(PADDING));
 
@@ -85,21 +81,22 @@ class MessageBubble extends HBox {
         this.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(this, Priority.ALWAYS);
 
-        if(msg.type == Message.Type.attachment)
-        {
+        if (isAttachment) {
             Platform.runLater(() -> {
                 messageTextFlow.setVisible(true);
                 messageTextFlow.setStyle("-fx-font-weight: bold;");
-                if (messageTextFlow.getChildren().getFirst() instanceof Text txt)
-                    if (msg.sender_id == controller.selected_user_id)
-                        txt.setStyle("-fx-fill: #010927;-fx-underline: true;");
-                    else
-                        txt.setStyle("-fx-fill: #47e4f1;-fx-underline: true;");
-
+                for (var child : messageTextFlow.getChildren()) {
+                    if (child instanceof Text txt) {
+                        txt.setStyle(msg.sender_id == controller.selected_user_id ?
+                                "-fx-fill: #010927;-fx-underline: true;" :
+                                "-fx-fill: #47e4f1;-fx-underline: true;");
+                    }
+                }
                 messageTextFlow.setOnMouseClicked(event -> rscMgr.requestFile(msg, this));
             });
         }
     }
+
 
     public void setImage(UsersController controller, byte[] data) {
         if (data == null) {
@@ -319,17 +316,40 @@ class MessageBubble extends HBox {
         stage.show();
     }
 
-    private TextFlow createTextFlowWithEmojis(String text) {
+    private TextFlow createTextFlowWithEmojis(String text, boolean isAttachment) {
         TextFlow textFlow = new TextFlow();
-        Pattern emojiPattern = Pattern.compile("[\\x{1F600}-\\x{1F64F}]|" + // Emoticons
-                "[\\x{1F300}-\\x{1F5FF}]|" + // Misc Symbols and Pictographs
-                "[\\x{1F680}-\\x{1F6FF}]|" + // Transport and Map Symbols
-                "[\\x{1F700}-\\x{1F77F}]|" + // Alchemical Symbols
-                "[\\x{1F780}-\\x{1F7FF}]|" + // Geometric Shapes Extended
-                "[\\x{1F800}-\\x{1F8FF}]|" + // Supplemental Arrows-C
-                "[\\x{1F900}-\\x{1F9FF}]|" + // Supplemental Symbols and Pictographs
-                "[\\x{1FA00}-\\x{1FA6F}]|" + // Chess Symbols
-                "[\\x{1FA70}-\\x{1FAFF}]");  // Symbols and Pictographs Extended-A
+        Pattern emojiPattern = Pattern.compile(
+                "[\\x{1F600}-\\x{1F64F}]|" +    // Emoticons
+                        "[\\x{1F300}-\\x{1F5FF}]|" +    // Misc Symbols and Pictographs
+                        "[\\x{1F680}-\\x{1F6FF}]|" +    // Transport and Map Symbols
+                        "[\\x{1F700}-\\x{1F77F}]|" +    // Alchemical Symbols
+                        "[\\x{1F780}-\\x{1F7FF}]|" +    // Geometric Shapes Extended
+                        "[\\x{1F800}-\\x{1F8FF}]|" +    // Supplemental Arrows-C
+                        "[\\x{1F900}-\\x{1F9FF}]|" +    // Supplemental Symbols and Pictographs
+                        "[\\x{1FA00}-\\x{1FA6F}]|" +    // Chess Symbols
+                        "[\\x{1FA70}-\\x{1FAFF}]|" +    // Symbols and Pictographs Extended-A
+                        "[\\x{1FB00}-\\x{1FBFF}]|" +    // Symbols and Pictographs Extended-B
+                        "[\\x{1F1E6}-\\x{1F1FF}]|" +
+                        "[\\x{E040}-\\x{F000}]|" +
+                        "[\\x{3030}-\\x{3299}]|" +
+                        "[\\x{0020}-\\x{00AF}]|" +
+                        "[\\x{2600}-\\x{26FF}]|" +
+                        "[\\x{2000}-\\x{2F00}]|" + // Misc symbols
+                        "[\\x{2700}-\\x{27BF}]|" +      // Dingbats
+                        "[\\x{FE00}-\\x{FE0F}]|" +      // Variation Selectors
+                        "[\\x{1F100}-\\x{1F1FF}]|" +    // Enclosed Alphanumeric Supplement
+                        "[\\x{1F200}-\\x{1F2FF}]|" +    // Enclosed Ideographic Supplement
+                        "[\\x{1F300}-\\x{1F5FF}]|" +    // Misc Symbols and Pictographs
+                        "[\\x{1F600}-\\x{1F64F}]|" +    // Emoticons
+                        "[\\x{1F680}-\\x{1F6FF}]|" +    // Transport and Map Symbols
+                        "[\\x{1F700}-\\x{1F77F}]|" +    // Alchemical Symbols
+                        "[\\x{1F780}-\\x{1F7FF}]|" +    // Geometric Shapes Extended
+                        "[\\x{1F800}-\\x{1F8FF}]|" +    // Supplemental Arrows-C
+                        "[\\x{1F900}-\\x{1F9FF}]|" +    // Supplemental Symbols and Pictographs
+                        "[\\x{1FA00}-\\x{1FA6F}]|" +    // Chess Symbols
+                        "[\\x{1FA70}-\\x{1FAFF}]|" +    // Symbols and Pictographs Extended-A
+                        "[\\x{1FB00}-\\x{1FBFF}]"       // Symbols and Pictographs Extended-B
+        );
         Matcher matcher = emojiPattern.matcher(text);
 
         int lastMatchEnd = 0;
@@ -337,27 +357,49 @@ class MessageBubble extends HBox {
             // Add preceding text
             if (matcher.start() > lastMatchEnd) {
                 String precedingText = text.substring(lastMatchEnd, matcher.start());
-                Text txt = new Text(precedingText);
-                txt.setTextAlignment(TextAlignment.LEFT);
-                txt.setFill(Color.WHITE);
-                textFlow.getChildren().add(txt);
+                addStyledTextToFlow(precedingText, textFlow, isAttachment);
             }
 
             // Add emoji image
             String emojiHex = Integer.toHexString(matcher.group().codePointAt(0));
-            ImageView emojiImageView = new ImageView(new Image(getClass().getResourceAsStream("/com/none/chatapp/icons/emojis/all/"+ emojiHex +".png")));
-            emojiImageView.setFitHeight(20);
-            emojiImageView.setFitWidth(20);
-            textFlow.getChildren().add(emojiImageView);
+            try {
+                ImageView emojiImageView = new ImageView(new Image(getClass().getResourceAsStream("/com/none/chatapp/icons/emojis/all/" + emojiHex + ".png")));
+                double emojiSize = 18; // Set emoji size
+                emojiImageView.setFitHeight(emojiSize);
+                emojiImageView.setFitWidth(emojiSize);
+                emojiImageView.setTranslateY(4); // Adjust vertical alignment if needed
+                textFlow.getChildren().add(emojiImageView);
+            } catch (Exception e) {
+                // Fallback for missing emoji images: display the emoji character itself
+                Text fallbackEmoji = new Text(matcher.group());
+                fallbackEmoji.setFill(isAttachment ? Color.web("#47e4f1") : Color.WHITE);
+                textFlow.getChildren().add(fallbackEmoji);
+            }
             lastMatchEnd = matcher.end();
         }
 
         // Add any remaining text after the last emoji
         if (lastMatchEnd < text.length()) {
             String remainingText = text.substring(lastMatchEnd);
-            textFlow.getChildren().add(new Text(remainingText));
+            addStyledTextToFlow(remainingText, textFlow, isAttachment);
         }
 
         return textFlow;
     }
+
+    private void addStyledTextToFlow(String text, TextFlow textFlow, boolean isAttachment) {
+        for (char c : text.toCharArray()) {
+            Text txt = new Text(String.valueOf(c));
+            if (isAttachment) {
+                txt.setFill(Color.web("#47e4f1"));
+                txt.setFont(Font.font("Helvetica", FontWeight.BOLD, 12));
+                txt.setUnderline(true);
+            } else {
+                txt.setFill(Color.WHITE);
+                txt.setFont(Font.font(12));
+            }
+            textFlow.getChildren().add(txt);
+        }
+    }
+
 }
